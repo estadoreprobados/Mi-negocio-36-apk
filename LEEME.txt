@@ -1,0 +1,24 @@
+# Mi Primer Negocio 36 — modo sin conexión (experimental)
+
+## Qué agrega
+- `manifest.json`: datos para instalar la web como aplicación.
+- `sw.js`: guarda en caché los archivos principales para abrir la app sin internet.
+- `icon-192.png` y `icon-512.png`: iconos de instalación.
+- Indicador de conexión en pantalla.
+- Mantiene el código y la clave de almacenamiento local de la versión de monedas (`mpn36_v2_data`).
+
+## Subir desde Android
+1. Descarga y conserva una copia de seguridad del repositorio y de tus datos.
+2. Extrae este ZIP en tu celular.
+3. En GitHub, dentro del repositorio `Mi-negocio-36-demo`, usa **Add file → Upload files**.
+4. Sube y reemplaza `index.html`, `app.js`, `styles.css` y `LEEME.txt`, y agrega también `manifest.json`, `sw.js`, `icon-192.png` e `icon-512.png`.
+5. Pulsa **Commit changes** y espera a que GitHub Pages publique los cambios.
+6. Abre la aplicación con internet y espera unos segundos. Recarga la página una vez mientras sigues conectado para que el service worker pueda controlar la página y guardar también recursos externos que se carguen.
+7. Prueba: activa modo avión y vuelve a abrir la app desde la misma dirección o desde el icono instalado.
+
+## Límites importantes
+- Los datos de ventas/productos se guardan en el almacenamiento local de ese navegador/dispositivo. No se sincronizan con otros teléfonos y no hay cuentas multiusuario todavía.
+- Para instalar o actualizar el caché, primero se necesita conexión. El navegador debe haber guardado los archivos antes de desconectarse.
+- La gráfica y los reportes PDF usan Chart.js y jsPDF desde CDN. El service worker intenta guardar esas bibliotecas tras cargarlas con internet; prueba la gráfica y el PDF en modo avión. Si no se guardaron, esas funciones requerirán conexión. La captura de ventas, inventario y CSV local debería seguir funcionando.
+- No borres los datos del sitio ni el almacenamiento del navegador sin exportar primero.
+- Este paquete agrega caché offline básica; no es todavía una solución de sincronización offline multiusuario para producción. Cuando haya nube, necesitaremos una cola de cambios, identificadores únicos, resolución de conflictos y reintentos seguros.
