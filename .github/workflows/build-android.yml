@@ -37,12 +37,13 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Compilar APK
-        run: gradle assembleDebug
-      --stacktrace --info
+      - name: Compilador APK
+        run: gradle assembleDebug --stacktrace --info
+
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
           name: Mi-Primer-Negocio-36-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          
