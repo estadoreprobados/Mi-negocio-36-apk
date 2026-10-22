@@ -14,6 +14,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
@@ -35,8 +36,11 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Compilador APK
-        run: gradle assembleDebug --stacktrace --info
+      - name: Ver tareas de Gradle
+        run: gradle tasks --all
+
+      - name: Compilar APK
+        run: gradle :app:assembleDebug --stacktrace
 
       - name: Guardar APK
         uses: actions/upload-artifact@v4
