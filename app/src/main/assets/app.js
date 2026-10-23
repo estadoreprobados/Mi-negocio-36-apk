@@ -326,11 +326,11 @@
 
 
   const THEMES = [
-    { id: "classic", name: "Negocio clásico", cost: 0, description: "Negro, dorado y elegante.", colors: ["#111827", "#d4a72c"], preview: "linear-gradient(135deg,#111827 50%,#d4a72c 50%)" },
-    { id: "ocean", name: "Océano", cost: 3, description: "Azul profundo y celeste.", colors: ["#082f49", "#38bdf8"], preview: "linear-gradient(135deg,#082f49 50%,#38bdf8 50%)" },
-    { id: "forest", name: "Bosque", cost: 5, description: "Verde oscuro y lima.", colors: ["#132a20", "#84cc16"], preview: "linear-gradient(135deg,#132a20 50%,#84cc16 50%)" },
+    { id: "classic", name: "Azul y tierra", cost: 0, description: "Azul sereno, arena y tonos naturales.", colors: ["#315f82", "#d8cbb7"], preview: "linear-gradient(135deg,#315f82 50%,#d8cbb7 50%)" },
+    { id: "ocean", name: "Océano", cost: 3, description: "Azules tranquilos y claros.", colors: ["#173b56", "#7db5d0"], preview: "linear-gradient(135deg,#173b56 50%,#7db5d0 50%)" },
+    { id: "forest", name: "Bosque", cost: 5, description: "Verdes apagados y beige tierra.", colors: ["#334536", "#c5b58f"], preview: "linear-gradient(135deg,#334536 50%,#c5b58f 50%)" },
     { id: "violet", name: "Neón violeta", cost: 7, description: "Violeta y rosa brillante.", colors: ["#24113f", "#e879f9"], preview: "linear-gradient(135deg,#24113f 50%,#e879f9 50%)" },
-    { id: "sunset", name: "Atardecer", cost: 9, description: "Borgoña y naranja.", colors: ["#431407", "#fb923c"], preview: "linear-gradient(135deg,#431407 50%,#fb923c 50%)" }
+    { id: "sunset", name: "Terracota", cost: 9, description: "Arcilla, café y arena cálida.", colors: ["#543b2d", "#c98b68"], preview: "linear-gradient(135deg,#543b2d 50%,#c98b68 50%)" }
   ];
 
   function saleDates() {
