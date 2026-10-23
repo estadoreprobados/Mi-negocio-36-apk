@@ -72,15 +72,27 @@
       sales: [],
       expenses: [],
       stockMoves: [],
-      settings: { currency: "MXN" }
+      settings: { currency: "MXN", theme: "classic" },
+      gamification: { coins: 0, rewardedMilestones: [], purchasedThemes: ["classic"] }
     };
   }
 
   let data = loadData();
+  data.settings = { currency: "MXN", theme: "classic", ...(data.settings || {}) };
+  data.gamification = {
+    coins: Math.max(0, Number(data.gamification?.coins) || 0),
+    rewardedMilestones: Array.isArray(data.gamification?.rewardedMilestones) ? data.gamification.rewardedMilestones : [],
+    purchasedThemes: Array.isArray(data.gamification?.purchasedThemes) ? data.gamification.purchasedThemes : ["classic"]
+  };
+  if (!data.gamification.purchasedThemes.includes("classic")) data.gamification.purchasedThemes.unshift("classic");
   let salesChart = null;
+  let comparisonChart = null;
+  let statsMoneyChart = null;
+  let statsExpenseChart = null;
 
   function save() {
     try {
+      updateStreakRewards();
       localStorage.setItem(KEY, JSON.stringify(data));
       renderAll();
     } catch (e) {
@@ -312,12 +324,237 @@
     `).join("") || emptyRow(4, "No hay ventas en este periodo");
   }
 
+
+  const THEMES = [
+    { id: "classic", name: "Negocio clásico", cost: 0, description: "Negro, dorado y elegante.", colors: ["#111827", "#d4a72c"], preview: "linear-gradient(135deg,#111827 50%,#d4a72c 50%)" },
+    { id: "ocean", name: "Océano", cost: 3, description: "Azul profundo y celeste.", colors: ["#082f49", "#38bdf8"], preview: "linear-gradient(135deg,#082f49 50%,#38bdf8 50%)" },
+    { id: "forest", name: "Bosque", cost: 5, description: "Verde oscuro y lima.", colors: ["#132a20", "#84cc16"], preview: "linear-gradient(135deg,#132a20 50%,#84cc16 50%)" },
+    { id: "violet", name: "Neón violeta", cost: 7, description: "Violeta y rosa brillante.", colors: ["#24113f", "#e879f9"], preview: "linear-gradient(135deg,#24113f 50%,#e879f9 50%)" },
+    { id: "sunset", name: "Atardecer", cost: 9, description: "Borgoña y naranja.", colors: ["#431407", "#fb923c"], preview: "linear-gradient(135deg,#431407 50%,#fb923c 50%)" }
+  ];
+
+  function saleDates() {
+    return [...new Set(data.sales.map(s => s.date).filter(Boolean))].sort();
+  }
+
+  function streakInfo() {
+    const dates = new Set(saleDates());
+    let count = 0;
+    let cursor = today();
+    if (!dates.has(cursor)) cursor = addDays(cursor, -1);
+    while (dates.has(cursor)) {
+      count++;
+      cursor = addDays(cursor, -1);
+    }
+    const startDate = count ? addDays(cursor, 1) : "";
+    const day = Number(today().slice(8, 10));
+    const monthPrefix = today().slice(0, 7);
+    const daysInMonth = new Date(Number(today().slice(0, 4)), Number(today().slice(5, 7)), 0).getDate();
+    let monthCount = 0;
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = `${monthPrefix}-${String(i).padStart(2, "0")}`;
+      if (dates.has(date)) monthCount++;
+    }
+    const fullMonth = monthCount === daysInMonth;
+    return { dates, count, startDate, daysInMonth, monthCount, fullMonth, day };
+  }
+
+  function updateStreakRewards() {
+    if (!data.gamification) data.gamification = { coins: 0, rewardedMilestones: [], purchasedThemes: ["classic"] };
+    const info = streakInfo();
+    if (!info.count || !info.startDate) return;
+    const completedWeeks = Math.floor(info.count / 7);
+    for (let week = 1; week <= completedWeeks; week++) {
+      const milestone = `${info.startDate}:${week}`;
+      if (!data.gamification.rewardedMilestones.includes(milestone)) {
+        data.gamification.rewardedMilestones.push(milestone);
+        data.gamification.coins += 1;
+      }
+    }
+  }
+
+  function renderStreak() {
+    const el = $("streakCount");
+    if (!el) return;
+    const info = streakInfo();
+    $("streakCount").textContent = String(info.count);
+    $("streakFlame").textContent = info.fullMonth ? "🔥🔥" : info.count >= 7 ? "🔥" : "♨️";
+    $("streakMessage").textContent = info.fullMonth
+      ? "¡Mes perfecto! Tu llama ha crecido. 🎉"
+      : info.count
+        ? `¡Bien hecho! ${info.monthCount} de ${info.daysInMonth} días con ventas este mes.`
+        : "Registra al menos una venta cada día para mantener la racha.";
+    const progress = info.count % 7;
+    const percent = info.fullMonth ? 100 : (progress / 7) * 100;
+    $("streakProgress").style.width = `${percent}%`;
+    $("streakProgressText").textContent = info.fullMonth
+      ? "Mes completado: llama especial desbloqueada"
+      : `${progress} de 7 días para tu próxima moneda`;
+    $("streakCalendar").innerHTML = Array.from({ length: info.daysInMonth }, (_, idx) => {
+      const d = idx + 1;
+      const date = `${today().slice(0, 7)}-${String(d).padStart(2, "0")}`;
+      const active = info.dates.has(date);
+      return `<span class="calendar-day ${active ? "has-sale" : ""} ${date === today() ? "is-today" : ""}" title="${date}${active ? ": venta registrada" : ""}">${d}</span>`;
+    }).join("");
+  }
+
+  function periodBounds(period) {
+    const end = today();
+    if (period === "today") return { from: end, to: end, days: 1, label: "Hoy" };
+    if (period === "month") {
+      const from = `${end.slice(0, 7)}-01`;
+      return { from, to: end, days: Math.max(1, Math.round((new Date(end + "T12:00:00") - new Date(from + "T12:00:00")) / 86400000) + 1), label: "Este mes" };
+    }
+    if (period === "all") {
+      const dates = [...data.sales, ...data.expenses].map(x => x.date).filter(Boolean).sort();
+      const from = dates[0] || end;
+      const days = Math.max(1, Math.round((new Date(end + "T12:00:00") - new Date(from + "T12:00:00")) / 86400000) + 1);
+      return { from, to: end, days, label: "Todo" };
+    }
+    const days = Number(period) || 7;
+    return { from: addDays(end, -(days - 1)), to: end, days, label: `Últimos ${days} días` };
+  }
+
+  function periodSeries(from, to) {
+    const dates = [];
+    let d = from;
+    while (d <= to && dates.length < 4000) {
+      dates.push(d);
+      d = addDays(d, 1);
+    }
+    return {
+      dates,
+      revenue: dates.map(date => data.sales.filter(s => s.date === date).reduce((sum, s) => sum + s.price * s.qty, 0)),
+      costs: dates.map(date => data.sales.filter(s => s.date === date).reduce((sum, s) => sum + s.cost * s.qty, 0)),
+      gross: dates.map(date => data.sales.filter(s => s.date === date).reduce((sum, s) => sum + (s.price - s.cost) * s.qty, 0)),
+      expenses: dates.map(date => data.expenses.filter(e => e.date === date).reduce((sum, e) => sum + e.amount, 0))
+    };
+  }
+
+  function rangeValues(values) {
+    return values.length ? { max: Math.max(...values), min: Math.min(...values) } : { max: 0, min: 0 };
+  }
+
+  function renderStatistics() {
+    if (!$("statsPeriod")) return;
+    const p = periodBounds($("statsPeriod").value);
+    const t = totals(p.from, p.to);
+    const units = t.ss.reduce((sum, s) => sum + s.qty, 0);
+    const byDay = {};
+    t.ss.forEach(s => { byDay[s.date] = (byDay[s.date] || 0) + 1; });
+    const best = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0];
+    const expenseRange = rangeValues(t.es.map(e => e.amount));
+    const costRange = rangeValues(t.ss.map(s => s.cost * s.qty));
+    const grossRange = rangeValues(t.ss.map(s => (s.price - s.cost) * s.qty));
+    $("statUnits").textContent = String(units);
+    $("statTransactions").textContent = String(t.ss.length);
+    $("statTransactionsLabel").textContent = p.label;
+    $("statBestSalesDay").textContent = String(best ? best[1] : 0);
+    $("statBestSalesDate").textContent = best ? `${best[0]} (${best[1]} operaciones)` : "Sin ventas";
+    $("statExpenseRange").textContent = `${money(expenseRange.max)} / ${money(expenseRange.min)}`;
+    $("statCostRange").textContent = `${money(costRange.max)} / ${money(costRange.min)}`;
+    $("statGrossRange").textContent = `${money(grossRange.max)} / ${money(grossRange.min)}`;
+
+    const current = periodSeries(p.from, p.to);
+    const prevTo = addDays(p.from, -1);
+    const prevFrom = addDays(prevTo, -(p.days - 1));
+    const previous = periodSeries(prevFrom, prevTo);
+    $("statsCompareLabel").textContent = `${p.label} vs. ${prevFrom} al ${prevTo}`;
+
+    if (window.Chart) {
+      if (comparisonChart) comparisonChart.destroy();
+      comparisonChart = new Chart($("comparisonChart"), {
+        type: "bar",
+        data: { labels: ["Ventas", "Costos", "Utilidad bruta", "Gastos"], datasets: [
+          { label: "Periodo actual", data: [t.revenue, t.costs, t.gross, t.expenseTotal], backgroundColor: "#d4a72c", borderRadius: 5 },
+          { label: "Periodo anterior", data: [
+            previous.revenue.reduce((a,b)=>a+b,0),
+            previous.costs.reduce((a,b)=>a+b,0),
+            previous.gross.reduce((a,b)=>a+b,0),
+            previous.expenses.reduce((a,b)=>a+b,0)
+          ], backgroundColor: "#64748b", borderRadius: 5 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } }, scales: { y: { beginAtZero: true } } }
+      });
+      if (statsMoneyChart) statsMoneyChart.destroy();
+      statsMoneyChart = new Chart($("statsMoneyChart"), {
+        type: "line",
+        data: { labels: current.dates.map(d => d.slice(5)), datasets: [
+          { label: "Ventas", data: current.revenue, borderColor: "#d4a72c", tension: .25 },
+          { label: "Costo de ventas", data: current.costs, borderColor: "#64748b", tension: .25 },
+          { label: "Utilidad bruta", data: current.gross, borderColor: "#16a34a", tension: .25 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } }, scales: { y: { beginAtZero: true } } }
+      });
+      if (statsExpenseChart) statsExpenseChart.destroy();
+      statsExpenseChart = new Chart($("statsExpenseChart"), {
+        type: "bar",
+        data: { labels: current.dates.map(d => d.slice(5)), datasets: [
+          { label: "Gastos", data: current.expenses, backgroundColor: "#f97316", borderRadius: 4 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+    }
+  }
+
+  function applyTheme() {
+    const theme = THEMES.find(t => t.id === data.settings.theme) || THEMES[0];
+    document.documentElement.dataset.appTheme = theme.id;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = theme.colors[0];
+  }
+
+  function renderShop() {
+    if (!$("themeShop")) return;
+    $("fireCoins").textContent = String(data.gamification.coins);
+    $("themeShop").innerHTML = THEMES.map(theme => {
+      const owned = data.gamification.purchasedThemes.includes(theme.id);
+      const active = data.settings.theme === theme.id;
+      const action = active ? "Tema activo" : owned ? "Aplicar tema" : `Comprar · ${theme.cost} 🔥`;
+      return `<article class="theme-card ${active ? "theme-active" : ""}">
+        <div class="theme-preview" style="background:${theme.preview}"></div>
+        <div class="theme-card-body"><h3>${escapeHtml(theme.name)}</h3><p>${escapeHtml(theme.description)}</p>
+        <div class="theme-card-footer"><strong>${theme.cost === 0 ? "Gratis" : `${theme.cost} 🔥`}</strong>
+        <button class="button ${active ? "secondary" : ""}" data-theme-action="${theme.id}" ${active ? "disabled" : ""}>${action}</button></div></div>
+      </article>`;
+    }).join("");
+  }
+
+  function handleThemeAction(id) {
+    const theme = THEMES.find(t => t.id === id);
+    if (!theme) return;
+    const owned = data.gamification.purchasedThemes.includes(id);
+    if (!owned) {
+      if (data.gamification.coins < theme.cost) {
+        toast(`Necesitas ${theme.cost} monedas de fuego para comprar este tema.`);
+        return;
+      }
+      if (!confirm(`¿Comprar "${theme.name}" por ${theme.cost} monedas de fuego?`)) return;
+      data.gamification.coins -= theme.cost;
+      data.gamification.purchasedThemes.push(id);
+    }
+    data.settings.theme = id;
+    applyTheme();
+    save();
+    toast(owned ? `Tema "${theme.name}" aplicado.` : `¡Compraste "${theme.name}"!`);
+  }
+
+  $("themeShop")?.addEventListener("click", e => {
+    const button = e.target.closest("[data-theme-action]");
+    if (button) handleThemeAction(button.dataset.themeAction);
+  });
+  $("statsPeriod")?.addEventListener("change", renderStatistics);
+
   function renderAll() {
     renderProducts();
     renderSales();
     renderExpenses();
     renderDashboard();
     renderReport();
+    renderStreak();
+    renderStatistics();
+    renderShop();
+    applyTheme();
   }
 
   function updateSalePreview() {
@@ -338,8 +575,10 @@
     document.querySelectorAll(".tab").forEach(b =>
       b.classList.toggle("active", b.dataset.view === view)
     );
-    if (view === "dashboard") renderDashboard();
+    if (view === "dashboard") { renderDashboard(); renderStreak(); }
     if (view === "reports") renderReport();
+    if (view === "statistics") renderStatistics();
+    if (view === "shop") renderShop();
   }
 
   document.querySelectorAll(".tab").forEach(b =>

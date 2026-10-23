@@ -8,6 +8,7 @@
   <title>Mi Primer Negocio 36</title>
 
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="features.css">
 
   <script defer src="chart.umd.min.js"></script>
   <script defer src="jspdf.umd.min.js"></script>
@@ -85,9 +86,25 @@
     <button class="tab" data-view="sales">Ventas</button>
     <button class="tab" data-view="expenses">Gastos</button>
     <button class="tab" data-view="reports">Reportes</button>
+    <button class="tab" data-view="statistics">Estadísticas</button>
+    <button class="tab" data-view="shop">Tienda 🔥</button>
   </nav>
 
   <section class="view" id="view-dashboard">
+    <article class="panel streak-panel">
+      <div class="streak-flame" id="streakFlame" aria-hidden="true">🔥</div>
+      <div class="streak-main">
+        <p class="eyebrow">TU CONSTANCIA</p>
+        <h2><span id="streakCount">0</span> días de racha</h2>
+        <p id="streakMessage">Registra una venta para comenzar tu racha.</p>
+        <div class="streak-progress"><span id="streakProgress"></span></div>
+        <small id="streakProgressText">0 de 7 días para tu próxima moneda</small>
+      </div>
+      <div class="streak-calendar-wrap">
+        <strong>Este mes</strong>
+        <div id="streakCalendar" class="streak-calendar" aria-label="Calendario de rachas"></div>
+      </div>
+    </article>
     <div class="section-heading">
       <div>
         <p class="eyebrow">VISTA GENERAL</p>
@@ -435,6 +452,51 @@
         </table>
       </div>
     </article>
+  </section>
+
+  <section class="view hidden" id="view-statistics">
+    <div class="section-heading">
+      <div><p class="eyebrow">DATOS DE TU NEGOCIO</p><h2>Estadísticas</h2></div>
+      <label class="date-filter">Periodo
+        <select id="statsPeriod">
+          <option value="today">Hoy</option>
+          <option value="7" selected>Últimos 7 días</option>
+          <option value="30">Últimos 30 días</option>
+          <option value="month">Este mes</option>
+          <option value="all">Todo</option>
+        </select>
+      </label>
+    </div>
+    <div class="metrics stats-metrics">
+      <article class="metric"><span>Productos vendidos</span><strong id="statUnits">0</strong><small>Unidades</small></article>
+      <article class="metric"><span>Ventas registradas</span><strong id="statTransactions">0</strong><small id="statTransactionsLabel">En el periodo</small></article>
+      <article class="metric"><span>Mayor número de ventas</span><strong id="statBestSalesDay">0</strong><small id="statBestSalesDate">En un día</small></article>
+      <article class="metric"><span>Gasto máximo / mínimo</span><strong id="statExpenseRange">$0 / $0</strong><small>Por gasto registrado</small></article>
+      <article class="metric"><span>Costo de ventas máximo / mínimo</span><strong id="statCostRange">$0 / $0</strong><small>Por operación registrada</small></article>
+      <article class="metric"><span>Utilidad bruta máxima / mínima</span><strong id="statGrossRange">$0 / $0</strong><small>Por operación registrada</small></article>
+    </div>
+    <article class="panel">
+      <div class="panel-title"><h3>Comparación con el periodo anterior</h3><span class="muted" id="statsCompareLabel">Periodo actual vs. anterior</span></div>
+      <div class="chart-wrap stats-chart-wrap"><canvas id="comparisonChart"></canvas></div>
+      <p class="muted footnote">La comparación usa periodos de igual duración. “Todo” se compara con el periodo anterior de la misma duración aproximada.</p>
+    </article>
+    <div class="chart-grid">
+      <article class="panel"><div class="panel-title"><h3>Ventas, costos y utilidad</h3></div><div class="chart-wrap stats-chart-wrap"><canvas id="statsMoneyChart"></canvas></div></article>
+      <article class="panel"><div class="panel-title"><h3>Gastos por día</h3></div><div class="chart-wrap stats-chart-wrap"><canvas id="statsExpenseChart"></canvas></div></article>
+    </div>
+  </section>
+
+  <section class="view hidden" id="view-shop">
+    <div class="section-heading">
+      <div><p class="eyebrow">PERSONALIZA TU NEGOCIO</p><h2>Tienda de temas</h2></div>
+      <div class="fire-wallet"><span aria-hidden="true">🔥</span> <strong id="fireCoins">0</strong> monedas</div>
+    </div>
+    <article class="panel shop-intro">
+      <h3>Gana monedas manteniendo tu racha</h3>
+      <p>Completa 7 días consecutivos con al menos una venta al día para ganar una moneda de fuego. Las monedas son puntos de la app, no dinero real.</p>
+    </article>
+    <div id="themeShop" class="theme-shop"></div>
+    <p class="muted footnote">Los temas comprados se guardan en este dispositivo. Si borras los datos de la app, podrías perder las monedas y compras locales.</p>
   </section>
 
   <footer>Mi Primer Negocio 36 · Herramienta de apoyo para proyectos escolares</footer>
