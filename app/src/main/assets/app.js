@@ -707,8 +707,24 @@ function downloadCsv() {
       "Reporte estimado para control escolar. Verifica tus registros antes de tomar decisiones.",
       14, y + 5
     );
-    doc.save("reporte-mi-primer-negocio-36.pdf");
+    
+    const filename = "reporte-mi-primer-negocio-36.pdf";
+
+    if (window.AndroidFiles &&
+        typeof window.AndroidFiles.saveBase64 === "function") {
+      const dataUri = doc.output("datauristring");
+      const base64 = dataUri.substring(dataUri.indexOf(",") + 1);
+
+      window.AndroidFiles.saveBase64(
+        filename,
+        "application/pdf",
+        base64
+      );
+    } else {
+      doc.save(filename);
+    }
   }
+
 
   $("generatePdf").addEventListener("click", generatePdf);
 
