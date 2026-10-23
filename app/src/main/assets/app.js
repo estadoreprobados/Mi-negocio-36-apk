@@ -178,7 +178,7 @@
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="mi-primer-negocio-36.csv";a.click();URL.revokeObjectURL(a.href);
   }
   $("exportCsv").addEventListener("click",downloadCsv);$("exportCsvTop").addEventListener("click",downloadCsv);
-  $("generatePdf").addEventListener("click",()=>{
+  $("generatePdf").addEventListener("click",generatePdf);
     if(!window.jspdf){toast("No se pudo cargar el generador PDF. Revisa tu conexión a internet.");return;}
     const {from,to}=reportRange(),t=totals(from,to),doc=new window.jspdf.jsPDF();
     doc.setFontSize(18);doc.text("Mi Primer Negocio 36",14,18);
