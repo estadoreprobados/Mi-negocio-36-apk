@@ -583,41 +583,59 @@
   function csvEscape(v) {
     return '"' + String(v ?? "").replace(/"/g, '""') + '"';
   }
+function downloadCsv() {
+  const rows = [
+    ["Moneda ISO 4217", data.settings.currency],
+    [],
+    ["Tipo", "Fecha", "Producto o concepto", "Cantidad",
+     "Precio o monto", "Costo unitario", "Total"]
+  ];
 
-  function downloadCsv() {
-    const rows = [
-      ["Moneda ISO 4217", data.settings.currency],
-      [],
-      ["Tipo", "Fecha", "Producto o concepto", "Cantidad", "Precio o monto", "Costo unitario", "Total"]
-    ];
+  data.products.forEach(p => rows.push([
+    "Producto", p.createdAt || "", p.name, p.stock,
+    p.price, productCost(p), ""
+  ]));
 
-    data.products.forEach(p => rows.push([
-      "Producto", p.createdAt, p.name, p.stock, p.price, productCost(p), ""
-    ]));
-    data.sales.forEach(s => rows.push([
-      "Venta", s.date, s.name, s.qty, s.price, s.cost, s.qty * s.price
-    ]));
-    data.expenses.forEach(e => rows.push([
-      "Gasto", e.date, e.name, "", e.amount, "", e.amount
-    ]));
-    data.stockMoves.forEach(m => rows.push([
-      "Inventario: " + m.typeLabel, m.date, m.name, m.qty, "", "", m.reason
-    ]));
+  data.sales.forEach(s => rows.push([
+    "Venta", s.date, s.name, s.qty,
+    s.price, s.cost, s.qty * s.price
+  ]));
 
-    const blob = new Blob(
-      ["\ufeff" + rows.map(r => r.map(csvEscape).join(",")).join("\r\n")],
-      { type: "text/csv;charset=utf-8;" }
-    );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "mi-primer-negocio-36.csv";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
+  data.expenses.forEach(e => rows.push([
+    "Gasto", e.date, e.name, "",
+    e.amount, "", e.amount
+  ]));
 
+  data.stockMoves.forEach(m => rows.push([
+    "Inventario: " + m.typeLabel, m.date, m.name,
+    m.qty, "", "", m.reason || ""
+  ]));
+
+  const csvEscape = value =>
+    '"' + String(value ?? "").replace(/"/g, '""') + '"';
+
+  const csv = "\uFEFF" + rows
+    .map(row => row.map(csvEscape).join(","))
+    .join("\r\n");
+
+  const blob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "mi-primer-negocio-36.csv";
+  a.style.display = "none";
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+  
   $("exportCsv").addEventListener("click", downloadCsv);
   $("exportCsvTop").addEventListener("click", downloadCsv);
 
