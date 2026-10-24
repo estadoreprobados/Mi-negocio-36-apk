@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Build;
 import android.os.Environment;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.webkit.ValueCallback;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -22,6 +24,8 @@ import java.io.IOException;
 
 public class MainActivity extends Activity {
     private WebView webView;
+    private ValueCallback<Uri[]> filePathCallback;
+    private static final int FILE_CHOOSER_REQUEST = 2048;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +39,26 @@ public class MainActivity extends Activity {
         settings.setAllowContentAccess(true);
 
         webView.addJavascriptInterface(new DownloadBridge(), "AndroidFiles");
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
+                    FileChooserParams params) {
+                if (filePathCallback != null) filePathCallback.onReceiveValue(null);
+                filePathCallback = callback;
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("application/pdf");
+                try {
+                    startActivityForResult(Intent.createChooser(intent, "Selecciona el PDF de respaldo"),
+                            FILE_CHOOSER_REQUEST);
+                } catch (Exception e) {
+                    filePathCallback = null;
+                    Toast.makeText(MainActivity.this, "No se pudo abrir el selector de archivos.", Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                return true;
+            }
+        });
 
         setContentView(webView);
         webView.loadUrl("file:///android_asset/index.html");
@@ -92,6 +115,22 @@ public class MainActivity extends Activity {
                             Toast.LENGTH_LONG).show();
                 }
             });
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == FILE_CHOOSER_REQUEST) {
+            if (filePathCallback != null) {
+                Uri[] results = null;
+                if (resultCode == RESULT_OK && intent != null && intent.getData() != null) {
+                    results = new Uri[] { intent.getData() };
+                }
+                filePathCallback.onReceiveValue(results);
+                filePathCallback = null;
+            }
         }
     }
 
