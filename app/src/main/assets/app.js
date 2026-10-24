@@ -78,7 +78,7 @@
   }
 
   let data = loadData();
-  data.settings = { currency: "MXN", theme: "classic", ...(data.settings || {}) };
+  data.settings = { currency: "MXN", theme: "classic", businessName: "", mode: "light", ...(data.settings || {}) };
   data.gamification = {
     coins: Math.max(0, Number(data.gamification?.coins) || 0),
     rewardedMilestones: Array.isArray(data.gamification?.rewardedMilestones) ? data.gamification.rewardedMilestones : [],
@@ -883,7 +883,7 @@ function downloadCsv() {
     const doc = new window.jspdf.jsPDF();
 
     doc.setFontSize(18);
-    doc.text("Mi Primer Negocio 36", 14, 18);
+    doc.text(data.settings.businessName || "Mi Primer Negocio 36", 14, 18);
     doc.setFontSize(11);
     doc.text(`Reporte de actividad · Moneda: ${data.settings.currency}`, 14, 27);
     doc.text(`Periodo: ${from || "Inicio"} al ${to || "Hoy"}`, 14, 34);
@@ -967,6 +967,23 @@ function downloadCsv() {
 
   $("generatePdf").addEventListener("click", generatePdf);
 
+
+  if ($("businessName")) {
+    $("businessName").value = data.settings.businessName || "";
+    $("saveBusinessName").addEventListener("click", saveBusinessName);
+  }
+  if ($("themeMode")) {
+    applySavedAppearance();
+    $("themeMode").addEventListener("change", () => {
+      data.settings.mode = $("themeMode").value === "dark" ? "dark" : "light";
+      save();
+      applySavedAppearance();
+      toast("Apariencia actualizada.");
+    });
+  }
+  if ($("exportBackupPdf")) $("exportBackupPdf").addEventListener("click", exportBackupPdf);
+  if ($("importBackupPdf")) $("importBackupPdf").addEventListener("change", e => importBackupPdf(e.target.files && e.target.files[0]));
+
   const currencySelect = $("currencySelect");
   if (currencySelect) {
     currencySelect.value = data.settings.currency || "MXN";
@@ -982,6 +999,118 @@ function downloadCsv() {
       toast("Moneda actualizada a " + chosen + ". No se realizó conversión de importes.");
     });
   }
+
+
+  function applySavedAppearance() {
+    const mode = data.settings.mode === "dark" ? "dark" : "light";
+    document.documentElement.dataset.mode = mode;
+    const select = $("themeMode");
+    if (select) select.value = mode;
+  }
+
+  function saveBusinessName() {
+    const name = ($("businessName").value || "").trim().slice(0, 70);
+    data.settings.businessName = name || "Mi Primer Negocio 36";
+    save();
+    toast("Nombre del negocio guardado.");
+  }
+
+  function exportBackupPdf() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      toast("No se pudo cargar el generador PDF.");
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const business = data.settings.businessName || "Mi Primer Negocio 36";
+    doc.setFontSize(18);
+    doc.text("Respaldo de datos", 14, 18);
+    doc.setFontSize(11);
+    doc.text(business, 14, 27);
+    doc.text("Generado: " + today(), 14, 34);
+    doc.text("Productos: " + data.products.length, 14, 43);
+    doc.text("Ventas: " + data.sales.length, 14, 50);
+    doc.text("Gastos: " + data.expenses.length, 14, 57);
+    doc.setFontSize(9);
+    doc.text("Este archivo contiene un respaldo interno para Mi Primer Negocio 36.", 14, 68);
+    doc.text("No edites ni vuelvas a guardar este PDF con otra aplicación.", 14, 75);
+
+    // El bloque de respaldo se agrega después del PDF; los lectores PDF lo ignoran,
+    // pero la app puede recuperarlo sin depender de servicios externos.
+    const json = JSON.stringify(data);
+    const encoded = btoa(unescape(encodeURIComponent(json)));
+    const pdfBytes = new Uint8Array(doc.output("arraybuffer"));
+    const marker = new TextEncoder().encode("\\nMPN36_BACKUP_V1:" + encoded + "\\n");
+    const combined = new Uint8Array(pdfBytes.length + marker.length);
+    combined.set(pdfBytes, 0);
+    combined.set(marker, pdfBytes.length);
+    let binary = "";
+    for (let i = 0; i < combined.length; i += 0x8000) {
+      binary += String.fromCharCode(...combined.subarray(i, i + 0x8000));
+    }
+    const base64 = btoa(binary);
+    const filename = "respaldo-mi-primer-negocio-36.pdf";
+    if (window.AndroidFiles && typeof window.AndroidFiles.saveBase64 === "function") {
+      window.AndroidFiles.saveBase64(filename, "application/pdf", base64);
+    } else {
+      const blob = new Blob([combined], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    toast("Respaldo PDF exportado.");
+  }
+
+  async function importBackupPdf(file) {
+    if (!file) return;
+    if (file.size > 15 * 1024 * 1024) {
+      toast("El archivo supera el límite de 15 MB.");
+      $("importBackupPdf").value = "";
+      return;
+    }
+    try {
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      }
+      const match = binary.match(/MPN36_BACKUP_V1:([A-Za-z0-9+/=]+)/);
+      if (!match) throw new Error("No contiene un respaldo compatible");
+      const restored = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
+      if (!restored || !Array.isArray(restored.products) ||
+          !Array.isArray(restored.sales) || !Array.isArray(restored.expenses) ||
+          !Array.isArray(restored.stockMoves) || !restored.settings) {
+        throw new Error("La estructura del respaldo no es válida");
+      }
+      if (!confirm("Importar este respaldo reemplazará los productos, ventas, gastos y configuración actuales. ¿Continuar?")) return;
+      data = {
+        ...restored,
+        products: restored.products,
+        sales: restored.sales,
+        expenses: restored.expenses,
+        stockMoves: restored.stockMoves,
+        settings: { currency: "MXN", mode: "light", ...(restored.settings || {}) },
+        gamification: {
+          coins: Math.max(0, Number(restored.gamification?.coins) || 0),
+          rewardedMilestones: Array.isArray(restored.gamification?.rewardedMilestones) ? restored.gamification.rewardedMilestones : [],
+          purchasedThemes: Array.isArray(restored.gamification?.purchasedThemes) ? restored.gamification.purchasedThemes : ["classic"]
+        }
+      };
+      localStorage.setItem(KEY, JSON.stringify(data));
+      applySavedAppearance();
+      if ($("businessName")) $("businessName").value = data.settings.businessName || "";
+      renderAll();
+      toast("Respaldo importado correctamente.");
+    } catch (err) {
+      console.error(err);
+      toast("No se pudo importar. Usa un PDF de respaldo creado por esta app.");
+    } finally {
+      $("importBackupPdf").value = "";
+    }
+  }
+
 
   $("saleDate").value = today();
   $("expenseDate").value = today();

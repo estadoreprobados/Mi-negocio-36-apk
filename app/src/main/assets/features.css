@@ -58,3 +58,25 @@ body { background:var(--mpn-bg); color:var(--mpn-text); }
 input, select, textarea { background:#fffdf8; color:var(--mpn-text); border-color:var(--mpn-border); }
 table th { background:#e8dfcf; color:#20384d; }
 table td { border-color:var(--mpn-border); }
+
+
+/* Opciones de negocio */
+.options-panel { display:grid; gap:12px; margin-bottom:16px; }
+.options-panel label { display:grid; gap:7px; font-weight:650; max-width:560px; }
+.options-panel input, .options-panel select { width:100%; min-height:44px; border:1px solid var(--line); border-radius:9px; padding:10px 12px; background:var(--card); color:var(--text); font:inherit; }
+.options-panel .button { justify-self:start; }
+:root[data-mode="dark"] {
+  color-scheme:dark;
+  --bg:#121a22; --card:#1b2833; --text:#e8edf1; --muted:#a5b4bf;
+  --line:#344653; --accent:#4c8db5; --accent-dark:#316c91;
+  --mpn-bg:#121a22; --mpn-panel:#1b2833; --mpn-text:#e8edf1;
+  --mpn-muted:#a5b4bf; --mpn-accent:#4c8db5; --mpn-accent-contrast:#fff;
+  --mpn-border:#344653;
+}
+:root[data-mode="dark"] body { background:var(--bg); color:var(--text); }
+:root[data-mode="dark"] .topbar { background:#0b1117; }
+:root[data-mode="dark"] .tabs { background:#202e39; }
+:root[data-mode="dark"] .tab { color:#c5d0d8; }
+:root[data-mode="dark"] .tab.active { background:#315f82; color:#fff; }
+:root[data-mode="dark"] input, :root[data-mode="dark"] select, :root[data-mode="dark"] textarea { background:#1b2833; color:#e8edf1; border-color:#344653; }
+:root[data-mode="dark"] .notice { background:#392e1d; color:#f4d6a0; border-color:#6b532b; }
