@@ -602,114 +602,83 @@ footer { color: var(--muted); }
 :root[data-app-theme="retro"][data-mode="dark"] body { background-color: #c8dced; color: #182b3d; }
 
 
-/* v3.6.5 · mejoras de temas: contraste real, fondos decorativos y variantes claro/oscuro. */
-/* Mantener superficies, controles y tablas legibles en modo oscuro para CUALQUIER tema. */
-:root[data-mode="dark"] {
-  color-scheme: dark;
-  --surface-soft: color-mix(in srgb, var(--mpn-panel, #192630) 78%, #000);
-}
-:root[data-mode="dark"] body { color: var(--mpn-text, #eef4f7); }
-:root[data-mode="dark"] .panel,
-:root[data-mode="dark"] .metric,
-:root[data-mode="dark"] .theme-card,
-:root[data-mode="dark"] .help-card,
-:root[data-mode="dark"] .ops-card { color: var(--mpn-text, #eef4f7); }
-:root[data-mode="dark"] input,
-:root[data-mode="dark"] select,
-:root[data-mode="dark"] textarea {
-  color: var(--mpn-text, #eef4f7); background: var(--mpn-panel, #192630);
-  border-color: var(--mpn-border, #394b59); color-scheme: dark;
-}
-:root[data-mode="dark"] input::placeholder,
-:root[data-mode="dark"] textarea::placeholder { color: var(--mpn-muted, #a6b6c1); opacity: 1; }
-:root[data-mode="dark"] .button.secondary,
-:root[data-mode="dark"] .text-button,
-:root[data-mode="dark"] .qty-controls button { color: var(--mpn-text, #eef4f7); background: var(--mpn-panel, #192630); border-color: var(--mpn-border, #394b59); }
-:root[data-mode="dark"] .panel,
-:root[data-mode="dark"] .metric,
-:root[data-mode="dark"] .theme-card,
-:root[data-mode="dark"] .tabs,
-:root[data-mode="dark"] .more-menu { border-color: var(--mpn-border, #394b59); }
-
-/* Hacker: versión clara legible; la oscura conserva negro/verde neón. */
-:root[data-mode="light"][data-app-theme="hacker"] {
-  color-scheme: light;
-  --mpn-bg:#effaf2; --mpn-panel:#ffffff; --mpn-text:#123522; --mpn-muted:#426b52;
-  --mpn-accent:#087a3b; --mpn-accent-contrast:#ffffff; --mpn-border:#b8dfc4;
-  --bg:#effaf2; --card:#ffffff; --text:#123522; --muted:#426b52; --line:#b8dfc4; --accent:#087a3b; --accent-dark:#065f2d;
-}
-:root[data-mode="light"][data-app-theme="hacker"] body {
-  background-color:#effaf2;
-  background-image:linear-gradient(#087a3b0c 1px,transparent 1px),linear-gradient(90deg,#087a3b0c 1px,transparent 1px),radial-gradient(ellipse at top right,#8be6a355,transparent 55%);
-  background-size:22px 22px,22px 22px,auto;
-}
-:root[data-app-theme="hacker"] .topbar { border-bottom:2px solid var(--mpn-accent); }
-:root[data-app-theme="hacker"] .panel,
-:root[data-app-theme="hacker"] .metric { box-shadow:0 5px 20px color-mix(in srgb, var(--mpn-accent) 10%, transparent); }
-:root[data-app-theme="hacker"] .button:not(.secondary) { box-shadow:0 0 0 1px color-mix(in srgb, var(--mpn-accent) 35%, transparent),0 4px 14px color-mix(in srgb, var(--mpn-accent) 14%, transparent); }
-
-/* Azul tecnológico: versión clara y oscura, con circuitos y cuadrícula digital. */
-:root[data-mode="light"][data-app-theme="tech-blue"] {
-  color-scheme:light; --mpn-bg:#edf6ff; --mpn-panel:#ffffff; --mpn-text:#102b49;
-  --mpn-muted:#4c6d8e; --mpn-accent:#086acb; --mpn-accent-contrast:#ffffff; --mpn-border:#b9d8f5;
-  --bg:#edf6ff; --card:#ffffff; --text:#102b49; --muted:#4c6d8e; --line:#b9d8f5; --accent:#086acb; --accent-dark:#0755a1;
-}
-:root[data-app-theme="tech-blue"] body {
-  background-image:linear-gradient(90deg,color-mix(in srgb,var(--mpn-accent) 7%,transparent) 1px,transparent 1px),linear-gradient(color-mix(in srgb,var(--mpn-accent) 7%,transparent) 1px,transparent 1px),radial-gradient(ellipse at 85% 0%,color-mix(in srgb,var(--mpn-accent) 16%,transparent),transparent 52%);
-  background-size:26px 26px,26px 26px,auto;
-}
-:root[data-app-theme="tech-blue"] .topbar { border-bottom:2px solid var(--mpn-accent); box-shadow:0 5px 24px color-mix(in srgb,var(--mpn-accent) 12%,transparent); }
-:root[data-app-theme="tech-blue"] .panel,
-:root[data-app-theme="tech-blue"] .metric { box-shadow:0 0 0 1px color-mix(in srgb,var(--mpn-accent) 10%,transparent),0 8px 24px color-mix(in srgb,var(--mpn-accent) 9%,transparent); }
-:root[data-app-theme="tech-blue"] .button:not(.secondary) { box-shadow:0 0 0 1px color-mix(in srgb,var(--mpn-accent) 30%,transparent),0 4px 16px color-mix(in srgb,var(--mpn-accent) 17%,transparent); }
-
-/* Paleontología: patrón repetido de fósiles/huesos de dinosaurio en SVG embebido. */
-:root[data-app-theme="paleontology"] body {
-  background-image:linear-gradient(135deg,color-mix(in srgb,var(--mpn-bg) 90%,transparent),color-mix(in srgb,var(--mpn-bg) 94%,#d8c49a)),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg fill='none' stroke='%238c8a65' stroke-opacity='.20' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M18 27l24 14m-28-20q-8-7-2-13q7-5 12 2q6-4 11 2q5 8-4 13l-4 7'/%3E%3Cpath d='M112 98l25-15m-26 8q-9-3-7-11q3-8 11-5q4-8 11-4q8 5 2 13l-1 7'/%3E%3Cpath d='M58 120l19-17m-20 10q-8-4-4-11q5-6 11-1q7-7 12-1q4 7-4 12l-3 7'/%3E%3C/g%3E%3Cg fill='%238c8a65' fill-opacity='.14'%3E%3Ccircle cx='145' cy='28' r='3'/%3E%3Ccircle cx='85' cy='55' r='2'/%3E%3Ccircle cx='28' cy='94' r='3'/%3E%3C/g%3E%3C/svg%3E");
-  background-attachment:fixed;
-}
-:root[data-mode="dark"][data-app-theme="paleontology"] body {
-  background-image:linear-gradient(135deg,#1b2119f2,#1b2119e8),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg fill='none' stroke='%23b7c49a' stroke-opacity='.22' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M18 27l24 14m-28-20q-8-7-2-13q7-5 12 2q6-4 11 2q5 8-4 13l-4 7'/%3E%3Cpath d='M112 98l25-15m-26 8q-9-3-7-11q3-8 11-5q4-8 11-4q8 5 2 13l-1 7'/%3E%3Cpath d='M58 120l19-17m-20 10q-8-4-4-11q5-6 11-1q7-7 12-1q4 7-4 12l-3 7'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Escolar: ilustraciones de libros, cuadernos y lápices en el fondo. */
-:root[data-app-theme="cbtis36"] body {
-  background-image:linear-gradient(135deg,color-mix(in srgb,var(--mpn-bg) 92%,transparent),color-mix(in srgb,var(--mpn-bg) 96%,#fff)),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='160' viewBox='0 0 190 160'%3E%3Cg stroke='%233b6c9d' stroke-opacity='.18' stroke-width='2' fill='none'%3E%3Crect x='18' y='22' width='34' height='43' rx='3'/%3E%3Cpath d='M35 22v43M23 31h8m-8 7h8m-8 7h8'/%3E%3Crect x='118' y='87' width='40' height='31' rx='3'/%3E%3Cpath d='M138 87v31M123 96h10m-10 7h10'/%3E%3Cpath d='M82 22l7 2-15 45-7-2zM75 67l-2 8 7-5'/%3E%3C/g%3E%3C/svg%3E");
-  background-attachment:fixed;
-}
-:root[data-mode="dark"][data-app-theme="cbtis36"] body {
-  background-image:linear-gradient(135deg,#101a2bf0,#101a2be8),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='160' viewBox='0 0 190 160'%3E%3Cg stroke='%2376aaff' stroke-opacity='.22' stroke-width='2' fill='none'%3E%3Crect x='18' y='22' width='34' height='43' rx='3'/%3E%3Cpath d='M35 22v43M23 31h8m-8 7h8m-8 7h8'/%3E%3Crect x='118' y='87' width='40' height='31' rx='3'/%3E%3Cpath d='M138 87v31M123 96h10m-10 7h10'/%3E%3Cpath d='M82 22l7 2-15 45-7-2zM75 67l-2 8 7-5'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Halloween: ilustraciones decorativas de calabazas, fantasmas, murciélagos y telarañas. */
-:root[data-mode="light"][data-app-theme="halloween2026"] {
-  color-scheme:light; --mpn-bg:#fff5e9; --mpn-panel:#fffdf9; --mpn-text:#32183e; --mpn-muted:#72577d;
-  --mpn-accent:#c94d08; --mpn-accent-contrast:#ffffff; --mpn-border:#e9c6a9;
-  --bg:#fff5e9; --card:#fffdf9; --text:#32183e; --muted:#72577d; --line:#e9c6a9; --accent:#c94d08; --accent-dark:#9f3b05;
-}
+/* Halloween: decoraciones visibles, no solo recolor. Patrones CSS/emoji ligeros, sin imágenes externas. */
 :root[data-app-theme="halloween2026"] body {
-  background-image:linear-gradient(135deg,color-mix(in srgb,var(--mpn-bg) 88%,transparent),color-mix(in srgb,var(--mpn-bg) 94%,#ffb347)),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg stroke='%23d96a24' stroke-opacity='.25' stroke-width='2' fill='none'%3E%3Cellipse cx='32' cy='37' rx='13' ry='12'/%3E%3Cellipse cx='32' cy='37' rx='6' ry='12'/%3E%3Cpath d='M29 24l3-5 4 5M20 36l-5-3m29 3l5-3M24 47l-4 4m24-4l4 4'/%3E%3Cpath d='M111 27q-13 0-13 14v14l5-4 5 4 5-4 5 4 5-4V41q0-14-12-14zM106 39h1m9 0h1'/%3E%3Cpath d='M130 104q13-15 26 0q-8-3-13 5q-5-8-13-5zM15 112l9-9 9 9m-18 0l9-9 9 9'/%3E%3C/g%3E%3C/svg%3E");
-  background-attachment:fixed;
+  background-color:#160d20 !important;
+  background-image: radial-gradient(ellipse at 12% 18%, #ff751833 0 5%, transparent 6%), radial-gradient(ellipse at 82% 32%, #ff75182b 0 4%, transparent 5%), radial-gradient(ellipse at 28% 78%, #8b3bb52b 0 6%, transparent 7%), repeating-linear-gradient(135deg, transparent 0 34px, #7c3b9820 35px 38px) !important;
 }
-:root[data-mode="dark"][data-app-theme="halloween2026"] body {
-  background-image:linear-gradient(135deg,#10091af2,#21102fe8 60%,#32120fe8),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg stroke='%23ff9b4a' stroke-opacity='.25' stroke-width='2' fill='none'%3E%3Cellipse cx='32' cy='37' rx='13' ry='12'/%3E%3Cellipse cx='32' cy='37' rx='6' ry='12'/%3E%3Cpath d='M29 24l3-5 4 5M20 36l-5-3m29 3l5-3M24 47l-4 4m24-4l4 4'/%3E%3Cpath d='M111 27q-13 0-13 14v14l5-4 5 4 5-4 5 4 5-4V41q0-14-12-14zM106 39h1m9 0h1'/%3E%3Cpath d='M130 104q13-15 26 0q-8-3-13 5q-5-8-13-5zM15 112l9-9 9 9m-18 0l9-9 9 9'/%3E%3C/g%3E%3C/svg%3E");
-}
-:root[data-mode="light"][data-app-theme="halloween2026"] .topbar { background:linear-gradient(110deg,#fff5e9,#f5e5ff 58%,#ffe0bd); color:#32183e; border-bottom:3px solid #c94d08; }
-:root[data-mode="light"][data-app-theme="halloween2026"] input,
-:root[data-mode="light"][data-app-theme="halloween2026"] select,
-:root[data-mode="light"][data-app-theme="halloween2026"] textarea { background:#fffdf9; color:#32183e; border-color:#e9c6a9; }
-:root[data-mode="light"][data-app-theme="halloween2026"] .notice { background:#fff0dc; border-color:#d9782b; color:#48213d; }
-:root[data-mode="light"][data-app-theme="halloween2026"] .button:not(.secondary),
-:root[data-mode="light"][data-app-theme="halloween2026"] .tab.active { background:linear-gradient(135deg,#c94d08,#e98522); color:#fff; border-color:#b64406; }
-:root[data-mode="dark"][data-app-theme="halloween2026"] .topbar { color:var(--mpn-text); }
+:root[data-app-theme="halloween2026"] .topbar { background:linear-gradient(120deg,#170b24,#4b1764 58%,#a63d08) !important; border-bottom:3px solid #ff7518; }
+:root[data-app-theme="halloween2026"] .panel,
+:root[data-app-theme="halloween2026"] .metric,
+:root[data-app-theme="halloween2026"] .theme-card,
+:root[data-app-theme="halloween2026"] .ops-card { border:2px solid #8b4ca0 !important; box-shadow:0 4px 16px #16051f25, inset 0 0 0 1px #ff8c4225; }
+:root[data-app-theme="halloween2026"] .panel-title::before,
+:root[data-app-theme="halloween2026"] .section-heading h2::before { content:"🎃  "; }
+:root[data-app-theme="halloween2026"] .button:not(.secondary),
+:root[data-app-theme="halloween2026"] .tab.active,
+:root[data-app-theme="halloween2026"] .more-menu-button { position:relative; border:2px solid #ff9b37 !important; background:linear-gradient(135deg,#3b1554,#8c2b69 55%,#e85d13) !important; color:#fff7e8 !important; box-shadow:0 3px 0 #4b1c5b, 0 0 10px #ff751844; }
+:root[data-app-theme="halloween2026"] .button:not(.secondary)::before { content:"🕸️"; margin-right:5px; }
+:root[data-app-theme="halloween2026"] .button:not(.secondary)::after { content:"🎃💀"; margin-left:5px; }
+:root[data-app-theme="halloween2026"] .theme-preview { background-image:radial-gradient(circle at 20% 40%,#ff9c35 0 8%,transparent 9%),radial-gradient(circle at 68% 70%,#ff9c35 0 7%,transparent 8%),linear-gradient(135deg,#180c23,#592070 55%,#e85d13) !important; }
+:root[data-app-theme="halloween2026"][data-mode="light"] body { background-color:#fff2df !important; background-image:radial-gradient(ellipse at 12% 18%,#ff75182b 0 5%,transparent 6%),radial-gradient(ellipse at 82% 32%,#6c27852b 0 4%,transparent 5%),repeating-linear-gradient(135deg,transparent 0 34px,#7c3b9817 35px 38px) !important; }
+:root[data-app-theme="halloween2026"][data-mode="light"] .panel,
+:root[data-app-theme="halloween2026"][data-mode="light"] .metric,
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card { background:#fffaf2 !important; color:#32113f !important; }
+:root[data-app-theme="halloween2026"][data-mode="light"] .panel p,
+:root[data-app-theme="halloween2026"][data-mode="light"] .panel label { color:#43204c; }
 
-/* Mantener los fondos ornamentales detrás del contenido, sin bloquear controles. */
-:root[data-app-theme="paleontology"] .panel,
-:root[data-app-theme="cbtis36"] .panel,
-:root[data-app-theme="halloween2026"] .panel { background-color:color-mix(in srgb,var(--mpn-panel) 96%,transparent); }
-@media (prefers-reduced-motion: reduce) {
-  :root[data-app-theme] *, :root[data-app-theme] *::before, :root[data-app-theme] *::after { scroll-behavior:auto !important; transition:none !important; }
+/* Retro: modo oscuro real, anulando los degradados claros heredados. */
+:root[data-app-theme="retro"][data-mode="dark"] { color-scheme:dark !important; --mpn-bg:#101b29; --mpn-panel:#192a3c; --mpn-text:#e9f4ff; --mpn-muted:#b6cee2; --mpn-accent:#59b7f3; --mpn-accent-contrast:#071522; --mpn-border:#42617b; --bg:#101b29; --card:#192a3c; --text:#e9f4ff; --muted:#b6cee2; --line:#42617b; }
+:root[data-app-theme="retro"][data-mode="dark"] body { background:#101b29 !important; color:#e9f4ff !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .panel,
+:root[data-app-theme="retro"][data-mode="dark"] .metric,
+:root[data-app-theme="retro"][data-mode="dark"] .theme-card,
+:root[data-app-theme="retro"][data-mode="dark"] .ops-card { background:linear-gradient(180deg,#1d3146,#152438) !important; color:#e9f4ff !important; border-color:#42617b !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .panel-title,
+:root[data-app-theme="retro"][data-mode="dark"] .section-heading,
+:root[data-app-theme="retro"][data-mode="dark"] .theme-card-body p { color:#e9f4ff !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .tabs { background:linear-gradient(180deg,#1b2f43,#142438) !important; border-color:#42617b !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .tab { color:#c5def2 !important; text-shadow:none !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .tab.active { background:linear-gradient(180deg,#3c7199,#245578) !important; color:#fff !important; border-color:#6ba9d4 !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .button:not(.secondary) { background:linear-gradient(180deg,#3c7199,#245578) !important; color:#fff !important; border-color:#6ba9d4 !important; text-shadow:none !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .button.secondary,
+:root[data-app-theme="retro"][data-mode="dark"] .row-button { background:linear-gradient(180deg,#263e55,#1a2d40) !important; color:#e9f4ff !important; border-color:#42617b !important; }
+:root[data-app-theme="retro"][data-mode="dark"] input,
+:root[data-app-theme="retro"][data-mode="dark"] select,
+:root[data-app-theme="retro"][data-mode="dark"] textarea { background:#101e2d !important; color:#e9f4ff !important; border-color:#42617b !important; }
+:root[data-app-theme="retro"][data-mode="dark"] table th { background:#263e55 !important; color:#e9f4ff !important; }
+:root[data-app-theme="retro"][data-mode="dark"] table td { color:#e9f4ff !important; border-color:#344e66 !important; }
+:root[data-app-theme="retro"][data-mode="dark"] .notice,
+:root[data-app-theme="retro"][data-mode="dark"] .inventory-box,
+:root[data-app-theme="retro"][data-mode="dark"] .sale-preview,
+:root[data-app-theme="retro"][data-mode="dark"] .mini-summary > div { background:#1b3044 !important; color:#e9f4ff !important; border-color:#42617b !important; }
+
+/* Nuevos temas desbloqueables con monedas: motivos visuales propios. */
+:root[data-app-theme="hearts"] { --mpn-bg:#fff0f6; --mpn-panel:#fffafd; --mpn-text:#65123c; --mpn-muted:#9f456c; --mpn-accent:#c02669; --mpn-accent-contrast:#fff; --mpn-border:#f3b7d0; --bg:#fff0f6; --card:#fffafd; --text:#65123c; --muted:#9f456c; --line:#f3b7d0; --accent:#c02669; --accent-dark:#94134c; }
+:root[data-app-theme="hearts"] body { background-image:radial-gradient(circle at 20px 20px,#e8438322 0 7px,transparent 8px),radial-gradient(circle at 50px 50px,#c0266918 0 6px,transparent 7px); background-size:70px 70px; }
+:root[data-app-theme="hearts"] .panel-title::before { content:"💗 "; }
+:root[data-app-theme="hearts"] .button:not(.secondary)::after { content:" 💖"; }
+:root[data-app-theme="sea-life"] { --mpn-bg:#e6faff; --mpn-panel:#f7feff; --mpn-text:#083b58; --mpn-muted:#39768c; --mpn-accent:#087eae; --mpn-accent-contrast:#fff; --mpn-border:#a7e4ef; --bg:#e6faff; --card:#f7feff; --text:#083b58; --muted:#39768c; --line:#a7e4ef; --accent:#087eae; --accent-dark:#075985; }
+:root[data-app-theme="sea-life"] body { background-image:radial-gradient(ellipse at 15px 20px,#0891b222 0 5px,transparent 6px),radial-gradient(ellipse at 48px 55px,#22d3ee22 0 7px,transparent 8px),repeating-linear-gradient(170deg,transparent 0 55px,#0284c711 56px 58px); background-size:75px 75px,75px 75px,100% 100%; }
+:root[data-app-theme="sea-life"] .panel-title::before { content:"🐠 "; }
+:root[data-app-theme="sea-life"] .button:not(.secondary)::after { content:" 🐟"; }
+:root[data-app-theme="accounting"] { --mpn-bg:#edf9ef; --mpn-panel:#fbfffc; --mpn-text:#16452a; --mpn-muted:#527b60; --mpn-accent:#188044; --mpn-accent-contrast:#fff; --mpn-border:#b8dfc2; --bg:#edf9ef; --card:#fbfffc; --text:#16452a; --muted:#527b60; --line:#b8dfc2; --accent:#188044; --accent-dark:#166534; }
+:root[data-app-theme="accounting"] body { background-image:repeating-linear-gradient(0deg,transparent 0 31px,#16804410 32px 33px),repeating-linear-gradient(90deg,transparent 0 31px,#16804410 32px 33px); }
+:root[data-app-theme="accounting"] .panel-title::before { content:"🧾 "; }
+:root[data-app-theme="accounting"] .button:not(.secondary)::after { content:" 📊"; }
+:root[data-mode="dark"][data-app-theme="hearts"] { --mpn-bg:#260d1b; --mpn-panel:#381329; --mpn-text:#ffe7f1; --mpn-muted:#e6a9c4; --mpn-accent:#f472b6; --mpn-accent-contrast:#3b0b27; --mpn-border:#713452; --bg:#260d1b; --card:#381329; --text:#ffe7f1; --muted:#e6a9c4; --line:#713452; --accent:#f472b6; }
+:root[data-mode="dark"][data-app-theme="sea-life"] { --mpn-bg:#062337; --mpn-panel:#0c354b; --mpn-text:#e2faff; --mpn-muted:#a3dce9; --mpn-accent:#38bdf8; --mpn-accent-contrast:#062337; --mpn-border:#23627a; --bg:#062337; --card:#0c354b; --text:#e2faff; --muted:#a3dce9; --line:#23627a; --accent:#38bdf8; }
+:root[data-mode="dark"][data-app-theme="accounting"] { --mpn-bg:#0d2115; --mpn-panel:#173522; --mpn-text:#e5f8e9; --mpn-muted:#a7cdb0; --mpn-accent:#4ade80; --mpn-accent-contrast:#082012; --mpn-border:#315e3d; --bg:#0d2115; --card:#173522; --text:#e5f8e9; --muted:#a7cdb0; --line:#315e3d; --accent:#4ade80; }
+.developer-tools { display:grid; gap:10px; padding:14px; border:1px dashed var(--mpn-accent); border-radius:12px; background:var(--mpn-bg); }
+.developer-tools .button { justify-self:start; }
+
+/* Wallpaper de Halloween con calabazas ilustradas y telarañas visibles en toda la pantalla. */
+:root[data-app-theme="halloween2026"] body::before {
+  content:"🎃　　 🕸️　　 🎃　　 💀\A　🕸️　　 🎃　　 👻　　 🎃\A🎃　　 💀　　 🕸️　　 🎃";
+  white-space:pre;
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  font-size:clamp(28px,5vw,54px); line-height:2.8; letter-spacing:.05em;
+  opacity:.23; overflow:hidden;
 }
+:root[data-app-theme="halloween2026"][data-mode="light"] body::before { opacity:.32; }
+:root[data-app-theme="halloween2026"] body > * { position:relative; z-index:1; }

@@ -349,23 +349,26 @@
     { id: "forest", name: "Bosque", cost: 5, description: "Verdes apagados y beige tierra.", colors: ["#334536", "#c5b58f"], preview: "linear-gradient(135deg,#334536 50%,#c5b58f 50%)" },
     { id: "violet", name: "Neón violeta", cost: 7, description: "Violeta y rosa brillante.", colors: ["#24113f", "#e879f9"], preview: "linear-gradient(135deg,#24113f 50%,#e879f9 50%)" },
     { id: "sunset", name: "Terracota", cost: 9, description: "Arcilla, café y arena cálida.", colors: ["#543b2d", "#c98b68"], preview: "linear-gradient(135deg,#543b2d 50%,#c98b68 50%)" },
-    { id: "hacker", name: "Hacker", cost: 0, description: "Terminal, código, circuitos y verde neón; incluye modo claro y oscuro.", colors: ["#001b0b", "#39ff88"], preview: "linear-gradient(135deg,#001b0b 50%,#39ff88 50%)" },
+    { id: "hacker", name: "Hacker", cost: 0, description: "Negro profundo y verde neón.", colors: ["#001b0b", "#39ff88"], preview: "linear-gradient(135deg,#001b0b 50%,#39ff88 50%)" },
     { id: "nature", name: "Naturaleza", cost: 0, description: "Verdes de bosque y tonos tierra.", colors: ["#234d35", "#d5e6c9"], preview: "linear-gradient(135deg,#234d35 50%,#d5e6c9 50%)" },
-    { id: "cbtis36", name: "Escolar", cost: 0, description: "Libros, cuadernos y lápices ilustrados; compatible con modo claro y oscuro.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" },
+    { id: "cbtis36", name: "Escolar", cost: 0, description: "Azul escolar y blanco.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" },
     { id: "bandera-bi", name: "Bandera bi", cost: 0, creatorCode: "bis3xual", description: "Rosa, morado y azul inspirados en la bandera bisexual.", colors: ["#d64b8b", "#4d6bc9"], preview: "linear-gradient(135deg,#d64b8b 0%,#9b59b6 50%,#4d6bc9 100%)" },
     { id: "atardecer", name: "Atardecer", cost: 0, creatorCode: "post-meridium", description: "Coral, naranja y violeta cálidos.", colors: ["#df684b", "#f2ad55"], preview: "linear-gradient(135deg,#df684b 0%,#f2ad55 50%,#7853a6 100%)" },
     { id: "eclipse", name: "Eclipse", cost: 0, creatorCode: "solrequiem", description: "Negro profundo con destellos violetas y solares.", colors: ["#30264f", "#e6a84c"], preview: "linear-gradient(135deg,#11111f 0%,#6550a4 55%,#e6a84c 100%)" },
-    { id: "tech-blue", name: "Azul tecnológico", cost: 0, description: "Circuitos, cuadrícula digital y azul eléctrico en modo claro y oscuro. Gratis.", colors: ["#080d16", "#168bff"], preview: "linear-gradient(135deg,#080d16 0%,#111d30 55%,#168bff 100%)" },
+    { id: "tech-blue", name: "Azul tecnológico", cost: 0, description: "Negro profundo, azul eléctrico y detalles tecnológicos. Gratis.", colors: ["#080d16", "#168bff"], preview: "linear-gradient(135deg,#080d16 0%,#111d30 55%,#168bff 100%)" },
     { id: "pride", name: "Pride", cost: 0, creatorCode: "Pride", description: "Paleta arcoíris inspirada en la bandera LGBT+.", colors: ["#e84775", "#4d9dfa"], preview: "linear-gradient(120deg,#e84775 0%,#f7c943 35%,#39a96b 65%,#4d9dfa 100%)" },
     { id: "trans", name: "Trans", cost: 0, creatorCode: "trans", description: "Azul claro, rosa y blanco inspirados en la bandera trans.", colors: ["#8bcfff", "#f4a8c8"], preview: "linear-gradient(135deg,#8bcfff 0%,#f4a8c8 35%,#ffffff 50%,#f4a8c8 65%,#8bcfff 100%)" },
     { id: "abrosexual", name: "Abrosexual", cost: 0, creatorCode: "abrosexual", description: "Verde, blanco y rosa inspirados en la bandera abrosexual.", colors: ["#54a878", "#e98db7"], preview: "linear-gradient(135deg,#54a878 0%,#dff3e5 35%,#ffffff 50%,#f6c8dc 65%,#e98db7 100%)" },
-    { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Fósiles y huesos de dinosaurio sobre texturas de piedra, helecho y arena.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" },
-    { id: "halloween2026", name: "Halloween 2026", cost: 0, creatorCode: "halloween2026", seasonal: "halloween", description: "Calabazas, fantasmas, murciélagos y telarañas ilustrados; modo claro y oscuro. Disponible del 25 al 31 de octubre de 2026.", colors: ["#ff7518", "#32104a"], preview: "linear-gradient(135deg,#12091f 0%,#5b217d 45%,#ff7518 46%,#ffb347 100%)" },
+    { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Verde helecho, arena y tonos de fósil para amantes de los dinosaurios.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" },
+    { id: "halloween2026", name: "Halloween 2026", cost: 0, creatorCode: "halloween2026", seasonal: "halloween", description: "Noche embrujada: carbón, calabaza, violeta y detalles fantasmales. Disponible del 25 al 31 de octubre de 2026.", colors: ["#ff7518", "#32104a"], preview: "linear-gradient(135deg,#12091f 0%,#5b217d 45%,#ff7518 46%,#ffb347 100%)" },
     { id: "navidad2026", name: "Navidad 2026", cost: 0, creatorCode: "Navidad2026", seasonal: "christmas", description: "Verde pino, rojo cereza, nieve y detalles dorados. Disponible del 1 al 31 de diciembre de 2026.", colors: ["#0f5132", "#c62828"], preview: "linear-gradient(135deg,#073b2a 0%,#0f7a4a 48%,#b51f32 49%,#f2c14e 100%)" },
-    { id: "retro", name: "Retro", cost: 0, creatorCode: "v3.6", seasonal: "retro", description: "Interfaz clásica inspirada en Windows 7: cristal azul Aero, bordes brillantes, botones degradados y tipografía Segoe UI. Disponible hasta el 1 de enero de 2027.", colors: ["#d97736", "#f2dfb3"], preview: "linear-gradient(135deg,#d9f1ff 0%,#4c9bd5 28%,#1b5b96 58%,#dcefff 100%)" }
+    { id: "retro", name: "Retro", cost: 0, creatorCode: "v3.6", seasonal: "retro", description: "Interfaz clásica inspirada en Windows 7: cristal azul Aero, bordes brillantes, botones degradados y tipografía Segoe UI. Disponible hasta el 1 de enero de 2027.", colors: ["#d97736", "#f2dfb3"], preview: "linear-gradient(135deg,#d9f1ff 0%,#4c9bd5 28%,#1b5b96 58%,#dcefff 100%)" },
+    { id: "hearts", name: "Corazones", cost: 15, description: "Rosas, corazones y detalles románticos.", colors: ["#c02669", "#ffe4ef"], preview: "linear-gradient(135deg,#6d123f,#e84383 55%,#ffe4ef)" },
+    { id: "sea-life", name: "Vida marina", cost: 18, description: "Un océano decorado con peces, burbujas y olas.", colors: ["#075985", "#67e8f9"], preview: "linear-gradient(135deg,#082f49,#0284c7 55%,#67e8f9)" },
+    { id: "accounting", name: "Contabilidad", cost: 20, description: "Libros contables, calculadoras, gráficas y símbolos financieros.", colors: ["#166534", "#dcfce7"], preview: "linear-gradient(135deg,#14532d,#16a34a 55%,#dcfce7)" }
   ];
 
-  const APP_VERSION = { name: "3.6.3", code: 13, buildDate: "25 de octubre de 2026" };
+  const APP_VERSION = { name: "3.6.5", code: 15, buildDate: "25 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -640,6 +643,29 @@
   $("creatorThemeCode")?.addEventListener("keydown", event => {
     if (event.key === "Enter") redeemCreatorCode();
   });
+
+  // Herramientas locales de desarrollador para pruebas de la tienda. No es una barrera de seguridad: el código vive en el cliente.
+  const DEVELOPER_TEST_CODE = "Developer3.6";
+  $("developerAccessButton")?.addEventListener("click", () => {
+    const entered = String($("developerAccessCode")?.value || "").trim();
+    const status = $("developerAccessStatus");
+    if (entered !== DEVELOPER_TEST_CODE) {
+      if (status) status.textContent = "Código incorrecto.";
+      toast("Código de desarrollador incorrecto.");
+      return;
+    }
+    $("developerTools")?.classList.remove("hidden");
+    if (status) status.textContent = "Acceso de pruebas habilitado en este dispositivo.";
+    if ($("developerAccessCode")) $("developerAccessCode").value = "";
+  });
+  $("developerInfiniteCoins")?.addEventListener("click", () => {
+    if (!$("developerTools") || $("developerTools").classList.contains("hidden")) return;
+    data.gamification.coins = 999999999;
+    save();
+    renderShop();
+    toast("Saldo máximo de prueba cargado. Puedes comprar todos los temas.");
+  });
+  $("developerHideTools")?.addEventListener("click", () => $("developerTools")?.classList.add("hidden"));
 
   $("themeShop")?.addEventListener("click", e => {
     const button = e.target.closest("[data-theme-action]");
