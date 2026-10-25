@@ -33,7 +33,8 @@
         <button class="menu-item" data-view="help" role="menuitem">❔ Ayuda</button>
         <button class="menu-item" data-view="statistics" role="menuitem">📊 Estadísticas</button>
         <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
-        <button class="menu-item" data-view="creators" role="menuitem">🧩 Código de creadores</button>
+        <button class="menu-item" data-view="creators" role="menuitem">🧩 Desbloquear temas</button>
+        <button class="menu-item" data-view="operations" role="menuitem">🧾 Punto de venta y herramientas</button>
         <button class="menu-item" data-view="version" role="menuitem">📱 Versión del sistema</button>
       </div>
     </div>
@@ -108,6 +109,7 @@
     <button class="tab" data-view="reports">Reportes</button>
     <button class="tab" data-view="notes">Notas 📝</button>
     <button class="tab" data-view="taxes">Impuestos 🧮</button>
+    <button class="tab" data-view="operations">Operaciones ✨</button>
   </nav>
 
   <section class="view" id="view-dashboard">
@@ -217,6 +219,9 @@
 
       <label>Nombre del producto
         <input id="productName" required maxlength="100" placeholder="Ej. Pulsera artesanal">
+      </label>
+      <label>Código de barras (opcional)
+        <input id="productBarcode" maxlength="80" placeholder="Escanea o escribe el código">
       </label>
 
       <label>Costo de materiales
@@ -538,6 +543,35 @@
 
 
 
+  <section class="view hidden" id="view-operations">
+    <div class="section-heading"><div><p class="eyebrow">CENTRO DE OPERACIONES</p><h2>Punto de venta y herramientas</h2><p class="muted">Controla ventas, fiado, caja, proveedores y respaldos desde un solo lugar.</p></div></div>
+    <div class="ops-grid">
+      <article class="panel ops-card"><p class="eyebrow">01 · VENTA RÁPIDA</p><h3>Punto de venta</h3>
+        <label>Buscar producto o código de barras<input id="posSearch" placeholder="Nombre o código…" autocomplete="off"></label>
+        <div class="inline-actions"><button class="button secondary" type="button" id="posScanButton">📷 Escanear</button><button class="button secondary" type="button" id="posAddButton">Añadir producto</button></div>
+        <div id="posScannerWrap" class="scanner-wrap hidden"><video id="posVideo" playsinline muted></video><p id="posScanStatus" class="muted">Apunta la cámara al código de barras.</p><button type="button" class="button secondary" id="posStopScan">Detener cámara</button></div>
+        <div id="posCartList" class="pos-cart-list"><p class="muted">El carrito está vacío.</p></div>
+        <div class="pos-total"><span>Total</span><strong id="posTotal">$0.00</strong></div>
+        <div class="pos-checkout-fields"><label>Forma de pago<select id="posPayment"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option><option value="fiado">Fiado</option></select></label><label>Cliente (si aplica)<select id="posCustomer"><option value="">Venta sin cliente</option></select></label></div>
+        <button class="button" id="posCheckout" type="button">Cobrar y registrar venta</button>
+      </article>
+      <article class="panel ops-card"><p class="eyebrow">02 · CUENTAS POR COBRAR</p><h3>Fiado y clientes</h3>
+        <form id="customerForm" class="stack-form"><label>Nombre del cliente<input id="customerName" required maxlength="100" placeholder="Nombre completo"></label><label>Teléfono (opcional)<input id="customerPhone" maxlength="30" inputmode="tel"></label><button class="button" type="submit">Guardar cliente</button></form>
+        <div id="creditSummary" class="mini-summary"></div><div id="customerList" class="compact-list"></div>
+        <form id="creditPaymentForm" class="stack-form"><label>Cliente<select id="creditCustomer" required></select></label><label>Abono recibido<input id="creditAmount" type="number" min="0.01" step="0.01" required></label><button class="button secondary" type="submit">Registrar abono</button></form>
+      </article>
+      <article class="panel ops-card"><p class="eyebrow">03 · CONTROL DIARIO</p><h3>Corte de caja</h3><div id="cashSummary" class="mini-summary"></div><label>Fondo inicial de caja<input id="cashOpening" type="number" min="0" step="0.01" value="0"></label><button class="button" id="cashCloseButton" type="button">Realizar corte de caja</button><div id="cashCutsList" class="compact-list"></div>
+      </article>
+      <article class="panel ops-card"><p class="eyebrow">04 · ABASTECIMIENTO</p><h3>Proveedores y compras</h3>
+        <form id="supplierForm" class="stack-form"><label>Nombre del proveedor<input id="supplierName" required maxlength="100"></label><label>Contacto (opcional)<input id="supplierContact" maxlength="100"></label><button class="button" type="submit">Guardar proveedor</button></form>
+        <form id="purchaseForm" class="stack-form"><label>Proveedor<select id="purchaseSupplier" required></select></label><label>Producto recibido<select id="purchaseProduct" required></select></label><label>Cantidad<input id="purchaseQty" type="number" min="1" step="1" required value="1"></label><label>Costo total de compra<input id="purchaseCost" type="number" min="0" step="0.01" required value="0"></label><button class="button secondary" type="submit">Registrar compra y sumar stock</button></form><div id="supplierList" class="compact-list"></div>
+      </article>
+      <article class="panel ops-card"><p class="eyebrow">05 · RESPALDO PORTÁTIL</p><h3>Copias de seguridad</h3><p class="muted">Exporta un archivo JSON para trasladar los datos entre dispositivos. Incluye el tema desbloqueado, clientes, fiado, caja y proveedores.</p><div class="inline-actions"><button class="button" id="exportJsonBackup" type="button">Exportar respaldo JSON</button><label class="button secondary file-button">Importar respaldo JSON<input id="importJsonBackup" type="file" accept="application/json,.json"></label></div><p class="muted footnote">Importar reemplaza los datos actuales. Guarda una copia antes de importar.</p>
+      </article>
+      <article class="panel ops-card"><p class="eyebrow">06 · REGRESIÓN Y DATOS</p><h3>Estado de los datos</h3><div id="dataHealthSummary" class="mini-summary"></div><button class="button secondary" id="runDataCheck" type="button">Revisar integridad de datos</button><p id="dataCheckResult" class="muted" role="status"></p></article>
+    </div>
+  </section>
+
   <section class="view hidden" id="view-help">
     <div class="section-heading"><div><p class="eyebrow">GUÍA DE USO</p><h2>Ayuda</h2></div></div>
     <article class="panel help-intro"><h3>Bienvenido a Mi Primer Negocio 36</h3><p>Consulta estas guías para aprender a usar cada función. Tus datos se guardan en este dispositivo.</p></article>
@@ -565,16 +599,16 @@
       <button class="button" id="redeemCreatorCode" type="button">Canjear código</button>
       <p id="creatorCodeMessage" class="muted" role="status" aria-live="polite"></p>
     </article>
-    <article class="panel"><h3>Códigos de temas disponibles</h3><p class="muted">Pride, trans, abrosexual y dinosauriogrr desbloquean sus respectivos temas. Introduce el código exactamente como se te proporcionó; no distingue entre mayúsculas y minúsculas.</p></article>
+    <article class="panel"><h3>Desbloqueos especiales</h3><p class="muted">Introduce un código que hayas recibido para desbloquear un tema. Los códigos no se muestran dentro de la aplicación.</p></article>
   </section>
 
   <section class="view hidden" id="view-version">
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.5.01</strong><p>Mi Primer Negocio 36</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.6</strong><p>Mi Primer Negocio 36</p>
       <div class="version-facts">
-        <p><span>Número de compilación</span><strong id="appBuildNumber">9</strong></p>
+        <p><span>Número de compilación</span><strong id="appBuildNumber">10</strong></p>
         <p><span>Actualización preparada</span><strong id="appBuildDate">25 de octubre de 2026</strong></p>
       </div>
     </article>

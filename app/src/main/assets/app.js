@@ -58,6 +58,11 @@
           expenses: Array.isArray(d.expenses) ? d.expenses : [],
           stockMoves: Array.isArray(d.stockMoves) ? d.stockMoves : [],
           notes: Array.isArray(d.notes) ? d.notes : [],
+          customers: Array.isArray(d.customers) ? d.customers : [],
+          creditMovements: Array.isArray(d.creditMovements) ? d.creditMovements : [],
+          cashCuts: Array.isArray(d.cashCuts) ? d.cashCuts : [],
+          suppliers: Array.isArray(d.suppliers) ? d.suppliers : [],
+          purchases: Array.isArray(d.purchases) ? d.purchases : [],
           settings: {
             ...(d.settings || {}),
             currency: d.settings?.currency || "MXN"
@@ -73,7 +78,7 @@
       sales: [],
       expenses: [],
       stockMoves: [],
-      notes: [],
+      notes: [], customers: [], creditMovements: [], cashCuts: [], suppliers: [], purchases: [],
       settings: { currency: "MXN", theme: "classic" },
       gamification: { coins: 0, rewardedMilestones: [], purchasedThemes: ["classic"] }
     };
@@ -81,6 +86,11 @@
 
   let data = loadData();
   data.notes = Array.isArray(data.notes) ? data.notes : [];
+  data.customers = Array.isArray(data.customers) ? data.customers : [];
+  data.creditMovements = Array.isArray(data.creditMovements) ? data.creditMovements : [];
+  data.cashCuts = Array.isArray(data.cashCuts) ? data.cashCuts : [];
+  data.suppliers = Array.isArray(data.suppliers) ? data.suppliers : [];
+  data.purchases = Array.isArray(data.purchases) ? data.purchases : [];
   data.settings = { currency: "MXN", theme: "classic", businessName: "", mode: "light", ...(data.settings || {}) };
   data.gamification = {
     coins: Math.max(0, Number(data.gamification?.coins) || 0),
@@ -351,15 +361,17 @@
     { id: "abrosexual", name: "Abrosexual", cost: 0, creatorCode: "abrosexual", description: "Verde, blanco y rosa inspirados en la bandera abrosexual.", colors: ["#54a878", "#e98db7"], preview: "linear-gradient(135deg,#54a878 0%,#dff3e5 35%,#ffffff 50%,#f6c8dc 65%,#e98db7 100%)" },
     { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Verde helecho, arena y tonos de fósil para amantes de los dinosaurios.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" },
     { id: "halloween2026", name: "Halloween 2026", cost: 0, creatorCode: "halloween2026", seasonal: "halloween", description: "Noche embrujada: carbón, calabaza, violeta y detalles fantasmales. Disponible del 25 al 31 de octubre de 2026.", colors: ["#ff7518", "#32104a"], preview: "linear-gradient(135deg,#12091f 0%,#5b217d 45%,#ff7518 46%,#ffb347 100%)" },
-    { id: "navidad2026", name: "Navidad 2026", cost: 0, creatorCode: "Navidad2026", seasonal: "christmas", description: "Verde pino, rojo cereza, nieve y detalles dorados. Disponible del 1 al 31 de diciembre de 2026.", colors: ["#0f5132", "#c62828"], preview: "linear-gradient(135deg,#073b2a 0%,#0f7a4a 48%,#b51f32 49%,#f2c14e 100%)" }
+    { id: "navidad2026", name: "Navidad 2026", cost: 0, creatorCode: "Navidad2026", seasonal: "christmas", description: "Verde pino, rojo cereza, nieve y detalles dorados. Disponible del 1 al 31 de diciembre de 2026.", colors: ["#0f5132", "#c62828"], preview: "linear-gradient(135deg,#073b2a 0%,#0f7a4a 48%,#b51f32 49%,#f2c14e 100%)" },
+    { id: "retro", name: "Retro", cost: 0, creatorCode: "v3.6", seasonal: "retro", description: "Estilo retro con crema, naranja quemado y verde clásico. Disponible durante el lanzamiento de la versión 3.6 y hasta el 1 de enero de 2027.", colors: ["#d97736", "#f2dfb3"], preview: "linear-gradient(135deg,#203c32 0%,#d97736 50%,#f2dfb3 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.5.01", code: 9, buildDate: "25 de octubre de 2026" };
+  const APP_VERSION = { name: "3.6", code: 10, buildDate: "25 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
     if (theme.seasonal === "halloween") return date >= "2026-10-25" && date <= "2026-10-31";
     if (theme.seasonal === "christmas") return date >= "2026-12-01" && date <= "2026-12-31";
+    if (theme.seasonal === "retro") return date >= "2026-10-25" && date <= "2027-01-01";
     return false;
   }
 
@@ -371,7 +383,7 @@
       delete data.settings.previousThemeBeforeSeasonal;
     }
     const expiredIds = THEMES.filter(theme => theme.seasonal && !seasonalThemeIsAvailable(theme)).map(theme => theme.id);
-    if (expiredIds.length) data.gamification.purchasedThemes = data.gamification.purchasedThemes.filter(id => !expiredIds.includes(id));
+    if (expiredIds.length) data.gamification.purchasedThemes = data.gamification.purchasedThemes.filter(id => id === "retro" || !expiredIds.includes(id));
     try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { console.error("No se pudo actualizar el tema de temporada:", e); }
   }
 
@@ -570,7 +582,7 @@
     if (!seasonalThemeIsAvailable(theme)) { toast("Este tema solo está disponible durante su temporada."); renderShop(); return; }
     const owned = data.gamification.purchasedThemes.includes(id);
     if (theme.creatorCode && !owned) {
-      toast("Este tema está bloqueado. Canjea su código en Ajustes → Códigos del creador.");
+      toast("Este tema está bloqueado. Ve a Ajustes → Desbloquear temas e introduce el código recibido.");
       return;
     }
     if (!owned) {
@@ -771,6 +783,7 @@
     const price = num("productPrice");
     const stock = num("productStock");
     const minStock = num("productMinStock");
+    const barcode = ($("productBarcode")?.value || "").trim().slice(0, 80);
 
     if (!name || [materials, labor, price, stock, minStock].some(v => v < 0) ||
         !Number.isInteger(stock) || !Number.isInteger(minStock)) {
@@ -787,6 +800,7 @@
       p.labor = labor;
       p.price = price;
       p.minStock = minStock;
+      p.barcode = barcode;
 
       const diff = stock - p.stock;
       if (diff !== 0) {
@@ -800,7 +814,7 @@
       toast("Producto actualizado.");
     } else {
       data.products.push({
-        id: uid(), name, materials, labor, price, stock, minStock,
+        id: uid(), name, materials, labor, price, stock, minStock, barcode,
         createdAt: today()
       });
       toast("Producto agregado.");
@@ -808,6 +822,7 @@
 
     $("productForm").reset();
     $("productId").value = "";
+    if ($("productBarcode")) $("productBarcode").value = "";
     $("productLabor").value = "0";
     $("productStock").value = "0";
     $("productMinStock").value = "3";
@@ -819,6 +834,7 @@
   $("cancelProductEdit").addEventListener("click", () => {
     $("productForm").reset();
     $("productId").value = "";
+    if ($("productBarcode")) $("productBarcode").value = "";
     $("productLabor").value = "0";
     $("productStock").value = "0";
     $("productMinStock").value = "3";
@@ -836,6 +852,7 @@
 
       $("productId").value = p.id;
       $("productName").value = p.name;
+      if ($("productBarcode")) $("productBarcode").value = p.barcode || "";
       $("productMaterials").value = p.materials;
       $("productLabor").value = p.labor;
       $("productPrice").value = p.price;
@@ -1408,6 +1425,11 @@ function downloadCsv() {
         expenses: restored.expenses,
         stockMoves: restored.stockMoves,
         notes: Array.isArray(restored.notes) ? restored.notes : [],
+        customers: Array.isArray(restored.customers) ? restored.customers : [],
+        creditMovements: Array.isArray(restored.creditMovements) ? restored.creditMovements : [],
+        cashCuts: Array.isArray(restored.cashCuts) ? restored.cashCuts : [],
+        suppliers: Array.isArray(restored.suppliers) ? restored.suppliers : [],
+        purchases: Array.isArray(restored.purchases) ? restored.purchases : [],
         settings: { currency: "MXN", mode: "light", ...(restored.settings || {}) },
         gamification: {
           coins: Math.max(0, Number(restored.gamification?.coins) || 0),
@@ -1429,10 +1451,74 @@ function downloadCsv() {
   }
 
 
+
+  // ===== Funciones nuevas de la versión 3.6 =====
+  let posCart = [];
+  let scanStream = null;
+  const customerBalance = id => (data.creditMovements || []).filter(m => m.customerId === id).reduce((sum,m) => sum + (m.type === "charge" ? Number(m.amount) : -Number(m.amount)), 0);
+  function syncOperationSelects() {
+    const customers = data.customers || [], suppliers = data.suppliers || [], products = data.products || [];
+    const customerOptions = '<option value="">Selecciona un cliente</option>' + customers.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join("");
+    ["posCustomer","creditCustomer"].forEach(id=>{const el=$(id);if(!el)return;const old=el.value;el.innerHTML=(id==="posCustomer"?'<option value="">Venta sin cliente</option>':'<option value="">Selecciona un cliente</option>')+customers.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)} · saldo ${money(customerBalance(c.id))}</option>`).join("");if(customers.some(c=>c.id===old))el.value=old;});
+    const supplierEl=$("purchaseSupplier");if(supplierEl){const old=supplierEl.value;supplierEl.innerHTML='<option value="">Selecciona proveedor</option>'+suppliers.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`).join("");if(suppliers.some(s=>s.id===old))supplierEl.value=old;}
+    const productEl=$("purchaseProduct");if(productEl){const old=productEl.value;productEl.innerHTML='<option value="">Selecciona producto</option>'+products.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · stock ${p.stock}</option>`).join("");if(products.some(p=>p.id===old))productEl.value=old;}
+  }
+  function renderPosCart(){
+    const el=$("posCartList");if(!el)return;
+    el.innerHTML=posCart.length?posCart.map(line=>`<div class="pos-cart-row"><div><strong>${escapeHtml(line.name)}</strong><small>${money(line.price)} c/u · stock ${product(line.productId)?.stock ?? 0}</small></div><div class="qty-controls"><button type="button" data-pos-minus="${line.productId}" aria-label="Restar">−</button><strong>${line.qty}</strong><button type="button" data-pos-plus="${line.productId}" aria-label="Sumar">+</button><button type="button" data-pos-remove="${line.productId}" aria-label="Quitar">×</button></div><strong>${money(line.qty*line.price)}</strong></div>`).join(""):'<p class="muted">El carrito está vacío.</p>';
+    $("posTotal").textContent=money(posCart.reduce((s,l)=>s+l.qty*l.price,0));
+  }
+  function findPosProduct(){const q=($("posSearch")?.value||"").trim().toLowerCase();if(!q)return null;return data.products.find(p=>String(p.barcode||"").toLowerCase()===q)||data.products.find(p=>p.name.toLowerCase()===q)||data.products.find(p=>p.name.toLowerCase().includes(q));}
+  function addPosProduct(){const p=findPosProduct();if(!p){toast("No encontré el producto. Revisa el nombre o registra su código de barras en Productos.");return;}if(p.stock<=0){toast("Este producto no tiene existencias.");return;}const line=posCart.find(x=>x.productId===p.id);if(line){if(line.qty>=p.stock){toast("No hay más existencias disponibles.");return;}line.qty++;}else posCart.push({productId:p.id,name:p.name,price:Number(p.price)||0,cost:productCost(p),qty:1});$("posSearch").value="";renderPosCart();}
+  $("posAddButton")?.addEventListener("click",addPosProduct);
+  $("posSearch")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addPosProduct();}});
+  $("posCartList")?.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const id=b.dataset.posPlus||b.dataset.posMinus||b.dataset.posRemove;const line=posCart.find(x=>x.productId===id);if(!line)return;if(b.dataset.posRemove){posCart=posCart.filter(x=>x.productId!==id);}else if(b.dataset.posPlus){const p=product(id);if(p&&line.qty<p.stock)line.qty++;else toast("No hay existencias suficientes.");}else{line.qty--;if(line.qty<=0)posCart=posCart.filter(x=>x.productId!==id);}renderPosCart();});
+  $("posCheckout")?.addEventListener("click",()=>{
+    if(!posCart.length){toast("Añade productos antes de cobrar.");return;}for(const line of posCart){const p=product(line.productId);if(!p||p.stock<line.qty){toast("El stock cambió. Revisa el carrito.");return;}}
+    const payment=$("posPayment").value, customerId=$("posCustomer").value, date=today();if(payment==="fiado"&&!customerId){toast("Para una venta fiada selecciona un cliente.");return;}
+    const customer=data.customers.find(c=>c.id===customerId);const total=posCart.reduce((s,l)=>s+l.qty*l.price,0);
+    posCart.forEach(line=>{const p=product(line.productId);p.stock-=line.qty;data.sales.push({id:uid(),productId:p.id,name:p.name,qty:line.qty,price:line.price,cost:line.cost,date,payment,customerId:customerId||"",source:"pos"});data.stockMoves.push({id:uid(),date,productId:p.id,name:p.name,typeLabel:"Venta punto de venta",qty:line.qty,reason:payment==="fiado"?`Fiado a ${customer?.name||"cliente"}`:"Punto de venta"});});
+    if(payment==="fiado")data.creditMovements.push({id:uid(),customerId,type:"charge",amount:total,date,description:`Venta fiada · ${posCart.map(l=>l.name).join(", ")}`});
+    posCart=[];renderPosCart();save({saleRegisteredToday:true});syncOperationSelects();renderOperations();toast(payment==="fiado"?"Venta registrada como fiado.":"Venta cobrada y registrada.");
+  });
+  $("customerForm")?.addEventListener("submit",e=>{e.preventDefault();const name=$("customerName").value.trim();if(!name)return;if(data.customers.some(c=>c.name.toLowerCase()===name.toLowerCase())){toast("Ya existe un cliente con ese nombre.");return;}data.customers.push({id:uid(),name,phone:$("customerPhone").value.trim(),createdAt:today()});$("customerForm").reset();save();syncOperationSelects();renderOperations();toast("Cliente guardado.");});
+  $("creditPaymentForm")?.addEventListener("submit",e=>{e.preventDefault();const customerId=$("creditCustomer").value,amount=Number($("creditAmount").value);if(!customerId||!(amount>0)){toast("Selecciona cliente e importe válido.");return;}if(amount>customerBalance(customerId)){toast("El abono supera el saldo pendiente.");return;}data.creditMovements.push({id:uid(),customerId,type:"payment",amount,date:today(),description:"Abono recibido"});$("creditAmount").value="";save();syncOperationSelects();renderOperations();toast("Abono registrado.");});
+  $("supplierForm")?.addEventListener("submit",e=>{e.preventDefault();const name=$("supplierName").value.trim();if(!name)return;data.suppliers.push({id:uid(),name,contact:$("supplierContact").value.trim(),createdAt:today()});$("supplierForm").reset();save();syncOperationSelects();renderOperations();toast("Proveedor guardado.");});
+  $("purchaseForm")?.addEventListener("submit",e=>{e.preventDefault();const supplierId=$("purchaseSupplier").value,productId=$("purchaseProduct").value,qty=Number($("purchaseQty").value),cost=Number($("purchaseCost").value);const p=product(productId),s=data.suppliers.find(x=>x.id===supplierId);if(!s||!p||!Number.isInteger(qty)||qty<1||cost<0){toast("Revisa proveedor, producto, cantidad y costo.");return;}p.stock+=qty;data.purchases.push({id:uid(),date:today(),supplierId,productId,productName:p.name,qty,cost});data.stockMoves.push({id:uid(),date:today(),productId,name:p.name,typeLabel:"Compra a proveedor",qty,reason:s.name});if(cost>0)data.expenses.push({id:uid(),concept:`Compra de ${p.name} · ${s.name}`,amount:cost,date:today(),category:"Inventario"});$("purchaseForm").reset();$("purchaseQty").value="1";$("purchaseCost").value="0";save();syncOperationSelects();renderOperations();toast("Compra registrada y stock actualizado.");});
+  function renderOperations(){
+    syncOperationSelects();renderPosCart();
+    const credit=$("creditSummary");if(credit){const due=data.customers.reduce((s,c)=>s+Math.max(0,customerBalance(c.id)),0);credit.innerHTML=`<div><span>Saldo total por cobrar</span><strong>${money(due)}</strong></div><div><span>Clientes</span><strong>${data.customers.length}</strong></div>`;}
+    const customers=$("customerList");if(customers)customers.innerHTML=data.customers.length?data.customers.map(c=>`<div class="compact-row"><div><strong>${escapeHtml(c.name)}</strong><small>${escapeHtml(c.phone||"Sin teléfono")}</small></div><strong>${money(customerBalance(c.id))}</strong></div>`).join(""):'<p class="muted">Todavía no hay clientes.</p>';
+    const suppliers=$("supplierList");if(suppliers)suppliers.innerHTML=data.suppliers.length?data.suppliers.map(s=>`<div class="compact-row"><div><strong>${escapeHtml(s.name)}</strong><small>${escapeHtml(s.contact||"Sin contacto")}</small></div><small>${data.purchases.filter(p=>p.supplierId===s.id).length} compras</small></div>`).join(""):'<p class="muted">Todavía no hay proveedores.</p>';
+    const lastCut=data.cashCuts[data.cashCuts.length-1];const salesSinceCut=data.sales.slice(lastCut?.salesIndex||0);
+    const cashSales=salesSinceCut.filter(s=>(s.payment||"efectivo")==="efectivo").reduce((sum,s)=>sum+s.qty*s.price,0);const cashExpense=data.expenses.slice(lastCut?.expenseIndex||0).reduce((sum,e)=>sum+Number(e.amount||0),0);
+    const cs=$("cashSummary");if(cs)cs.innerHTML=`<div><span>Ventas registradas desde el último corte</span><strong>${money(salesSinceCut.reduce((s,x)=>s+x.qty*x.price,0))}</strong></div><div><span>Ventas no fiadas</span><strong>${money(cashSales)}</strong></div><div><span>Gastos registrados</span><strong>${money(cashExpense)}</strong></div><div><span>Movimientos de ventas</span><strong>${salesSinceCut.length}</strong></div>`;
+    const cuts=$("cashCutsList");if(cuts)cuts.innerHTML=data.cashCuts.length?data.cashCuts.slice().reverse().slice(0,8).map(c=>`<div class="compact-row"><div><strong>Corte ${escapeHtml(c.date)}</strong><small>${c.salesCount} ventas · fondo ${money(c.opening)}</small></div><strong>${money(c.expectedCash)}</strong></div>`).join(""):'<p class="muted">Aún no hay cortes de caja.</p>';
+    const health=$("dataHealthSummary");if(health)health.innerHTML=`<div><span>Productos</span><strong>${data.products.length}</strong></div><div><span>Ventas</span><strong>${data.sales.length}</strong></div><div><span>Clientes / proveedores</span><strong>${data.customers.length} / ${data.suppliers.length}</strong></div><div><span>Tema actual</span><strong>${escapeHtml((THEMES.find(t=>t.id===data.settings.theme)||THEMES[0]).name)}</strong></div>`;
+  }
+  $("cashCloseButton")?.addEventListener("click",()=>{const opening=Math.max(0,Number($("cashOpening").value)||0);const last=data.cashCuts[data.cashCuts.length-1];const sales=data.sales.slice(last?.salesIndex||0);const expenses=data.expenses.slice(last?.expenseIndex||0);const cashSales=sales.filter(s=>(s.payment||"efectivo")==="efectivo").reduce((sum,s)=>sum+s.qty*s.price,0);const expenseTotal=expenses.reduce((sum,e)=>sum+Number(e.amount||0),0);const cut={id:uid(),date:today(),opening,salesCount:sales.length,salesTotal:sales.reduce((s,x)=>s+x.qty*x.price,0),cashSales,expenseTotal,expectedCash:opening+cashSales-expenseTotal,lastSaleId:data.sales.length?data.sales[data.sales.length-1].id:"",salesIndex:data.sales.length,expenseIndex:data.expenses.length};data.cashCuts.push(cut);save();renderOperations();toast("Corte de caja guardado. Revisa el efectivo esperado.");});
+  $("exportJsonBackup")?.addEventListener("click",()=>{try{const payload={format:"MPN36_BACKUP_JSON",version:3.6,exportedAt:new Date().toISOString(),data};const json=JSON.stringify(payload,null,2);const filename="respaldo-mi-primer-negocio-36-v3.6.json";if(window.AndroidFiles&&typeof window.AndroidFiles.saveBase64==="function"){const bytes=new TextEncoder().encode(json);let binary="";for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));window.AndroidFiles.saveBase64(filename,"application/json",btoa(binary));}else{const blob=new Blob([json],{type:"application/json;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}toast("Respaldo JSON exportado.");}catch(e){console.error(e);toast("No se pudo exportar el respaldo JSON.");}});
+  $("importJsonBackup")?.addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>20*1024*1024)throw new Error("El archivo supera 20 MB.");const parsed=JSON.parse(await file.text());const restored=parsed.data||parsed;if(!Array.isArray(restored.products)||!Array.isArray(restored.sales)||!restored.settings)throw new Error("Formato incompatible.");if(!confirm("Importar el respaldo reemplazará los datos actuales. ¿Continuar?"))return;data={...restored,products:restored.products,sales:restored.sales,expenses:Array.isArray(restored.expenses)?restored.expenses:[],stockMoves:Array.isArray(restored.stockMoves)?restored.stockMoves:[],notes:Array.isArray(restored.notes)?restored.notes:[],customers:Array.isArray(restored.customers)?restored.customers:[],creditMovements:Array.isArray(restored.creditMovements)?restored.creditMovements:[],cashCuts:Array.isArray(restored.cashCuts)?restored.cashCuts:[],suppliers:Array.isArray(restored.suppliers)?restored.suppliers:[],purchases:Array.isArray(restored.purchases)?restored.purchases:[],settings:{currency:"MXN",mode:"light",...(restored.settings||{})},gamification:{coins:Math.max(0,Number(restored.gamification?.coins)||0),rewardedMilestones:Array.isArray(restored.gamification?.rewardedMilestones)?restored.gamification.rewardedMilestones:[],purchasedThemes:Array.isArray(restored.gamification?.purchasedThemes)?restored.gamification.purchasedThemes:["classic"]}};localStorage.setItem(KEY,JSON.stringify(data));applySavedAppearance();if($("businessName"))$("businessName").value=data.settings.businessName||"";renderAll();renderOperations();toast("Respaldo importado correctamente.");}catch(err){console.error(err);toast("No se pudo importar: revisa que sea un respaldo JSON válido.");}finally{e.target.value="";}});
+  $("runDataCheck")?.addEventListener("click",()=>{const issues=[];if(data.products.some(p=>!p.id||!p.name||Number(p.stock)<0))issues.push("productos con datos incompletos o stock negativo");if(data.sales.some(s=>!s.id||!s.productId||Number(s.qty)<=0))issues.push("ventas incompletas");if(data.creditMovements.some(m=>!data.customers.some(c=>c.id===m.customerId)))issues.push("movimientos de fiado sin cliente");if(data.products.some(p=>p.barcode&&data.products.some(q=>q.id!==p.id&&q.barcode===p.barcode)))issues.push("códigos de barras duplicados");const result=$("dataCheckResult");if(result)result.textContent=issues.length?"Revisar: "+issues.join("; "):"Revisión básica completada: no se detectaron inconsistencias comunes.";});
+  async function startBarcodeScanner(){
+    if(window.AndroidFiles&&typeof window.AndroidFiles.startBarcodeScan==="function"){window.AndroidFiles.startBarcodeScan();return;}
+    const wrap=$("posScannerWrap"),video=$("posVideo"),status=$("posScanStatus");if(!navigator.mediaDevices?.getUserMedia){toast("La cámara no está disponible en este dispositivo. Puedes escribir o escanear el código con un lector externo.");return;}
+    if(!("BarcodeDetector" in window)){toast("Este WebView no incluye lectura de códigos por cámara. Usa un lector externo o escribe el código; la búsqueda por código sigue funcionando.");return;}
+    try{const detector=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});video.srcObject=scanStream;wrap.classList.remove("hidden");await video.play();status.textContent="Buscando código…";const scan=async()=>{if(!scanStream)return;try{const codes=await detector.detect(video);if(codes.length){$("posSearch").value=codes[0].rawValue;stopBarcodeScanner();addPosProduct();return;}}catch(e){}requestAnimationFrame(scan);};requestAnimationFrame(scan);}catch(err){console.error(err);toast("No se pudo abrir la cámara. Revisa los permisos o escribe el código manualmente.");stopBarcodeScanner();}
+  }
+  window.onNativeBarcodeScanned = function(code){if(code){$("posSearch").value=String(code);addPosProduct();}};
+  function stopBarcodeScanner(){if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null;}const video=$("posVideo");if(video)video.srcObject=null;$("posScannerWrap")?.classList.add("hidden");}
+  $("posScanButton")?.addEventListener("click",startBarcodeScanner);$("posStopScan")?.addEventListener("click",stopBarcodeScanner);
+  const originalGo = go;
+  // El render de operaciones se activa al entrar a la sección y al terminar las operaciones.
+  document.querySelectorAll('[data-view="operations"]').forEach(b=>b.addEventListener("click",renderOperations));
+  renderOperations();
+
   $("saleDate").value = today();
   $("expenseDate").value = today();
   $("reportFrom").value = addDays(today(), -29);
   $("reportTo").value = today();
 
   renderAll();
+  renderOperations();
 })();
