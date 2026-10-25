@@ -1,0 +1,10 @@
+Mi Primer Negocio 36 v3.6.3 — correcciones de Retro y escáner
+
+- Tema Retro rediseñado con apariencia inspirada en Windows 7 Aero: barra azul brillante, bordes azules, botones degradados y tipografía Segoe UI.
+- Se corrigieron las variables de color del tema para que afecten a los componentes reales de la interfaz.
+- El escáner Android solicita el permiso CAMERA antes de abrir la pantalla de lectura.
+- Se especifica la actividad de captura ZXing y se manejan cancelaciones y permisos denegados sin cerrar voluntariamente la app.
+- Se restringe el procesamiento de resultados a la actividad de escaneo.
+- Versión 3.6.3, versionCode 13.
+
+Pruebas pendientes: compilación real de Android, concesión/denegación de cámara y lectura de códigos en dispositivo físico.

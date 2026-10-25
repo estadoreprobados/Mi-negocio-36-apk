@@ -362,10 +362,10 @@
     { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Verde helecho, arena y tonos de fósil para amantes de los dinosaurios.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" },
     { id: "halloween2026", name: "Halloween 2026", cost: 0, creatorCode: "halloween2026", seasonal: "halloween", description: "Noche embrujada: carbón, calabaza, violeta y detalles fantasmales. Disponible del 25 al 31 de octubre de 2026.", colors: ["#ff7518", "#32104a"], preview: "linear-gradient(135deg,#12091f 0%,#5b217d 45%,#ff7518 46%,#ffb347 100%)" },
     { id: "navidad2026", name: "Navidad 2026", cost: 0, creatorCode: "Navidad2026", seasonal: "christmas", description: "Verde pino, rojo cereza, nieve y detalles dorados. Disponible del 1 al 31 de diciembre de 2026.", colors: ["#0f5132", "#c62828"], preview: "linear-gradient(135deg,#073b2a 0%,#0f7a4a 48%,#b51f32 49%,#f2c14e 100%)" },
-    { id: "retro", name: "Retro", cost: 0, creatorCode: "v3.6", seasonal: "retro", description: "Estilo retro con crema, naranja quemado y verde clásico. Disponible durante el lanzamiento de la versión 3.6 y hasta el 1 de enero de 2027.", colors: ["#d97736", "#f2dfb3"], preview: "linear-gradient(135deg,#203c32 0%,#d97736 50%,#f2dfb3 100%)" }
+    { id: "retro", name: "Retro", cost: 0, creatorCode: "v3.6", seasonal: "retro", description: "Interfaz clásica inspirada en Windows 7: cristal azul Aero, bordes brillantes, botones degradados y tipografía Segoe UI. Disponible hasta el 1 de enero de 2027.", colors: ["#d97736", "#f2dfb3"], preview: "linear-gradient(135deg,#d9f1ff 0%,#4c9bd5 28%,#1b5b96 58%,#dcefff 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.6.2", code: 12, buildDate: "25 de octubre de 2026" };
+  const APP_VERSION = { name: "3.6.3", code: 13, buildDate: "25 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
