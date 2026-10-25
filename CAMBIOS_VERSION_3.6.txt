@@ -1,0 +1,9 @@
+Mi Primer Negocio 36 — Versión 3.6
+
+Primera gran actualización: interfaz móvil renovada, punto de venta con carrito, búsqueda por código de barras y escáner compatible con BarcodeDetector, cuentas de clientes y fiado con abonos, corte de caja, proveedores y compras que actualizan inventario, respaldos JSON portátiles, revisión básica de integridad y tema Retro.
+
+El tema Retro se desbloquea con el código de lanzamiento v3.6 y está disponible del 25 de octubre de 2026 al 1 de enero de 2027 inclusive. El tema desbloqueado se conserva en los datos y se incluye en respaldos, aunque la aplicación no permite activarlo fuera de su ventana de disponibilidad.
+
+Los datos siguen guardándose localmente en el dispositivo. No se ha añadido sincronización ni envío automático a servidores.
+
+Notas: el escáner por cámara requiere un WebView con BarcodeDetector; si el motor no lo soporta, la búsqueda manual y los lectores externos siguen disponibles.
