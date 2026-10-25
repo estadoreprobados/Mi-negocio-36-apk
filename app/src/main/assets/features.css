@@ -121,3 +121,11 @@ table td { border-color:var(--mpn-border); }
 .tax-tool .tax-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
 .tax-tool p { margin:12px 0 0; }
 @media (max-width:520px) { .top-actions { width:100%; } .top-actions .button { flex:1; } .tax-tool .tax-fields { grid-template-columns:1fr; } }
+
+
+/* Nombre del negocio mostrado debajo del título principal. */
+.business-name-display { margin: 6px 0 0; font-size: 0.98rem; font-weight: 700; color: #f2d8a8; overflow-wrap: anywhere; }
+.business-name-display.hidden { display: none; }
+.tax-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; }
+.tax-results p { margin: 0; padding: 12px; border: 1px solid var(--mpn-border); border-radius: 10px; background: var(--mpn-bg); }
+.tax-results strong { display: block; font-size: 1.15rem; margin-top: 4px; }

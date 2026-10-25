@@ -20,6 +20,7 @@
   <div>
     <p class="eyebrow">ADMINISTRACIÓN DE NEGOCIOS</p>
     <h1>Mi Primer Negocio <span>36</span></h1>
+    <p id="businessNameDisplay" class="business-name-display hidden" aria-live="polite"></p>
   </div>
   <div class="top-actions">
     <button id="importCsvTop" class="button secondary" type="button">Importar CSV</button>
@@ -93,6 +94,7 @@
     <button class="tab" data-view="statistics">Estadísticas</button>
     <button class="tab" data-view="shop">Tienda 🔥</button>
     <button class="tab" data-view="options">Opciones ⚙️</button>
+    <button class="tab" data-view="taxes">Impuestos 🧮</button>
   </nav>
 
   <section class="view" id="view-dashboard">
@@ -499,10 +501,10 @@
     </div>
     <article class="panel shop-intro">
       <h3>Temas para personalizar tu app</h3>
-      <p>Los temas Hacker, Naturaleza y CBTIS 36 son completamente gratis. Los demás temas conservan su sistema de monedas.</p>
+      <p>Los temas Hacker, Naturaleza y Escolar son completamente gratis. Los demás temas conservan su sistema de monedas.</p>
     </article>
     <div id="themeShop" class="theme-shop"></div>
-    <p class="muted footnote">Los temas Hacker, Naturaleza y CBTIS 36 siempre están disponibles gratis. Tus preferencias se guardan en este dispositivo.</p>
+    <p class="muted footnote">Los temas Hacker, Naturaleza y Escolar siempre están disponibles gratis. Tus preferencias se guardan en este dispositivo.</p>
   </section>
 
 
@@ -528,19 +530,6 @@
         </select>
       </label>
     </article>
-    <article class="panel options-panel tax-tool">
-      <h3>Calculadora de impuestos (estimación)</h3>
-      <p class="muted">Calcula un porcentaje sobre una cantidad. No sustituye una determinación fiscal oficial.</p>
-      <div class="tax-fields">
-        <label for="taxAmount">Cantidad antes de impuesto
-          <input id="taxAmount" type="number" min="0" step="0.01" value="100">
-        </label>
-        <label for="taxRate">Porcentaje (%)
-          <input id="taxRate" type="number" min="0" max="100" step="0.01" value="16">
-        </label>
-      </div>
-      <p>Impuesto: <strong id="taxValue">$16.00</strong> · Total: <strong id="taxTotal">$116.00</strong></p>
-    </article>
     <article class="panel options-panel">
       <h3>Importar / exportar datos mediante PDF</h3>
       <p class="muted">El PDF de respaldo generado aquí contiene los datos necesarios para restaurarlos. Los PDF externos o los reportes antiguos no se pueden importar.</p>
@@ -549,6 +538,28 @@
         <input id="importBackupPdf" type="file" accept="application/pdf,.pdf">
       </label>
       <p class="muted footnote">La importación reemplaza los datos actuales. Exporta un respaldo antes de continuar.</p>
+    </article>
+  </section>
+
+  <section class="view hidden" id="view-taxes">
+    <div class="section-heading">
+      <div><p class="eyebrow">HERRAMIENTAS</p><h2>Calculadora de impuestos</h2></div>
+    </div>
+    <article class="panel options-panel tax-tool">
+      <h3>Estimación de impuesto</h3>
+      <p class="muted">Calcula un porcentaje sobre una cantidad. Es una estimación educativa y no sustituye una determinación fiscal oficial.</p>
+      <div class="tax-fields">
+        <label for="taxAmount">Cantidad antes de impuesto
+          <input id="taxAmount" type="number" min="0" step="0.01" value="100" inputmode="decimal">
+        </label>
+        <label for="taxRate">Porcentaje (%)
+          <input id="taxRate" type="number" min="0" max="100" step="0.01" value="16" inputmode="decimal">
+        </label>
+      </div>
+      <div class="tax-results" aria-live="polite">
+        <p>Impuesto estimado: <strong id="taxValue">$16.00</strong></p>
+        <p>Total con impuesto: <strong id="taxTotal">$116.00</strong></p>
+      </div>
     </article>
   </section>
 

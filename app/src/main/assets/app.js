@@ -338,7 +338,7 @@
     { id: "sunset", name: "Terracota", cost: 9, description: "Arcilla, café y arena cálida.", colors: ["#543b2d", "#c98b68"], preview: "linear-gradient(135deg,#543b2d 50%,#c98b68 50%)" },
     { id: "hacker", name: "Hacker", cost: 0, description: "Negro profundo y verde neón. Gratis para siempre.", colors: ["#001b0b", "#39ff88"], preview: "linear-gradient(135deg,#001b0b 50%,#39ff88 50%)" },
     { id: "nature", name: "Naturaleza", cost: 0, description: "Verdes de bosque y tonos tierra. Gratis para siempre.", colors: ["#234d35", "#d5e6c9"], preview: "linear-gradient(135deg,#234d35 50%,#d5e6c9 50%)" },
-    { id: "cbtis36", name: "CBTIS 36", cost: 0, description: "Azul escolar y blanco. Gratis para siempre.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" }
+    { id: "cbtis36", name: "Escolar", cost: 0, description: "Azul escolar y blanco. Gratis para siempre.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" }
   ];
 
   function saleDates() {
@@ -591,6 +591,7 @@
     if (view === "reports") renderReport();
     if (view === "statistics") renderStatistics();
     if (view === "shop") renderShop();
+    if (view === "taxes") updateTax();
   }
 
   document.querySelectorAll(".tab").forEach(b =>
@@ -1008,8 +1009,18 @@ function downloadCsv() {
   $("generatePdf").addEventListener("click", generatePdf);
 
 
+  function renderBusinessNameDisplay(value) {
+    const display = $("businessNameDisplay");
+    if (!display) return;
+    const name = String(value || "").trim().slice(0, 70);
+    display.textContent = name;
+    display.classList.toggle("hidden", !name);
+  }
+
   if ($("businessName")) {
     $("businessName").value = data.settings.businessName || "";
+    renderBusinessNameDisplay(data.settings.businessName || "");
+    $("businessName").addEventListener("input", () => renderBusinessNameDisplay($("businessName").value));
     $("saveBusinessName").addEventListener("click", saveBusinessName);
   }
   if ($("themeMode")) {
@@ -1025,13 +1036,24 @@ function downloadCsv() {
   if ($("importBackupPdf")) $("importBackupPdf").addEventListener("change", e => importBackupPdf(e.target.files && e.target.files[0]));
 
   function updateTax() {
-    const amount = Math.max(0, Number($("taxAmount").value) || 0);
-    const rate = Math.min(100, Math.max(0, Number($("taxRate").value) || 0));
-    const tax = amount * rate / 100;
-    $("taxValue").textContent = money(tax);
-    $("taxTotal").textContent = money(amount + tax);
+    const amountInput = $("taxAmount");
+    const rateInput = $("taxRate");
+    const taxValue = $("taxValue");
+    const taxTotal = $("taxTotal");
+    if (!amountInput || !rateInput || !taxValue || !taxTotal) return;
+    const amount = Math.max(0, Number.parseFloat(amountInput.value) || 0);
+    const rate = Math.min(100, Math.max(0, Number.parseFloat(rateInput.value) || 0));
+    const tax = Math.round((amount * rate / 100 + Number.EPSILON) * 100) / 100;
+    taxValue.textContent = money(tax);
+    taxTotal.textContent = money(Math.round((amount + tax + Number.EPSILON) * 100) / 100);
   }
-  ["taxAmount", "taxRate"].forEach(id => $(id).addEventListener("input", updateTax));
+  ["taxAmount", "taxRate"].forEach(id => {
+    const field = $(id);
+    if (field) {
+      field.addEventListener("input", updateTax);
+      field.addEventListener("change", updateTax);
+    }
+  });
   updateTax();
 
   function parseCsv(text) {
@@ -1142,9 +1164,10 @@ function downloadCsv() {
 
   function saveBusinessName() {
     const name = ($("businessName").value || "").trim().slice(0, 70);
-    data.settings.businessName = name || "Mi Primer Negocio 36";
+    data.settings.businessName = name;
+    renderBusinessNameDisplay(name);
     save();
-    toast("Nombre del negocio guardado.");
+    toast(name ? "Nombre del negocio guardado." : "Nombre del negocio borrado.");
   }
 
   function exportBackupPdf() {
