@@ -1,0 +1,11 @@
+Mi Primer Negocio 36 — versión 3.6.2
+
+Correcciones de clientes y fiado:
+- Ahora se puede editar el nombre y teléfono de un cliente existente.
+- Al crear un cliente se puede registrar un saldo/deuda inicial.
+- Se añadió un formulario para agregar deudas o cargos adicionales a un cliente existente.
+- La lista muestra el saldo pendiente y el botón Editar.
+- Los cargos y abonos quedan registrados en los movimientos de fiado y se conservan en respaldos.
+
+Versión Android: versionCode 12, versionName 3.6.2.
+Pendiente: compilar con GitHub Actions y probar en dispositivo Android.

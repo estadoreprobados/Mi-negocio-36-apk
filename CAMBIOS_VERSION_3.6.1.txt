@@ -1,0 +1,11 @@
+MI PRIMER NEGOCIO 36 — VERSIÓN 3.6.1
+Correcciones de mantenimiento
+
+- Se quitó la entrada duplicada de Operaciones del menú secundario; permanece en la barra principal.
+- Se corrigió la devolución del resultado del escáner nativo de códigos de barras a la pantalla de punto de venta.
+- Se añadieron controles de error para que los fallos al iniciar/cancelar el escáner no cierren la app.
+- Se añadió una explicación de Operaciones a la sección Ayuda.
+- Se renovó el diseño de tarjetas, formularios, navegación y pantallas móviles.
+- Se incrementó versionCode a 11 y versionName a 3.6.1 para permitir instalar esta corrección sobre la versión 3.6.
+
+IMPORTANTE: compilar e instalar mediante la misma firma que la versión previa. Probar la cámara en un dispositivo real, además de las operaciones y respaldos, antes de publicar.

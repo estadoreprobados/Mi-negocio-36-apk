@@ -34,7 +34,6 @@
         <button class="menu-item" data-view="statistics" role="menuitem">📊 Estadísticas</button>
         <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
         <button class="menu-item" data-view="creators" role="menuitem">🧩 Desbloquear temas</button>
-        <button class="menu-item" data-view="operations" role="menuitem">🧾 Punto de venta y herramientas</button>
         <button class="menu-item" data-view="version" role="menuitem">📱 Versión del sistema</button>
       </div>
     </div>
@@ -556,8 +555,9 @@
         <button class="button" id="posCheckout" type="button">Cobrar y registrar venta</button>
       </article>
       <article class="panel ops-card"><p class="eyebrow">02 · CUENTAS POR COBRAR</p><h3>Fiado y clientes</h3>
-        <form id="customerForm" class="stack-form"><label>Nombre del cliente<input id="customerName" required maxlength="100" placeholder="Nombre completo"></label><label>Teléfono (opcional)<input id="customerPhone" maxlength="30" inputmode="tel"></label><button class="button" type="submit">Guardar cliente</button></form>
+        <form id="customerForm" class="stack-form"><input id="customerEditId" type="hidden" value=""><label>Nombre del cliente<input id="customerName" required maxlength="100" placeholder="Nombre completo"></label><label>Teléfono (opcional)<input id="customerPhone" maxlength="30" inputmode="tel"></label><div id="customerInitialDebtWrap"><label>Deuda inicial (si ya debe)<input id="customerInitialDebt" type="number" min="0" step="0.01" value="0" inputmode="decimal"></label><p class="muted footnote">Si el cliente ya te debe dinero, escribe aquí el total inicial.</p></div><div class="inline-actions"><button class="button" id="customerSaveButton" type="submit">Guardar cliente</button><button class="button secondary hidden" id="customerCancelEdit" type="button">Cancelar edición</button></div></form>
         <div id="creditSummary" class="mini-summary"></div><div id="customerList" class="compact-list"></div>
+        <form id="customerDebtForm" class="stack-form"><h4>Agregar deuda o cargo</h4><label>Cliente<select id="debtCustomer" required></select></label><label>Importe que debe<input id="debtAmount" type="number" min="0.01" step="0.01" required inputmode="decimal"></label><label>Concepto (opcional)<input id="debtDescription" maxlength="160" placeholder="Ej. mercancía fiada"></label><button class="button secondary" type="submit">Agregar deuda</button></form>
         <form id="creditPaymentForm" class="stack-form"><label>Cliente<select id="creditCustomer" required></select></label><label>Abono recibido<input id="creditAmount" type="number" min="0.01" step="0.01" required></label><button class="button secondary" type="submit">Registrar abono</button></form>
       </article>
       <article class="panel ops-card"><p class="eyebrow">03 · CONTROL DIARIO</p><h3>Corte de caja</h3><div id="cashSummary" class="mini-summary"></div><label>Fondo inicial de caja<input id="cashOpening" type="number" min="0" step="0.01" value="0"></label><button class="button" id="cashCloseButton" type="button">Realizar corte de caja</button><div id="cashCutsList" class="compact-list"></div>
@@ -578,6 +578,7 @@
     <div class="help-grid">
       <article class="panel help-card"><h3>📦 Productos e inventario</h3><ol><li>Abre la pestaña <b>Productos</b>.</li><li>Completa el nombre, costos, precio de venta y existencias iniciales.</li><li>Guarda el producto. Usa las herramientas de inventario para registrar entradas o salidas y revisar las existencias.</li></ol></article>
       <article class="panel help-card"><h3>🛒 Registrar ventas</h3><ol><li>Entra en <b>Ventas</b> y selecciona un producto.</li><li>Indica la cantidad y revisa el precio y el total.</li><li>Registra la venta. Las existencias y los indicadores se actualizarán según la operación.</li></ol></article>
+      <article class="panel help-card"><h3>🧾 Operaciones: punto de venta, fiado y caja</h3><ol><li>Abre la pestaña <b>Operaciones</b> de la barra principal.</li><li>En <b>Punto de venta</b>, busca o escanea productos, añádelos al carrito y selecciona la forma de pago antes de cobrar.</li><li>Para el <b>fiado</b>, guarda primero al cliente y registra la venta a crédito; registra los abonos en el apartado de clientes.</li><li>En <b>Corte de caja</b>, introduce el fondo inicial y realiza el corte al terminar tu jornada. Compara el efectivo esperado con el efectivo real.</li><li>En <b>Proveedores y compras</b>, registra el proveedor y la compra para actualizar existencias.</li><li>En <b>Copias de seguridad</b>, exporta un archivo JSON y guárdalo en un lugar seguro. Importarlo reemplaza los datos actuales.</li></ol><p class="muted">La lectura con cámara requiere permiso. Si no está disponible, puedes escribir el código de barras en el buscador.</p></article>
       <article class="panel help-card"><h3>🧾 Registrar gastos</h3><ol><li>Abre <b>Gastos</b>.</li><li>Agrega la descripción, el importe y la fecha.</li><li>Guarda el gasto y revisa su efecto en el resumen y los reportes.</li></ol></article>
       <article class="panel help-card"><h3>📊 Resumen y estadísticas</h3><p>El <b>Resumen</b> presenta indicadores del negocio y la racha de ventas. En <b>Estadísticas</b> puedes revisar gráficas y cambiar el periodo cuando la opción esté disponible.</p></article>
       <article class="panel help-card"><h3>📄 Reportes y archivos</h3><p>En <b>Reportes</b> genera archivos PDF o CSV para consultar o guardar información. Las descargas se guardan mediante Android. También puedes usar las opciones de importación y exportación disponibles.</p><p class="muted">Consejo: conserva una copia de respaldo antes de importar datos, ya que algunas importaciones pueden reemplazar la información existente.</p></article>
@@ -606,7 +607,7 @@
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.6</strong><p>Mi Primer Negocio 36</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.6.1</strong><p>Mi Primer Negocio 36</p>
       <div class="version-facts">
         <p><span>Número de compilación</span><strong id="appBuildNumber">10</strong></p>
         <p><span>Actualización preparada</span><strong id="appBuildDate">25 de octubre de 2026</strong></p>

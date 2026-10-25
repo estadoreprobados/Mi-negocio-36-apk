@@ -17,6 +17,7 @@ import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import org.json.JSONObject;
 import android.webkit.WebSettings;
 import android.widget.Toast;
 
@@ -99,12 +100,31 @@ public class MainActivity extends Activity {
     private class DownloadBridge {
         @JavascriptInterface
         public void startBarcodeScan() {
-            runOnUiThread(() -> new IntentIntegrator(MainActivity.this)
-                    .setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-                    .setPrompt("Enfoca el código de barras del producto")
-                    .setBeepEnabled(false)
-                    .setOrientationLocked(false)
-                    .initiateScan());
+            runOnUiThread(() -> {
+                try {
+                    if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                        notifyScannerError("Este dispositivo no tiene una cámara disponible.");
+                        return;
+                    }
+                    new IntentIntegrator(MainActivity.this)
+                            .setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
+                            .setPrompt("Enfoca el código de barras del producto")
+                            .setBeepEnabled(false)
+                            .setOrientationLocked(false)
+                            .initiateScan();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this,
+                            "No se pudo iniciar el escáner. Puedes escribir el código manualmente.",
+                            Toast.LENGTH_LONG).show();
+                    notifyScannerError("No se pudo iniciar la cámara. Escribe el código manualmente.");
+                }
+            });
+        }
+
+        private void notifyScannerError(String message) {
+            if (webView == null) return;
+            webView.post(() -> webView.evaluateJavascript(
+                    "window.onNativeBarcodeError && window.onNativeBarcodeError(" + JSONObject.quote(message) + ")", null));
         }
 
         @JavascriptInterface
@@ -173,6 +193,19 @@ public class MainActivity extends Activity {
                 filePathCallback.onReceiveValue(results);
                 filePathCallback = null;
             }
+            return;
+        }
+
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
+            if (scanResult.getContents() != null) {
+                String code = JSONObject.quote(scanResult.getContents());
+                if (webView != null) webView.evaluateJavascript(
+                        "window.onNativeBarcodeScanned && window.onNativeBarcodeScanned(" + code + ")", null);
+            } else {
+                Toast.makeText(this, "Escaneo cancelado. La aplicación sigue abierta.", Toast.LENGTH_SHORT).show();
+            }
+            return;
         }
     }
 
