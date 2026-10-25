@@ -269,3 +269,36 @@ table td { border-color:var(--mpn-border); }
 .menu-item { width:100%; text-align:left; }
 :root[data-app-theme] .theme-card { background:var(--mpn-panel); color:var(--mpn-text); }
 :root[data-app-theme] .theme-preview { border-bottom:1px solid var(--mpn-border); }
+
+
+/* v3.5.01: identidades visuales completas para las temporadas. */
+:root[data-app-theme="halloween2026"] { color-scheme:dark; --mpn-bg:#10091a; --mpn-panel:#21102f; --mpn-text:#fff0ff; --mpn-muted:#c5a8d9; --mpn-accent:#ff7518; --mpn-accent-contrast:#1b0924; --mpn-border:#60327a; --bg:#10091a; --card:#21102f; --text:#fff0ff; --muted:#c5a8d9; --line:#60327a; --accent:#ff7518; --accent-dark:#ff9b4a; }
+:root[data-app-theme="halloween2026"] body { background-color:#10091a; background-image:radial-gradient(circle at 8% 8%,#642b7a55 0 2px,transparent 3px),radial-gradient(circle at 92% 22%,#ff751833 0 3px,transparent 4px),linear-gradient(135deg,#10091a,#21102f 55%,#32120f); }
+:root[data-app-theme="halloween2026"] .topbar { background:linear-gradient(110deg,#10091a,#32104a 58%,#9b3b08); border-bottom:3px solid #ff7518; }
+:root[data-app-theme="halloween2026"] .panel, :root[data-app-theme="halloween2026"] .metric, :root[data-app-theme="halloween2026"] .theme-card { box-shadow:0 8px 25px #0005; border-radius:16px; }
+:root[data-app-theme="halloween2026"] .button:not(.secondary), :root[data-app-theme="halloween2026"] .tab.active { background:linear-gradient(135deg,#ff7518,#ffb347); color:#24102d; border:1px solid #ffd08a; box-shadow:0 3px 0 #7b3107; }
+:root[data-app-theme="halloween2026"] .more-menu-button { border-color:#ff7518; color:#ffb347; }
+:root[data-app-theme="halloween2026"] .notice { background:#321b08; border-color:#ff7518; color:#ffe2bd; }
+:root[data-app-theme="halloween2026"] input, :root[data-app-theme="halloween2026"] select, :root[data-app-theme="halloween2026"] textarea { background:#160d20; color:#fff0ff; border-color:#60327a; }
+:root[data-app-theme="halloween2026"] .theme-preview { border-bottom:2px solid #ff7518; }
+:root[data-app-theme="navidad2026"] { color-scheme:dark; --mpn-bg:#071d16; --mpn-panel:#103729; --mpn-text:#fff7e6; --mpn-muted:#c1d8c9; --mpn-accent:#d62839; --mpn-accent-contrast:#ffffff; --mpn-border:#287b52; --bg:#071d16; --card:#103729; --text:#fff7e6; --muted:#c1d8c9; --line:#287b52; --accent:#d62839; --accent-dark:#a91d2b; }
+:root[data-app-theme="navidad2026"] body { background-color:#071d16; background-image:radial-gradient(circle at 12% 10%,#fff8dd55 0 2px,transparent 3px),radial-gradient(circle at 85% 28%,#fff8dd44 0 3px,transparent 4px),linear-gradient(145deg,#071d16,#0c4931 58%,#35121a); }
+:root[data-app-theme="navidad2026"] .topbar { background:linear-gradient(110deg,#073b2a,#0f6a43 55%,#8f1828); border-bottom:3px solid #f2c14e; }
+:root[data-app-theme="navidad2026"] .panel, :root[data-app-theme="navidad2026"] .metric, :root[data-app-theme="navidad2026"] .theme-card { box-shadow:0 8px 24px #0004; border-radius:16px; }
+:root[data-app-theme="navidad2026"] .button:not(.secondary), :root[data-app-theme="navidad2026"] .tab.active { background:linear-gradient(135deg,#c51f35,#e84a4a); color:#fff; border:1px solid #f2c14e; box-shadow:0 3px 0 #651522; }
+:root[data-app-theme="navidad2026"] .more-menu-button { border-color:#f2c14e; color:#f2c14e; }
+:root[data-app-theme="navidad2026"] .notice { background:#173d2e; border-color:#f2c14e; color:#fff7e6; }
+:root[data-app-theme="navidad2026"] input, :root[data-app-theme="navidad2026"] select, :root[data-app-theme="navidad2026"] textarea { background:#09281d; color:#fff7e6; border-color:#287b52; }
+:root[data-app-theme="navidad2026"] .theme-preview { border-bottom:2px solid #f2c14e; }
+.version-hero { overflow:hidden; position:relative; }
+.version-mark { display:inline-grid; place-items:center; width:76px; height:76px; margin:0 0 8px; border-radius:22px; background:linear-gradient(135deg,#315f82,#d8cbb7); color:#fff; font-weight:900; letter-spacing:-.05em; box-shadow:0 8px 18px #0002; }
+.version-facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px; }
+.version-facts p { display:grid; gap:4px; padding:12px; margin:0; border:1px solid var(--mpn-border); border-radius:10px; background:var(--mpn-bg); }
+.version-facts span { color:var(--mpn-muted); font-size:.82rem; }
+.release-list { padding-left:22px; margin:12px 0 0; display:grid; gap:10px; }
+.release-list li { padding-left:3px; }
+
+:root[data-mode="dark"][data-app-theme="halloween2026"] { color-scheme:dark; --mpn-bg:#10091a; --mpn-panel:#21102f; --mpn-text:#fff0ff; --mpn-muted:#c5a8d9; --mpn-accent:#ff7518; --mpn-accent-contrast:#1b0924; --mpn-border:#60327a; --bg:#10091a; --card:#21102f; --text:#fff0ff; --muted:#c5a8d9; --line:#60327a; --accent:#ff7518; --accent-dark:#ff9b4a; }
+:root[data-mode="dark"][data-app-theme="navidad2026"] { color-scheme:dark; --mpn-bg:#071d16; --mpn-panel:#103729; --mpn-text:#fff7e6; --mpn-muted:#c1d8c9; --mpn-accent:#d62839; --mpn-accent-contrast:#ffffff; --mpn-border:#287b52; --bg:#071d16; --card:#103729; --text:#fff7e6; --muted:#c1d8c9; --line:#287b52; --accent:#d62839; --accent-dark:#a91d2b; }
+:root[data-mode="dark"][data-app-theme="halloween2026"] body { background-color:#10091a; background-image:radial-gradient(circle at 8% 8%,#642b7a55 0 2px,transparent 3px),radial-gradient(circle at 92% 22%,#ff751833 0 3px,transparent 4px),linear-gradient(135deg,#10091a,#21102f 55%,#32120f); }
+:root[data-mode="dark"][data-app-theme="navidad2026"] body { background-color:#071d16; background-image:radial-gradient(circle at 12% 10%,#fff8dd55 0 2px,transparent 3px),radial-gradient(circle at 85% 28%,#fff8dd44 0 3px,transparent 4px),linear-gradient(145deg,#071d16,#0c4931 58%,#35121a); }

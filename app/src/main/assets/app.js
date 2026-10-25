@@ -349,8 +349,31 @@
     { id: "pride", name: "Pride", cost: 0, creatorCode: "Pride", description: "Paleta arcoíris inspirada en la bandera LGBT+.", colors: ["#e84775", "#4d9dfa"], preview: "linear-gradient(120deg,#e84775 0%,#f7c943 35%,#39a96b 65%,#4d9dfa 100%)" },
     { id: "trans", name: "Trans", cost: 0, creatorCode: "trans", description: "Azul claro, rosa y blanco inspirados en la bandera trans.", colors: ["#8bcfff", "#f4a8c8"], preview: "linear-gradient(135deg,#8bcfff 0%,#f4a8c8 35%,#ffffff 50%,#f4a8c8 65%,#8bcfff 100%)" },
     { id: "abrosexual", name: "Abrosexual", cost: 0, creatorCode: "abrosexual", description: "Verde, blanco y rosa inspirados en la bandera abrosexual.", colors: ["#54a878", "#e98db7"], preview: "linear-gradient(135deg,#54a878 0%,#dff3e5 35%,#ffffff 50%,#f6c8dc 65%,#e98db7 100%)" },
-    { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Verde helecho, arena y tonos de fósil para amantes de los dinosaurios.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" }
+    { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Verde helecho, arena y tonos de fósil para amantes de los dinosaurios.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" },
+    { id: "halloween2026", name: "Halloween 2026", cost: 0, creatorCode: "halloween2026", seasonal: "halloween", description: "Noche embrujada: carbón, calabaza, violeta y detalles fantasmales. Disponible del 25 al 31 de octubre de 2026.", colors: ["#ff7518", "#32104a"], preview: "linear-gradient(135deg,#12091f 0%,#5b217d 45%,#ff7518 46%,#ffb347 100%)" },
+    { id: "navidad2026", name: "Navidad 2026", cost: 0, creatorCode: "Navidad2026", seasonal: "christmas", description: "Verde pino, rojo cereza, nieve y detalles dorados. Disponible del 1 al 31 de diciembre de 2026.", colors: ["#0f5132", "#c62828"], preview: "linear-gradient(135deg,#073b2a 0%,#0f7a4a 48%,#b51f32 49%,#f2c14e 100%)" }
   ];
+
+  const APP_VERSION = { name: "3.5.01", code: 9, buildDate: "25 de octubre de 2026" };
+
+  function seasonalThemeIsAvailable(theme, date = today()) {
+    if (!theme?.seasonal) return true;
+    if (theme.seasonal === "halloween") return date >= "2026-10-25" && date <= "2026-10-31";
+    if (theme.seasonal === "christmas") return date >= "2026-12-01" && date <= "2026-12-31";
+    return false;
+  }
+
+  function expireSeasonalThemes() {
+    const current = THEMES.find(theme => theme.id === data.settings.theme && theme.seasonal);
+    if (current && !seasonalThemeIsAvailable(current)) {
+      const fallback = data.settings.previousThemeBeforeSeasonal;
+      data.settings.theme = THEMES.some(theme => theme.id === fallback && !theme.seasonal) ? fallback : "classic";
+      delete data.settings.previousThemeBeforeSeasonal;
+    }
+    const expiredIds = THEMES.filter(theme => theme.seasonal && !seasonalThemeIsAvailable(theme)).map(theme => theme.id);
+    if (expiredIds.length) data.gamification.purchasedThemes = data.gamification.purchasedThemes.filter(id => !expiredIds.includes(id));
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { console.error("No se pudo actualizar el tema de temporada:", e); }
+  }
 
   function saleDates() {
     return [...new Set(data.sales.map(s => s.date).filter(Boolean))].sort();
@@ -513,7 +536,9 @@
   }
 
   function applyTheme() {
-    const theme = THEMES.find(t => t.id === data.settings.theme) || THEMES[0];
+    expireSeasonalThemes();
+    renderShop();
+    const theme = THEMES.find(t => t.id === data.settings.theme && seasonalThemeIsAvailable(t)) || THEMES[0];
     document.documentElement.dataset.appTheme = theme.id;
     // Aplica primero el modo elegido para que cada tema use su paleta clara u oscura.
     document.documentElement.dataset.mode = data.settings.mode === "dark" ? "dark" : "light";
@@ -524,7 +549,7 @@
   function renderShop() {
     if (!$ ("themeShop")) return;
     $("fireCoins").textContent = String(data.gamification.coins);
-    $("themeShop").innerHTML = THEMES.map(theme => {
+    $("themeShop").innerHTML = THEMES.filter(theme => seasonalThemeIsAvailable(theme)).map(theme => {
       const owned = data.gamification.purchasedThemes.includes(theme.id);
       const active = data.settings.theme === theme.id;
       const lockedCreatorTheme = Boolean(theme.creatorCode) && !owned;
@@ -542,6 +567,7 @@
   function handleThemeAction(id) {
     const theme = THEMES.find(t => t.id === id);
     if (!theme) return;
+    if (!seasonalThemeIsAvailable(theme)) { toast("Este tema solo está disponible durante su temporada."); renderShop(); return; }
     const owned = data.gamification.purchasedThemes.includes(id);
     if (theme.creatorCode && !owned) {
       toast("Este tema está bloqueado. Canjea su código en Ajustes → Códigos del creador.");
@@ -560,6 +586,11 @@
         data.gamification.purchasedThemes.push(id);
       }
     }
+    if (theme.seasonal) {
+      if (!THEMES.find(item => item.id === data.settings.theme)?.seasonal) data.settings.previousThemeBeforeSeasonal = data.settings.theme || "classic";
+    } else {
+      delete data.settings.previousThemeBeforeSeasonal;
+    }
     data.settings.theme = id;
     applyTheme();
     save();
@@ -576,8 +607,8 @@
       toast("Escribe un código de creador.");
       return;
     }
-    if (!theme) {
-      if (message) message.textContent = "Código no válido. Revisa que esté escrito correctamente.";
+    if (!theme || !seasonalThemeIsAvailable(theme)) {
+      if (message) message.textContent = theme ? "Este código solo se puede usar durante su temporada." : "Código no válido. Revisa que esté escrito correctamente.";
       toast("Código no válido.");
       return;
     }
@@ -629,6 +660,7 @@
     renderShop();
     renderNotes();
     applyTheme();
+    renderSystemVersion();
   }
 
   function updateSalePreview() {
@@ -662,6 +694,16 @@
     if (view === "statistics") renderStatistics();
     if (view === "shop") renderShop();
     if (view === "taxes") updateTax();
+    if (view === "version") renderSystemVersion();
+  }
+
+  function renderSystemVersion() {
+    const version = $("appVersionLabel");
+    if (version) version.textContent = `Versión ${APP_VERSION.name}`;
+    const build = $("appBuildNumber");
+    const date = $("appBuildDate");
+    if (build) build.textContent = String(APP_VERSION.code);
+    if (date) date.textContent = APP_VERSION.buildDate;
   }
 
   document.querySelectorAll(".tab").forEach(b =>
