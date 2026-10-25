@@ -527,10 +527,10 @@
     </div>
     <article class="panel shop-intro">
       <h3>Temas para personalizar tu app</h3>
-      <p>Los temas Hacker, Naturaleza y Escolar son completamente gratis. Los demás temas conservan su sistema de monedas.</p>
+      <p>Los temas Hacker, Naturaleza y Escolar son gratis. Los temas Bandera bi, Atardecer y Eclipse se desbloquean con códigos del creador desde Ajustes.</p>
     </article>
     <div id="themeShop" class="theme-shop"></div>
-    <p class="muted footnote">Los temas Hacker, Naturaleza y Escolar siempre están disponibles gratis. Tus preferencias se guardan en este dispositivo.</p>
+    <p class="muted footnote">Los temas Hacker, Naturaleza y Escolar siempre están disponibles gratis. Bandera bi, Atardecer y Eclipse requieren su código del creador. Tus preferencias se guardan en este dispositivo.</p>
   </section>
 
 
@@ -555,6 +555,15 @@
           <option value="dark">Oscuro</option>
         </select>
       </label>
+    </article>
+    <article class="panel options-panel creator-codes-panel">
+      <h3>Códigos del creador</h3>
+      <p class="muted">Introduce el código de un tema para desbloquearlo gratis. Cada código desbloquea un tema específico.</p>
+      <label for="creatorThemeCode">Código de acceso
+        <input id="creatorThemeCode" type="text" maxlength="60" placeholder="Escribe tu código" autocomplete="off" autocapitalize="none" spellcheck="false">
+      </label>
+      <button class="button" id="redeemCreatorCode" type="button">Canjear código</button>
+      <p id="creatorCodeMessage" class="muted" role="status" aria-live="polite"></p>
     </article>
     <article class="panel options-panel">
       <h3>Importar / exportar datos mediante PDF</h3>

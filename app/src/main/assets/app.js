@@ -341,7 +341,10 @@
     { id: "sunset", name: "Terracota", cost: 9, description: "Arcilla, café y arena cálida.", colors: ["#543b2d", "#c98b68"], preview: "linear-gradient(135deg,#543b2d 50%,#c98b68 50%)" },
     { id: "hacker", name: "Hacker", cost: 0, description: "Negro profundo y verde neón. Gratis para siempre.", colors: ["#001b0b", "#39ff88"], preview: "linear-gradient(135deg,#001b0b 50%,#39ff88 50%)" },
     { id: "nature", name: "Naturaleza", cost: 0, description: "Verdes de bosque y tonos tierra. Gratis para siempre.", colors: ["#234d35", "#d5e6c9"], preview: "linear-gradient(135deg,#234d35 50%,#d5e6c9 50%)" },
-    { id: "cbtis36", name: "Escolar", cost: 0, description: "Azul escolar y blanco. Gratis para siempre.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" }
+    { id: "cbtis36", name: "Escolar", cost: 0, description: "Azul escolar y blanco. Gratis para siempre.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" },
+    { id: "bandera-bi", name: "Bandera bi", cost: 0, creatorCode: "bis3xual", description: "Rosa, morado y azul inspirados en la bandera bisexual.", colors: ["#d64b8b", "#4d6bc9"], preview: "linear-gradient(135deg,#d64b8b 0%,#9b59b6 50%,#4d6bc9 100%)" },
+    { id: "atardecer", name: "Atardecer", cost: 0, creatorCode: "post-meridium", description: "Colores cálidos de un atardecer: coral, naranja y violeta.", colors: ["#df684b", "#f2ad55"], preview: "linear-gradient(135deg,#df684b 0%,#f2ad55 50%,#7853a6 100%)" },
+    { id: "eclipse", name: "Eclipse", cost: 0, creatorCode: "solrequiem", description: "Negro profundo con destellos violetas y solares.", colors: ["#30264f", "#e6a84c"], preview: "linear-gradient(135deg,#11111f 0%,#6550a4 55%,#e6a84c 100%)" }
   ];
 
   function saleDates() {
@@ -507,22 +510,26 @@
   function applyTheme() {
     const theme = THEMES.find(t => t.id === data.settings.theme) || THEMES[0];
     document.documentElement.dataset.appTheme = theme.id;
+    // Aplica primero el modo elegido para que cada tema use su paleta clara u oscura.
+    document.documentElement.dataset.mode = data.settings.mode === "dark" ? "dark" : "light";
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = theme.colors[0];
   }
 
   function renderShop() {
-    if (!$("themeShop")) return;
+    if (!$ ("themeShop")) return;
     $("fireCoins").textContent = String(data.gamification.coins);
     $("themeShop").innerHTML = THEMES.map(theme => {
       const owned = data.gamification.purchasedThemes.includes(theme.id);
       const active = data.settings.theme === theme.id;
-      const action = active ? "Tema activo" : owned ? "Aplicar tema" : `Comprar · ${theme.cost} 🔥`;
-      return `<article class="theme-card ${active ? "theme-active" : ""}">
+      const lockedCreatorTheme = Boolean(theme.creatorCode) && !owned;
+      const action = lockedCreatorTheme ? "Fuera de uso" : active ? "Tema activo" : owned ? "Activar tema" : `Comprar · ${theme.cost} 🔥`;
+      const price = lockedCreatorTheme ? "Bloqueado" : (theme.creatorCode && owned) ? "Desbloqueado gratis" : theme.cost === 0 ? "Gratis" : `${theme.cost} 🔥`;
+      return `<article class="theme-card ${active ? "theme-active" : ""} ${lockedCreatorTheme ? "theme-locked" : ""}">
         <div class="theme-preview" style="background:${theme.preview}"></div>
         <div class="theme-card-body"><h3>${escapeHtml(theme.name)}</h3><p>${escapeHtml(theme.description)}</p>
-        <div class="theme-card-footer"><strong>${theme.cost === 0 ? "Gratis" : `${theme.cost} 🔥`}</strong>
-        <button class="button ${active ? "secondary" : ""}" data-theme-action="${theme.id}" ${active ? "disabled" : ""}>${action}</button></div></div>
+        <div class="theme-card-footer"><strong>${price}</strong>
+        <button class="button ${active || lockedCreatorTheme ? "secondary" : ""}" data-theme-action="${theme.id}" ${active || lockedCreatorTheme ? "disabled" : ""}>${action}</button></div></div>
       </article>`;
     }).join("");
   }
@@ -531,6 +538,10 @@
     const theme = THEMES.find(t => t.id === id);
     if (!theme) return;
     const owned = data.gamification.purchasedThemes.includes(id);
+    if (theme.creatorCode && !owned) {
+      toast("Este tema está bloqueado. Canjea su código en Ajustes → Códigos del creador.");
+      return;
+    }
     if (!owned) {
       if (theme.cost === 0) {
         data.gamification.purchasedThemes.push(id);
@@ -549,6 +560,38 @@
     save();
     toast(owned || theme.cost === 0 ? `Tema "${theme.name}" aplicado.` : `¡Compraste "${theme.name}"!`);
   }
+
+  function redeemCreatorCode() {
+    const input = $("creatorThemeCode");
+    const message = $("creatorCodeMessage");
+    const code = String(input?.value || "").trim().toLowerCase();
+    const theme = THEMES.find(item => item.creatorCode && item.creatorCode.toLowerCase() === code);
+    if (!code) {
+      if (message) message.textContent = "Escribe un código antes de canjearlo.";
+      toast("Escribe un código de creador.");
+      return;
+    }
+    if (!theme) {
+      if (message) message.textContent = "Código no válido. Revisa que esté escrito correctamente.";
+      toast("Código no válido.");
+      return;
+    }
+    if (data.gamification.purchasedThemes.includes(theme.id)) {
+      if (message) message.textContent = `El tema ${theme.name} ya está desbloqueado.`;
+      toast("Ese tema ya estaba desbloqueado.");
+      input.value = "";
+      return;
+    }
+    data.gamification.purchasedThemes.push(theme.id);
+    save();
+    if (message) message.textContent = `¡Código aceptado! ${theme.name} se desbloqueó gratis. Abre la Tienda de temas para activarlo.`;
+    if (input) input.value = "";
+    toast(`¡${theme.name} desbloqueado gratis!`);
+  }
+  $("redeemCreatorCode")?.addEventListener("click", redeemCreatorCode);
+  $("creatorThemeCode")?.addEventListener("keydown", event => {
+    if (event.key === "Enter") redeemCreatorCode();
+  });
 
   $("themeShop")?.addEventListener("click", e => {
     const button = e.target.closest("[data-theme-action]");
@@ -1229,6 +1272,8 @@ function downloadCsv() {
     document.documentElement.dataset.mode = mode;
     const select = $("themeMode");
     if (select) select.value = mode;
+    const theme = THEMES.find(item => item.id === data.settings.theme) || THEMES[0];
+    document.documentElement.dataset.appTheme = theme.id;
   }
 
   function saveBusinessName() {
