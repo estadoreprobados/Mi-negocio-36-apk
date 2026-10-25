@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.os.Build;
 import android.os.Environment;
 import android.content.ContentValues;
+import android.content.pm.PackageManager;
+import android.Manifest;
+import android.webkit.PermissionRequest;
 import android.content.Intent;
 import android.webkit.ValueCallback;
 import android.net.Uri;
@@ -21,11 +24,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class MainActivity extends Activity {
     private WebView webView;
     private ValueCallback<Uri[]> filePathCallback;
     private static final int FILE_CHOOSER_REQUEST = 2048;
+    private PermissionRequest pendingWebPermission;
+    private static final int CAMERA_PERMISSION_REQUEST = 2049;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,20 @@ public class MainActivity extends Activity {
 
         webView.addJavascriptInterface(new DownloadBridge(), "AndroidFiles");
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onPermissionRequest(PermissionRequest request) {
+                runOnUiThread(() -> {
+                    boolean asksCamera = false;
+                    for (String resource : request.getResources()) {
+                        if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(resource)) asksCamera = true;
+                    }
+                    if (!asksCamera) { request.deny(); return; }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        pendingWebPermission = request;
+                        requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
+                    } else { request.grant(request.getResources()); }
+                });
+            }
             @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
                     FileChooserParams params) {
@@ -65,7 +86,27 @@ public class MainActivity extends Activity {
         webView.loadUrl("file:///android_asset/index.html");
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST && pendingWebPermission != null) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) pendingWebPermission.grant(pendingWebPermission.getResources());
+            else pendingWebPermission.deny();
+            pendingWebPermission = null;
+        }
+    }
+
     private class DownloadBridge {
+        @JavascriptInterface
+        public void startBarcodeScan() {
+            runOnUiThread(() -> new IntentIntegrator(MainActivity.this)
+                    .setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
+                    .setPrompt("Enfoca el código de barras del producto")
+                    .setBeepEnabled(false)
+                    .setOrientationLocked(false)
+                    .initiateScan());
+        }
+
         @JavascriptInterface
         public void saveBase64(String filename, String mimeType, String base64) {
             runOnUiThread(() -> {
