@@ -129,3 +129,21 @@ table td { border-color:var(--mpn-border); }
 .tax-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; }
 .tax-results p { margin: 0; padding: 12px; border: 1px solid var(--mpn-border); border-radius: 10px; background: var(--mpn-bg); }
 .tax-results strong { display: block; font-size: 1.15rem; margin-top: 4px; }
+
+/* El modo oscuro prevalece sobre todos los temas, incluidos los gratuitos. */
+:root[data-mode="dark"][data-app-theme] {
+  color-scheme:dark;
+  --mpn-bg:#101820; --mpn-panel:#1b2732; --mpn-text:#edf2f7;
+  --mpn-muted:#b0bec9; --mpn-border:#394b59;
+  --bg:#101820; --card:#1b2732; --text:#edf2f7;
+  --muted:#b0bec9; --line:#394b59; --accent:var(--mpn-accent); --accent-dark:var(--mpn-accent);
+}
+:root[data-mode="dark"] label { color:var(--mpn-text); }
+:root[data-mode="dark"] table th { background:#253440; color:var(--mpn-text); }
+:root[data-mode="dark"] table td { border-color:var(--mpn-border); color:var(--mpn-text); }
+:root[data-mode="dark"] .button.secondary, :root[data-mode="dark"] .text-button { background:#263744; color:var(--mpn-text); border-color:var(--mpn-border); }
+:root[data-mode="dark"] .inventory-box, :root[data-mode="dark"] .sale-preview { background:#202e39; color:var(--mpn-text); }
+:root[data-mode="dark"] .status.low { background:#4b2425; color:#ffc4c0; }
+:root[data-mode="dark"] .status.ok { background:#173b2c; color:#a6f4c5; }
+.streak-flame { filter:none; display:flex; align-items:center; justify-content:center; }
+.streak-flame img { display:block; width:clamp(48px,7vw,72px); height:clamp(48px,7vw,72px); object-fit:contain; border-radius:18px; }

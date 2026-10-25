@@ -57,6 +57,7 @@
           sales: Array.isArray(d.sales) ? d.sales : [],
           expenses: Array.isArray(d.expenses) ? d.expenses : [],
           stockMoves: Array.isArray(d.stockMoves) ? d.stockMoves : [],
+          notes: Array.isArray(d.notes) ? d.notes : [],
           settings: {
             ...(d.settings || {}),
             currency: d.settings?.currency || "MXN"
@@ -72,12 +73,14 @@
       sales: [],
       expenses: [],
       stockMoves: [],
+      notes: [],
       settings: { currency: "MXN", theme: "classic" },
       gamification: { coins: 0, rewardedMilestones: [], purchasedThemes: ["classic"] }
     };
   }
 
   let data = loadData();
+  data.notes = Array.isArray(data.notes) ? data.notes : [];
   data.settings = { currency: "MXN", theme: "classic", businessName: "", mode: "light", ...(data.settings || {}) };
   data.gamification = {
     coins: Math.max(0, Number(data.gamification?.coins) || 0),
@@ -95,9 +98,9 @@
   let statsMoneyChart = null;
   let statsExpenseChart = null;
 
-  function save() {
+  function save(options = {}) {
     try {
-      updateStreakRewards();
+      updateStreakRewards(Boolean(options.saleRegisteredToday));
       localStorage.setItem(KEY, JSON.stringify(data));
       renderAll();
     } catch (e) {
@@ -367,17 +370,15 @@
     return { dates, count, startDate, daysInMonth, monthCount, fullMonth, day };
   }
 
-  function updateStreakRewards() {
+  function updateStreakRewards(saleRegisteredToday = false) {
     if (!data.gamification) data.gamification = { coins: 0, rewardedMilestones: [], purchasedThemes: ["classic"] };
-    const info = streakInfo();
-    if (!info.count || !info.startDate) return;
-    const completedWeeks = Math.floor(info.count / 7);
-    for (let week = 1; week <= completedWeeks; week++) {
-      const milestone = `${info.startDate}:${week}`;
-      if (!data.gamification.rewardedMilestones.includes(milestone)) {
-        data.gamification.rewardedMilestones.push(milestone);
-        data.gamification.coins += 1;
-      }
+    if (!Array.isArray(data.gamification.rewardedMilestones)) data.gamification.rewardedMilestones = [];
+    // Una moneda por día, solo al registrar al menos una venta con fecha de hoy.
+    if (!saleRegisteredToday || !data.sales.some(s => s.date === today())) return;
+    const dailyReward = `daily:${today()}`;
+    if (!data.gamification.rewardedMilestones.includes(dailyReward)) {
+      data.gamification.rewardedMilestones.push(dailyReward);
+      data.gamification.coins += 1;
     }
   }
 
@@ -386,18 +387,16 @@
     if (!el) return;
     const info = streakInfo();
     $("streakCount").textContent = String(info.count);
-    $("streakFlame").textContent = info.fullMonth ? "🔥🔥" : info.count >= 7 ? "🔥" : "♨️";
-    $("streakMessage").textContent = info.fullMonth
-      ? "¡Mes perfecto! Tu llama ha crecido. 🎉"
-      : info.count
-        ? `¡Bien hecho! ${info.monthCount} de ${info.daysInMonth} días con ventas este mes.`
-        : "Registra al menos una venta cada día para mantener la racha.";
+    $("streakMessage").textContent = info.count
+      ? `¡Bien hecho! ${info.monthCount} de ${info.daysInMonth} días con ventas este mes. Registra una venta hoy para mantenerla.`
+      : "Registra al menos una venta hoy para comenzar o recuperar tu racha.";
     const progress = info.count % 7;
     const percent = info.fullMonth ? 100 : (progress / 7) * 100;
     $("streakProgress").style.width = `${percent}%`;
-    $("streakProgressText").textContent = info.fullMonth
-      ? "Mes completado: llama especial desbloqueada"
-      : `${progress} de 7 días para tu próxima moneda`;
+    const rewardedToday = data.gamification.rewardedMilestones.includes(`daily:${today()}`);
+    $("streakProgressText").textContent = rewardedToday
+      ? "Moneda de hoy ganada · vuelve mañana para mantener la racha"
+      : "Registra una venta hoy para ganar 1 moneda";
     $("streakCalendar").innerHTML = Array.from({ length: info.daysInMonth }, (_, idx) => {
       const d = idx + 1;
       const date = `${today().slice(0, 7)}-${String(d).padStart(2, "0")}`;
@@ -557,6 +556,20 @@
   });
   $("statsPeriod")?.addEventListener("change", renderStatistics);
 
+  function renderNotes() {
+    const list = $("notesList");
+    if (!list) return;
+    if (!Array.isArray(data.notes) || !data.notes.length) {
+      list.innerHTML = '<article class="panel empty">Todavía no tienes notas. Escribe una arriba para guardar tu primer recordatorio.</article>';
+      return;
+    }
+    list.innerHTML = data.notes.slice().reverse().map(note => `
+      <article class="note-card">
+        <p>${escapeHtml(note.text || "")}</p>
+        <footer><time>${escapeHtml(note.date || "")}</time><button class="row-button danger" type="button" data-delete-note="${escapeHtml(note.id)}">Eliminar</button></footer>
+      </article>`).join("");
+  }
+
   function renderAll() {
     renderProducts();
     renderSales();
@@ -566,6 +579,7 @@
     renderStreak();
     renderStatistics();
     renderShop();
+    renderNotes();
     applyTheme();
   }
 
@@ -587,6 +601,14 @@
     document.querySelectorAll(".tab").forEach(b =>
       b.classList.toggle("active", b.dataset.view === view)
     );
+    document.querySelectorAll(".menu-item").forEach(b =>
+      b.classList.toggle("active", b.dataset.view === view)
+    );
+    const menu = $("moreMenu");
+    const menuButton = $("moreMenuButton");
+    if (menu) menu.classList.add("hidden");
+    if (menuButton) menuButton.setAttribute("aria-expanded", "false");
+    if (view === "notes") renderNotes();
     if (view === "dashboard") { renderDashboard(); renderStreak(); }
     if (view === "reports") renderReport();
     if (view === "statistics") renderStatistics();
@@ -597,10 +619,57 @@
   document.querySelectorAll(".tab").forEach(b =>
     b.addEventListener("click", () => go(b.dataset.view))
   );
+  document.querySelectorAll(".menu-item").forEach(b =>
+    b.addEventListener("click", () => go(b.dataset.view))
+  );
 
   document.querySelectorAll("[data-goto]").forEach(b =>
     b.addEventListener("click", () => go(b.dataset.goto))
   );
+
+  const moreMenuButton = $("moreMenuButton");
+  const moreMenu = $("moreMenu");
+  if (moreMenuButton && moreMenu) {
+    moreMenuButton.addEventListener("click", () => {
+      const open = moreMenu.classList.contains("hidden");
+      moreMenu.classList.toggle("hidden", !open);
+      moreMenuButton.setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".more-menu-wrap")) {
+        moreMenu.classList.add("hidden");
+        moreMenuButton.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        moreMenu.classList.add("hidden");
+        moreMenuButton.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  if ($("addNote")) {
+    $("addNote").addEventListener("click", () => {
+      const text = ($("noteText").value || "").trim();
+      if (!text) { toast("Escribe una nota antes de guardarla."); return; }
+      if (!Array.isArray(data.notes)) data.notes = [];
+      data.notes.push({ id: uid(), text: text.slice(0, 2000), date: today() });
+      $("noteText").value = "";
+      save();
+      toast("Nota guardada.");
+    });
+  }
+  if ($("notesList")) {
+    $("notesList").addEventListener("click", e => {
+      const button = e.target.closest("[data-delete-note]");
+      if (!button) return;
+      if (!confirm("¿Eliminar esta nota?")) return;
+      data.notes = (data.notes || []).filter(note => note.id !== button.dataset.deleteNote);
+      save();
+      toast("Nota eliminada.");
+    });
+  }
 
   $("productForm").addEventListener("submit", e => {
     e.preventDefault();
@@ -769,8 +838,8 @@
     });
 
     $("saleQty").value = "1";
-    save();
-    toast("Venta registrada e inventario actualizado.");
+    save({ saleRegisteredToday: date === today() });
+    toast(date === today() ? "Venta registrada. Las ventas de hoy cuentan para tu racha." : "Venta registrada e inventario actualizado.");
   });
 
   $("saleRows").addEventListener("click", e => {
@@ -1246,6 +1315,7 @@ function downloadCsv() {
         sales: restored.sales,
         expenses: restored.expenses,
         stockMoves: restored.stockMoves,
+        notes: Array.isArray(restored.notes) ? restored.notes : [],
         settings: { currency: "MXN", mode: "light", ...(restored.settings || {}) },
         gamification: {
           coins: Math.max(0, Number(restored.gamification?.coins) || 0),

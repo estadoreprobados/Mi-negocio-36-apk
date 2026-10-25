@@ -26,6 +26,15 @@
     <button id="importCsvTop" class="button secondary" type="button">Importar CSV</button>
     <input id="importCsvFile" type="file" accept=".csv,text/csv" class="hidden">
     <button id="exportCsvTop" class="button secondary" type="button">Exportar CSV</button>
+    <div class="more-menu-wrap">
+      <button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Más opciones" aria-haspopup="true" aria-expanded="false">⋮</button>
+      <div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Más opciones">
+        <button class="menu-item" data-view="currency" role="menuitem">💱 Moneda del negocio</button>
+        <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
+        <button class="menu-item" data-view="options" role="menuitem">⚙️ Ajustes</button>
+        <button class="menu-item" data-view="statistics" role="menuitem">📊 Estadísticas</button>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -35,7 +44,9 @@
     Tus datos se guardan en este dispositivo. Esta versión no sincroniza entre dispositivos.
   </div>
 
-  <section class="panel currency-settings" aria-labelledby="currencyTitle">
+
+  <section class="view hidden" id="view-currency">
+    <section class="panel currency-settings" aria-labelledby="currencyTitle">
     <div class="panel-title">
       <div>
         <p class="eyebrow">CONFIGURACIÓN</p>
@@ -83,7 +94,9 @@
         Cambiar la moneda modifica la forma de mostrar los importes, pero no convierte las cantidades.
       </p>
     </div>
+    </section>
   </section>
+
 
   <nav class="tabs" aria-label="Secciones">
     <button class="tab active" data-view="dashboard">Resumen</button>
@@ -91,15 +104,13 @@
     <button class="tab" data-view="sales">Ventas</button>
     <button class="tab" data-view="expenses">Gastos</button>
     <button class="tab" data-view="reports">Reportes</button>
-    <button class="tab" data-view="statistics">Estadísticas</button>
-    <button class="tab" data-view="shop">Tienda 🔥</button>
-    <button class="tab" data-view="options">Opciones ⚙️</button>
+    <button class="tab" data-view="notes">Notas 📝</button>
     <button class="tab" data-view="taxes">Impuestos 🧮</button>
   </nav>
 
   <section class="view" id="view-dashboard">
     <article class="panel streak-panel">
-      <div class="streak-flame" id="streakFlame" aria-hidden="true">🔥</div>
+      <div class="streak-flame" aria-hidden="true"><img id="streakAppIcon" src="app-icon.png" alt="" width="72" height="72"></div>
       <div class="streak-main">
         <p class="eyebrow">TU CONSTANCIA</p>
         <h2><span id="streakCount">0</span> días de racha</h2>
@@ -460,6 +471,21 @@
         </table>
       </div>
     </article>
+  </section>
+
+  <section class="view hidden" id="view-notes">
+    <div class="section-heading">
+      <div><p class="eyebrow">IDEAS Y RECORDATORIOS</p><h2>Notas</h2></div>
+    </div>
+    <article class="panel options-panel">
+      <h3>Escribe una nota</h3>
+      <label for="noteText">Nota o recordatorio
+        <textarea id="noteText" rows="4" maxlength="2000" placeholder="Ej. Comprar bolsas para la tienda..."></textarea>
+      </label>
+      <button class="button" id="addNote" type="button">Guardar nota</button>
+      <p class="muted footnote">Las notas se guardan únicamente en este dispositivo.</p>
+    </article>
+    <div id="notesList" class="notes-list" aria-live="polite"></div>
   </section>
 
   <section class="view hidden" id="view-statistics">
