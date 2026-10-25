@@ -600,3 +600,116 @@ footer { color: var(--muted); }
 }
 :root[data-app-theme="retro"][data-mode="dark"] { color-scheme: light; }
 :root[data-app-theme="retro"][data-mode="dark"] body { background-color: #c8dced; color: #182b3d; }
+
+
+/* v3.6.5 · mejoras de temas: contraste real, fondos decorativos y variantes claro/oscuro. */
+/* Mantener superficies, controles y tablas legibles en modo oscuro para CUALQUIER tema. */
+:root[data-mode="dark"] {
+  color-scheme: dark;
+  --surface-soft: color-mix(in srgb, var(--mpn-panel, #192630) 78%, #000);
+}
+:root[data-mode="dark"] body { color: var(--mpn-text, #eef4f7); }
+:root[data-mode="dark"] .panel,
+:root[data-mode="dark"] .metric,
+:root[data-mode="dark"] .theme-card,
+:root[data-mode="dark"] .help-card,
+:root[data-mode="dark"] .ops-card { color: var(--mpn-text, #eef4f7); }
+:root[data-mode="dark"] input,
+:root[data-mode="dark"] select,
+:root[data-mode="dark"] textarea {
+  color: var(--mpn-text, #eef4f7); background: var(--mpn-panel, #192630);
+  border-color: var(--mpn-border, #394b59); color-scheme: dark;
+}
+:root[data-mode="dark"] input::placeholder,
+:root[data-mode="dark"] textarea::placeholder { color: var(--mpn-muted, #a6b6c1); opacity: 1; }
+:root[data-mode="dark"] .button.secondary,
+:root[data-mode="dark"] .text-button,
+:root[data-mode="dark"] .qty-controls button { color: var(--mpn-text, #eef4f7); background: var(--mpn-panel, #192630); border-color: var(--mpn-border, #394b59); }
+:root[data-mode="dark"] .panel,
+:root[data-mode="dark"] .metric,
+:root[data-mode="dark"] .theme-card,
+:root[data-mode="dark"] .tabs,
+:root[data-mode="dark"] .more-menu { border-color: var(--mpn-border, #394b59); }
+
+/* Hacker: versión clara legible; la oscura conserva negro/verde neón. */
+:root[data-mode="light"][data-app-theme="hacker"] {
+  color-scheme: light;
+  --mpn-bg:#effaf2; --mpn-panel:#ffffff; --mpn-text:#123522; --mpn-muted:#426b52;
+  --mpn-accent:#087a3b; --mpn-accent-contrast:#ffffff; --mpn-border:#b8dfc4;
+  --bg:#effaf2; --card:#ffffff; --text:#123522; --muted:#426b52; --line:#b8dfc4; --accent:#087a3b; --accent-dark:#065f2d;
+}
+:root[data-mode="light"][data-app-theme="hacker"] body {
+  background-color:#effaf2;
+  background-image:linear-gradient(#087a3b0c 1px,transparent 1px),linear-gradient(90deg,#087a3b0c 1px,transparent 1px),radial-gradient(ellipse at top right,#8be6a355,transparent 55%);
+  background-size:22px 22px,22px 22px,auto;
+}
+:root[data-app-theme="hacker"] .topbar { border-bottom:2px solid var(--mpn-accent); }
+:root[data-app-theme="hacker"] .panel,
+:root[data-app-theme="hacker"] .metric { box-shadow:0 5px 20px color-mix(in srgb, var(--mpn-accent) 10%, transparent); }
+:root[data-app-theme="hacker"] .button:not(.secondary) { box-shadow:0 0 0 1px color-mix(in srgb, var(--mpn-accent) 35%, transparent),0 4px 14px color-mix(in srgb, var(--mpn-accent) 14%, transparent); }
+
+/* Azul tecnológico: versión clara y oscura, con circuitos y cuadrícula digital. */
+:root[data-mode="light"][data-app-theme="tech-blue"] {
+  color-scheme:light; --mpn-bg:#edf6ff; --mpn-panel:#ffffff; --mpn-text:#102b49;
+  --mpn-muted:#4c6d8e; --mpn-accent:#086acb; --mpn-accent-contrast:#ffffff; --mpn-border:#b9d8f5;
+  --bg:#edf6ff; --card:#ffffff; --text:#102b49; --muted:#4c6d8e; --line:#b9d8f5; --accent:#086acb; --accent-dark:#0755a1;
+}
+:root[data-app-theme="tech-blue"] body {
+  background-image:linear-gradient(90deg,color-mix(in srgb,var(--mpn-accent) 7%,transparent) 1px,transparent 1px),linear-gradient(color-mix(in srgb,var(--mpn-accent) 7%,transparent) 1px,transparent 1px),radial-gradient(ellipse at 85% 0%,color-mix(in srgb,var(--mpn-accent) 16%,transparent),transparent 52%);
+  background-size:26px 26px,26px 26px,auto;
+}
+:root[data-app-theme="tech-blue"] .topbar { border-bottom:2px solid var(--mpn-accent); box-shadow:0 5px 24px color-mix(in srgb,var(--mpn-accent) 12%,transparent); }
+:root[data-app-theme="tech-blue"] .panel,
+:root[data-app-theme="tech-blue"] .metric { box-shadow:0 0 0 1px color-mix(in srgb,var(--mpn-accent) 10%,transparent),0 8px 24px color-mix(in srgb,var(--mpn-accent) 9%,transparent); }
+:root[data-app-theme="tech-blue"] .button:not(.secondary) { box-shadow:0 0 0 1px color-mix(in srgb,var(--mpn-accent) 30%,transparent),0 4px 16px color-mix(in srgb,var(--mpn-accent) 17%,transparent); }
+
+/* Paleontología: patrón repetido de fósiles/huesos de dinosaurio en SVG embebido. */
+:root[data-app-theme="paleontology"] body {
+  background-image:linear-gradient(135deg,color-mix(in srgb,var(--mpn-bg) 90%,transparent),color-mix(in srgb,var(--mpn-bg) 94%,#d8c49a)),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg fill='none' stroke='%238c8a65' stroke-opacity='.20' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M18 27l24 14m-28-20q-8-7-2-13q7-5 12 2q6-4 11 2q5 8-4 13l-4 7'/%3E%3Cpath d='M112 98l25-15m-26 8q-9-3-7-11q3-8 11-5q4-8 11-4q8 5 2 13l-1 7'/%3E%3Cpath d='M58 120l19-17m-20 10q-8-4-4-11q5-6 11-1q7-7 12-1q4 7-4 12l-3 7'/%3E%3C/g%3E%3Cg fill='%238c8a65' fill-opacity='.14'%3E%3Ccircle cx='145' cy='28' r='3'/%3E%3Ccircle cx='85' cy='55' r='2'/%3E%3Ccircle cx='28' cy='94' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment:fixed;
+}
+:root[data-mode="dark"][data-app-theme="paleontology"] body {
+  background-image:linear-gradient(135deg,#1b2119f2,#1b2119e8),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg fill='none' stroke='%23b7c49a' stroke-opacity='.22' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M18 27l24 14m-28-20q-8-7-2-13q7-5 12 2q6-4 11 2q5 8-4 13l-4 7'/%3E%3Cpath d='M112 98l25-15m-26 8q-9-3-7-11q3-8 11-5q4-8 11-4q8 5 2 13l-1 7'/%3E%3Cpath d='M58 120l19-17m-20 10q-8-4-4-11q5-6 11-1q7-7 12-1q4 7-4 12l-3 7'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Escolar: ilustraciones de libros, cuadernos y lápices en el fondo. */
+:root[data-app-theme="cbtis36"] body {
+  background-image:linear-gradient(135deg,color-mix(in srgb,var(--mpn-bg) 92%,transparent),color-mix(in srgb,var(--mpn-bg) 96%,#fff)),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='160' viewBox='0 0 190 160'%3E%3Cg stroke='%233b6c9d' stroke-opacity='.18' stroke-width='2' fill='none'%3E%3Crect x='18' y='22' width='34' height='43' rx='3'/%3E%3Cpath d='M35 22v43M23 31h8m-8 7h8m-8 7h8'/%3E%3Crect x='118' y='87' width='40' height='31' rx='3'/%3E%3Cpath d='M138 87v31M123 96h10m-10 7h10'/%3E%3Cpath d='M82 22l7 2-15 45-7-2zM75 67l-2 8 7-5'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment:fixed;
+}
+:root[data-mode="dark"][data-app-theme="cbtis36"] body {
+  background-image:linear-gradient(135deg,#101a2bf0,#101a2be8),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='160' viewBox='0 0 190 160'%3E%3Cg stroke='%2376aaff' stroke-opacity='.22' stroke-width='2' fill='none'%3E%3Crect x='18' y='22' width='34' height='43' rx='3'/%3E%3Cpath d='M35 22v43M23 31h8m-8 7h8m-8 7h8'/%3E%3Crect x='118' y='87' width='40' height='31' rx='3'/%3E%3Cpath d='M138 87v31M123 96h10m-10 7h10'/%3E%3Cpath d='M82 22l7 2-15 45-7-2zM75 67l-2 8 7-5'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Halloween: ilustraciones decorativas de calabazas, fantasmas, murciélagos y telarañas. */
+:root[data-mode="light"][data-app-theme="halloween2026"] {
+  color-scheme:light; --mpn-bg:#fff5e9; --mpn-panel:#fffdf9; --mpn-text:#32183e; --mpn-muted:#72577d;
+  --mpn-accent:#c94d08; --mpn-accent-contrast:#ffffff; --mpn-border:#e9c6a9;
+  --bg:#fff5e9; --card:#fffdf9; --text:#32183e; --muted:#72577d; --line:#e9c6a9; --accent:#c94d08; --accent-dark:#9f3b05;
+}
+:root[data-app-theme="halloween2026"] body {
+  background-image:linear-gradient(135deg,color-mix(in srgb,var(--mpn-bg) 88%,transparent),color-mix(in srgb,var(--mpn-bg) 94%,#ffb347)),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg stroke='%23d96a24' stroke-opacity='.25' stroke-width='2' fill='none'%3E%3Cellipse cx='32' cy='37' rx='13' ry='12'/%3E%3Cellipse cx='32' cy='37' rx='6' ry='12'/%3E%3Cpath d='M29 24l3-5 4 5M20 36l-5-3m29 3l5-3M24 47l-4 4m24-4l4 4'/%3E%3Cpath d='M111 27q-13 0-13 14v14l5-4 5 4 5-4 5 4 5-4V41q0-14-12-14zM106 39h1m9 0h1'/%3E%3Cpath d='M130 104q13-15 26 0q-8-3-13 5q-5-8-13-5zM15 112l9-9 9 9m-18 0l9-9 9 9'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment:fixed;
+}
+:root[data-mode="dark"][data-app-theme="halloween2026"] body {
+  background-image:linear-gradient(135deg,#10091af2,#21102fe8 60%,#32120fe8),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='150' viewBox='0 0 180 150'%3E%3Cg stroke='%23ff9b4a' stroke-opacity='.25' stroke-width='2' fill='none'%3E%3Cellipse cx='32' cy='37' rx='13' ry='12'/%3E%3Cellipse cx='32' cy='37' rx='6' ry='12'/%3E%3Cpath d='M29 24l3-5 4 5M20 36l-5-3m29 3l5-3M24 47l-4 4m24-4l4 4'/%3E%3Cpath d='M111 27q-13 0-13 14v14l5-4 5 4 5-4 5 4 5-4V41q0-14-12-14zM106 39h1m9 0h1'/%3E%3Cpath d='M130 104q13-15 26 0q-8-3-13 5q-5-8-13-5zM15 112l9-9 9 9m-18 0l9-9 9 9'/%3E%3C/g%3E%3C/svg%3E");
+}
+:root[data-mode="light"][data-app-theme="halloween2026"] .topbar { background:linear-gradient(110deg,#fff5e9,#f5e5ff 58%,#ffe0bd); color:#32183e; border-bottom:3px solid #c94d08; }
+:root[data-mode="light"][data-app-theme="halloween2026"] input,
+:root[data-mode="light"][data-app-theme="halloween2026"] select,
+:root[data-mode="light"][data-app-theme="halloween2026"] textarea { background:#fffdf9; color:#32183e; border-color:#e9c6a9; }
+:root[data-mode="light"][data-app-theme="halloween2026"] .notice { background:#fff0dc; border-color:#d9782b; color:#48213d; }
+:root[data-mode="light"][data-app-theme="halloween2026"] .button:not(.secondary),
+:root[data-mode="light"][data-app-theme="halloween2026"] .tab.active { background:linear-gradient(135deg,#c94d08,#e98522); color:#fff; border-color:#b64406; }
+:root[data-mode="dark"][data-app-theme="halloween2026"] .topbar { color:var(--mpn-text); }
+
+/* Mantener los fondos ornamentales detrás del contenido, sin bloquear controles. */
+:root[data-app-theme="paleontology"] .panel,
+:root[data-app-theme="cbtis36"] .panel,
+:root[data-app-theme="halloween2026"] .panel { background-color:color-mix(in srgb,var(--mpn-panel) 96%,transparent); }
+@media (prefers-reduced-motion: reduce) {
+  :root[data-app-theme] *, :root[data-app-theme] *::before, :root[data-app-theme] *::after { scroll-behavior:auto !important; transition:none !important; }
+}
