@@ -619,7 +619,7 @@ footer { color: var(--muted); }
 :root[data-app-theme="halloween2026"] .more-menu-button { position:relative; border:2px solid #ff9b37 !important; background:linear-gradient(135deg,#3b1554,#8c2b69 55%,#e85d13) !important; color:#fff7e8 !important; box-shadow:0 3px 0 #4b1c5b, 0 0 10px #ff751844; }
 :root[data-app-theme="halloween2026"] .button:not(.secondary)::before { content:"🕸️"; margin-right:5px; }
 :root[data-app-theme="halloween2026"] .button:not(.secondary)::after { content:"🎃💀"; margin-left:5px; }
-:root[data-app-theme="halloween2026"] .theme-preview { background-image:radial-gradient(circle at 20% 40%,#ff9c35 0 8%,transparent 9%),radial-gradient(circle at 68% 70%,#ff9c35 0 7%,transparent 8%),linear-gradient(135deg,#180c23,#592070 55%,#e85d13) !important; }
+/* Vista previa Halloween aislada: no modifica las imágenes de otros temas. */
 :root[data-app-theme="halloween2026"][data-mode="light"] body { background-color:#fff2df !important; background-image:radial-gradient(ellipse at 12% 18%,#ff75182b 0 5%,transparent 6%),radial-gradient(ellipse at 82% 32%,#6c27852b 0 4%,transparent 5%),repeating-linear-gradient(135deg,transparent 0 34px,#7c3b9817 35px 38px) !important; }
 :root[data-app-theme="halloween2026"][data-mode="light"] .panel,
 :root[data-app-theme="halloween2026"][data-mode="light"] .metric,
@@ -682,3 +682,50 @@ footer { color: var(--muted); }
 }
 :root[data-app-theme="halloween2026"][data-mode="light"] body::before { opacity:.32; }
 :root[data-app-theme="halloween2026"] body > * { position:relative; z-index:1; }
+
+
+/* Vista previa individual de cada tema: decoraciones y paletas independientes. */
+.theme-preview {
+  height:112px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;
+  isolation:isolate; background-size:cover; background-position:center; border-bottom:1px solid var(--mpn-border);
+}
+.theme-preview .preview-art {
+  position:relative; z-index:2; display:block; text-align:center; font-size:clamp(25px,4vw,39px);
+  line-height:1.2; letter-spacing:2px; padding:8px 10px; border-radius:14px;
+  color:#fff; text-shadow:0 2px 5px #0009; filter:drop-shadow(0 2px 3px #0005);
+}
+.theme-preview .preview-palette {
+  position:absolute; z-index:3; left:8px; bottom:7px; display:flex; gap:4px; padding:4px 5px;
+  border-radius:999px; background:#ffffffd9; box-shadow:0 1px 5px #0003;
+}
+.theme-preview .preview-palette i { display:block; width:13px; height:13px; border-radius:50%; border:1px solid #0002; }
+.theme-preview-hacker { background-image:linear-gradient(135deg,#020b06,#073d20 55%,#39ff88) !important; }
+.theme-preview-hacker::before { content:"0101  { }  >_  1010"; position:absolute; inset:0; color:#7dff9d; opacity:.35; font:700 12px/2 monospace; letter-spacing:3px; overflow:hidden; }
+.theme-preview-hacker .preview-art { font-family:monospace; color:#aaffc2; background:#001b0bcc; }
+.theme-preview-cbtis36 { background-image:linear-gradient(135deg,#123b70 0%,#2e6eaa 48%,#e6eef9 100%) !important; }
+.theme-preview-cbtis36 .preview-art { background:#123b70b8; }
+.theme-preview-paleontology { background-image:linear-gradient(135deg,#203d2b,#54784a 48%,#d8c49a) !important; }
+.theme-preview-paleontology .preview-art { background:#203d2bc9; }
+.theme-preview-halloween2026 { background-image:radial-gradient(circle at 18% 25%,#ffb347 0 9%,transparent 10%),radial-gradient(circle at 82% 68%,#ff7518 0 12%,transparent 13%),linear-gradient(135deg,#12091f 0%,#5b217d 48%,#ff7518 100%) !important; }
+.theme-preview-halloween2026 .preview-art { background:#261036b8; }
+.theme-preview-navidad2026 { background-image:linear-gradient(135deg,#073b2a 0%,#0f7a4a 42%,#b51f32 72%,#f2c14e 100%) !important; }
+.theme-preview-navidad2026 .preview-art { background:#073b2ab8; }
+.theme-preview-hearts { background-image:radial-gradient(circle at 20% 25%,#ffe4ef 0 7%,transparent 8%),radial-gradient(circle at 80% 70%,#f9a8d4 0 9%,transparent 10%),linear-gradient(135deg,#6d123f,#e84383 55%,#ffe4ef) !important; }
+.theme-preview-sea-life { background-image:radial-gradient(circle at 15% 25%,#67e8f9 0 5%,transparent 6%),radial-gradient(circle at 80% 75%,#cffafe 0 4%,transparent 5%),linear-gradient(135deg,#082f49,#0284c7 55%,#67e8f9) !important; }
+.theme-preview-accounting { background-image:repeating-linear-gradient(0deg,#ffffff18 0 1px,transparent 1px 14px),linear-gradient(135deg,#14532d,#16a34a 55%,#dcfce7) !important; }
+.theme-preview-tech-blue { background-image:linear-gradient(135deg,#080d16 0%,#111d30 45%,#168bff 100%) !important; }
+.theme-preview-tech-blue::before { content:""; position:absolute; inset:0; opacity:.5; background:repeating-linear-gradient(0deg,transparent 0 18px,#72c9ff66 19px 20px),repeating-linear-gradient(90deg,transparent 0 24px,#72c9ff66 25px 26px); }
+.theme-preview-bandera-bi { background-image:linear-gradient(to bottom,#d60270 0 40%,#9b4f96 40% 60%,#0038a8 60% 100%) !important; }
+.theme-preview-pride { background-image:linear-gradient(to bottom,#e40303 0 16.66%,#ff8c00 16.66% 33.32%,#ffed00 33.32% 49.98%,#008026 49.98% 66.64%,#004dff 66.64% 83.3%,#750787 83.3% 100%) !important; }
+.theme-preview-trans { background-image:linear-gradient(to bottom,#5bcefa 0 20%,#f5a9b8 20% 40%,#fff 40% 60%,#f5a9b8 60% 80%,#5bcefa 80% 100%) !important; }
+.theme-preview-abrosexual { background-image:linear-gradient(to bottom,#7baf5c 0 20%,#b8e0a5 20% 40%,#fff 40% 60%,#f5b4d2 60% 80%,#e56ca7 80% 100%) !important; }
+.theme-preview-bandera-bi .preview-art, .theme-preview-pride .preview-art, .theme-preview-trans .preview-art, .theme-preview-abrosexual .preview-art { background:#0003; }
+.theme-preview-ocean { background-image:linear-gradient(135deg,#173b56,#347ca5 50%,#7db5d0) !important; }
+.theme-preview-forest { background-image:linear-gradient(135deg,#334536,#687d52 50%,#c5b58f) !important; }
+.theme-preview-violet { background-image:linear-gradient(135deg,#24113f,#9333ea 50%,#e879f9) !important; }
+.theme-preview-sunset { background-image:linear-gradient(135deg,#543b2d,#c98b68 50%,#f2c27d) !important; }
+.theme-preview-nature { background-image:linear-gradient(135deg,#234d35,#47784b 50%,#d5e6c9) !important; }
+.theme-preview-retro { background-image:linear-gradient(135deg,#d9f1ff 0%,#4c9bd5 28%,#1b5b96 58%,#dcefff 100%) !important; }
+.theme-preview-classic { background-image:linear-gradient(135deg,#315f82 0%,#5d89a5 48%,#d8cbb7 49%,#f4e9d7 100%) !important; }
+.theme-preview-atardecer { background-image:linear-gradient(135deg,#df684b 0%,#f2ad55 50%,#7853a6 100%) !important; }
+.theme-preview-eclipse { background-image:linear-gradient(135deg,#11111f 0%,#6550a4 55%,#e6a84c 100%) !important; }
