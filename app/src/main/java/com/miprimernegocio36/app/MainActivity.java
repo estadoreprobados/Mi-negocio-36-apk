@@ -47,9 +47,10 @@ public class MainActivity extends Activity {
                 filePathCallback = callback;
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("application/pdf");
+                // Permite elegir tanto respaldos PDF como archivos CSV desde el selector de Android.
+                intent.setType("*/*");
                 try {
-                    startActivityForResult(Intent.createChooser(intent, "Selecciona el PDF de respaldo"),
+                    startActivityForResult(Intent.createChooser(intent, "Selecciona un archivo PDF o CSV"),
                             FILE_CHOOSER_REQUEST);
                 } catch (Exception e) {
                     filePathCallback = null;
