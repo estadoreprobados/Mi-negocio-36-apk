@@ -27,12 +27,14 @@
     <input id="importCsvFile" type="file" accept=".csv,text/csv" class="hidden">
     <button id="exportCsvTop" class="button secondary" type="button">Exportar CSV</button>
     <div class="more-menu-wrap">
-      <button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Más opciones" aria-haspopup="true" aria-expanded="false">⋮</button>
-      <div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Más opciones">
-        <button class="menu-item" data-view="currency" role="menuitem">💱 Moneda del negocio</button>
-        <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
+      <button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Abrir menú" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+      <div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Menú principal">
         <button class="menu-item" data-view="options" role="menuitem">⚙️ Ajustes</button>
+        <button class="menu-item" data-view="help" role="menuitem">❔ Ayuda</button>
         <button class="menu-item" data-view="statistics" role="menuitem">📊 Estadísticas</button>
+        <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
+        <button class="menu-item" data-view="creators" role="menuitem">🧩 Código de creadores</button>
+        <button class="menu-item" data-view="version" role="menuitem">📱 Versión del sistema</button>
       </div>
     </div>
   </div>
@@ -527,17 +529,59 @@
     </div>
     <article class="panel shop-intro">
       <h3>Temas para personalizar tu app</h3>
-      <p>Los temas Hacker, Naturaleza y Escolar son gratis. Los temas Bandera bi, Atardecer y Eclipse se desbloquean con códigos del creador desde Ajustes.</p>
+      <p>Elige un tema para cambiar los colores, los fondos de los iconos y el estilo de los botones. Azul tecnológico es gratis; Pride, Trans, Abrosexual y Paleontología se desbloquean con código de creador.</p>
     </article>
     <div id="themeShop" class="theme-shop"></div>
-    <p class="muted footnote">Los temas Hacker, Naturaleza y Escolar siempre están disponibles gratis. Bandera bi, Atardecer y Eclipse requieren su código del creador. Tus preferencias se guardan en este dispositivo.</p>
+    <p class="muted footnote">Los temas gratuitos están disponibles sin código. Pride, Trans, Abrosexual y Paleontología requieren sus códigos de creador. Tus preferencias se guardan en este dispositivo.</p>
   </section>
 
+
+
+
+  <section class="view hidden" id="view-help">
+    <div class="section-heading"><div><p class="eyebrow">GUÍA DE USO</p><h2>Ayuda</h2></div></div>
+    <article class="panel help-intro"><h3>Bienvenido a Mi Primer Negocio 36</h3><p>Consulta estas guías para aprender a usar cada función. Tus datos se guardan en este dispositivo.</p></article>
+    <div class="help-grid">
+      <article class="panel help-card"><h3>📦 Productos e inventario</h3><ol><li>Abre la pestaña <b>Productos</b>.</li><li>Completa el nombre, costos, precio de venta y existencias iniciales.</li><li>Guarda el producto. Usa las herramientas de inventario para registrar entradas o salidas y revisar las existencias.</li></ol></article>
+      <article class="panel help-card"><h3>🛒 Registrar ventas</h3><ol><li>Entra en <b>Ventas</b> y selecciona un producto.</li><li>Indica la cantidad y revisa el precio y el total.</li><li>Registra la venta. Las existencias y los indicadores se actualizarán según la operación.</li></ol></article>
+      <article class="panel help-card"><h3>🧾 Registrar gastos</h3><ol><li>Abre <b>Gastos</b>.</li><li>Agrega la descripción, el importe y la fecha.</li><li>Guarda el gasto y revisa su efecto en el resumen y los reportes.</li></ol></article>
+      <article class="panel help-card"><h3>📊 Resumen y estadísticas</h3><p>El <b>Resumen</b> presenta indicadores del negocio y la racha de ventas. En <b>Estadísticas</b> puedes revisar gráficas y cambiar el periodo cuando la opción esté disponible.</p></article>
+      <article class="panel help-card"><h3>📄 Reportes y archivos</h3><p>En <b>Reportes</b> genera archivos PDF o CSV para consultar o guardar información. Las descargas se guardan mediante Android. También puedes usar las opciones de importación y exportación disponibles.</p><p class="muted">Consejo: conserva una copia de respaldo antes de importar datos, ya que algunas importaciones pueden reemplazar la información existente.</p></article>
+      <article class="panel help-card"><h3>📝 Notas e impuestos</h3><p>En <b>Notas</b> guarda recordatorios del negocio y elimina los que ya no necesites. La <b>Calculadora de impuestos</b> estima un porcentaje sobre una cantidad; no sustituye una determinación fiscal oficial.</p></article>
+      <article class="panel help-card"><h3>💱 Moneda y ajustes</h3><p>Elige la moneda para mostrar importes y configura el nombre del negocio o el modo claro/oscuro desde <b>Ajustes</b>. Cambiar la moneda no convierte cantidades ya registradas.</p></article>
+      <article class="panel help-card"><h3>🎨 Tienda de temas</h3><p>Abre la tienda, desbloquea los temas con código cuando corresponda y pulsa <b>Aplicar tema</b>. El tema elegido se guarda en este dispositivo y no elimina los datos del negocio.</p></article>
+      <article class="panel help-card"><h3>🔒 Datos y privacidad</h3><p>La aplicación guarda los datos del negocio localmente en el dispositivo y no sincroniza automáticamente entre dispositivos. Haz respaldos periódicos y evita compartirlos con personas no autorizadas.</p></article>
+    </div>
+  </section>
+
+  <section class="view hidden" id="view-creators">
+    <div class="section-heading"><div><p class="eyebrow">DESBLOQUEOS</p><h2>Código de creadores</h2></div></div>
+        <article class="panel options-panel creator-codes-panel">
+      <h3>Códigos del creador</h3>
+      <p class="muted">Introduce el código de un tema para desbloquearlo gratis. Cada código desbloquea un tema específico.</p>
+      <label for="creatorThemeCode">Código de acceso
+        <input id="creatorThemeCode" type="text" maxlength="60" placeholder="Escribe tu código" autocomplete="off" autocapitalize="none" spellcheck="false">
+      </label>
+      <button class="button" id="redeemCreatorCode" type="button">Canjear código</button>
+      <p id="creatorCodeMessage" class="muted" role="status" aria-live="polite"></p>
+    </article>
+    <article class="panel"><h3>Códigos de temas disponibles</h3><p class="muted">Pride, trans, abrosexual y dinosauriogrr desbloquean sus respectivos temas. Introduce el código exactamente como se te proporcionó; no distingue entre mayúsculas y minúsculas.</p></article>
+  </section>
+
+  <section class="view hidden" id="view-version">
+    <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
+    <article class="panel version-panel"><p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.5</strong><p>Mi Primer Negocio 36</p><p class="muted">Si instalas una actualización, este número cambiará cuando se publique una nueva versión.</p></article>
+  </section>
 
   <section class="view hidden" id="view-options">
     <div class="section-heading">
       <div><p class="eyebrow">PERSONALIZA LA APP</p><h2>Opciones</h2></div>
     </div>
+    <article class="panel options-panel">
+      <h3>Moneda del negocio</h3>
+      <p class="muted">Selecciona cómo se muestran los importes. Esto no convierte las cantidades registradas.</p>
+      <button class="button secondary" type="button" data-goto="currency">Configurar moneda</button>
+    </article>
     <article class="panel options-panel">
       <h3>Nombre de tu negocio</h3>
       <p class="muted">Aparecerá en la aplicación y en los reportes PDF.</p>
@@ -556,15 +600,7 @@
         </select>
       </label>
     </article>
-    <article class="panel options-panel creator-codes-panel">
-      <h3>Códigos del creador</h3>
-      <p class="muted">Introduce el código de un tema para desbloquearlo gratis. Cada código desbloquea un tema específico.</p>
-      <label for="creatorThemeCode">Código de acceso
-        <input id="creatorThemeCode" type="text" maxlength="60" placeholder="Escribe tu código" autocomplete="off" autocapitalize="none" spellcheck="false">
-      </label>
-      <button class="button" id="redeemCreatorCode" type="button">Canjear código</button>
-      <p id="creatorCodeMessage" class="muted" role="status" aria-live="polite"></p>
-    </article>
+
     <article class="panel options-panel">
       <h3>Importar / exportar datos mediante PDF</h3>
       <p class="muted">El PDF de respaldo generado aquí contiene los datos necesarios para restaurarlos. Los PDF externos o los reportes antiguos no se pueden importar.</p>

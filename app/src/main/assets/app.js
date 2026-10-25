@@ -89,7 +89,7 @@
   };
   if (!data.gamification.purchasedThemes.includes("classic")) data.gamification.purchasedThemes.unshift("classic");
   // Los tres temas nuevos son gratuitos y quedan disponibles incluso en datos de versiones anteriores.
-  ["hacker", "nature", "cbtis36"].forEach(id => {
+  ["hacker", "nature", "cbtis36", "tech-blue"].forEach(id => {
     if (!data.gamification.purchasedThemes.includes(id)) data.gamification.purchasedThemes.push(id);
   });
   let salesChart = null;
@@ -339,12 +339,17 @@
     { id: "forest", name: "Bosque", cost: 5, description: "Verdes apagados y beige tierra.", colors: ["#334536", "#c5b58f"], preview: "linear-gradient(135deg,#334536 50%,#c5b58f 50%)" },
     { id: "violet", name: "Neón violeta", cost: 7, description: "Violeta y rosa brillante.", colors: ["#24113f", "#e879f9"], preview: "linear-gradient(135deg,#24113f 50%,#e879f9 50%)" },
     { id: "sunset", name: "Terracota", cost: 9, description: "Arcilla, café y arena cálida.", colors: ["#543b2d", "#c98b68"], preview: "linear-gradient(135deg,#543b2d 50%,#c98b68 50%)" },
-    { id: "hacker", name: "Hacker", cost: 0, description: "Negro profundo y verde neón. Gratis para siempre.", colors: ["#001b0b", "#39ff88"], preview: "linear-gradient(135deg,#001b0b 50%,#39ff88 50%)" },
-    { id: "nature", name: "Naturaleza", cost: 0, description: "Verdes de bosque y tonos tierra. Gratis para siempre.", colors: ["#234d35", "#d5e6c9"], preview: "linear-gradient(135deg,#234d35 50%,#d5e6c9 50%)" },
-    { id: "cbtis36", name: "Escolar", cost: 0, description: "Azul escolar y blanco. Gratis para siempre.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" },
+    { id: "hacker", name: "Hacker", cost: 0, description: "Negro profundo y verde neón.", colors: ["#001b0b", "#39ff88"], preview: "linear-gradient(135deg,#001b0b 50%,#39ff88 50%)" },
+    { id: "nature", name: "Naturaleza", cost: 0, description: "Verdes de bosque y tonos tierra.", colors: ["#234d35", "#d5e6c9"], preview: "linear-gradient(135deg,#234d35 50%,#d5e6c9 50%)" },
+    { id: "cbtis36", name: "Escolar", cost: 0, description: "Azul escolar y blanco.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" },
     { id: "bandera-bi", name: "Bandera bi", cost: 0, creatorCode: "bis3xual", description: "Rosa, morado y azul inspirados en la bandera bisexual.", colors: ["#d64b8b", "#4d6bc9"], preview: "linear-gradient(135deg,#d64b8b 0%,#9b59b6 50%,#4d6bc9 100%)" },
-    { id: "atardecer", name: "Atardecer", cost: 0, creatorCode: "post-meridium", description: "Colores cálidos de un atardecer: coral, naranja y violeta.", colors: ["#df684b", "#f2ad55"], preview: "linear-gradient(135deg,#df684b 0%,#f2ad55 50%,#7853a6 100%)" },
-    { id: "eclipse", name: "Eclipse", cost: 0, creatorCode: "solrequiem", description: "Negro profundo con destellos violetas y solares.", colors: ["#30264f", "#e6a84c"], preview: "linear-gradient(135deg,#11111f 0%,#6550a4 55%,#e6a84c 100%)" }
+    { id: "atardecer", name: "Atardecer", cost: 0, creatorCode: "post-meridium", description: "Coral, naranja y violeta cálidos.", colors: ["#df684b", "#f2ad55"], preview: "linear-gradient(135deg,#df684b 0%,#f2ad55 50%,#7853a6 100%)" },
+    { id: "eclipse", name: "Eclipse", cost: 0, creatorCode: "solrequiem", description: "Negro profundo con destellos violetas y solares.", colors: ["#30264f", "#e6a84c"], preview: "linear-gradient(135deg,#11111f 0%,#6550a4 55%,#e6a84c 100%)" },
+    { id: "tech-blue", name: "Azul tecnológico", cost: 0, description: "Negro profundo, azul eléctrico y detalles tecnológicos. Gratis.", colors: ["#080d16", "#168bff"], preview: "linear-gradient(135deg,#080d16 0%,#111d30 55%,#168bff 100%)" },
+    { id: "pride", name: "Pride", cost: 0, creatorCode: "Pride", description: "Paleta arcoíris inspirada en la bandera LGBT+.", colors: ["#e84775", "#4d9dfa"], preview: "linear-gradient(120deg,#e84775 0%,#f7c943 35%,#39a96b 65%,#4d9dfa 100%)" },
+    { id: "trans", name: "Trans", cost: 0, creatorCode: "trans", description: "Azul claro, rosa y blanco inspirados en la bandera trans.", colors: ["#8bcfff", "#f4a8c8"], preview: "linear-gradient(135deg,#8bcfff 0%,#f4a8c8 35%,#ffffff 50%,#f4a8c8 65%,#8bcfff 100%)" },
+    { id: "abrosexual", name: "Abrosexual", cost: 0, creatorCode: "abrosexual", description: "Verde, blanco y rosa inspirados en la bandera abrosexual.", colors: ["#54a878", "#e98db7"], preview: "linear-gradient(135deg,#54a878 0%,#dff3e5 35%,#ffffff 50%,#f6c8dc 65%,#e98db7 100%)" },
+    { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Verde helecho, arena y tonos de fósil para amantes de los dinosaurios.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" }
   ];
 
   function saleDates() {
@@ -523,7 +528,7 @@
       const owned = data.gamification.purchasedThemes.includes(theme.id);
       const active = data.settings.theme === theme.id;
       const lockedCreatorTheme = Boolean(theme.creatorCode) && !owned;
-      const action = lockedCreatorTheme ? "Fuera de uso" : active ? "Tema activo" : owned ? "Activar tema" : `Comprar · ${theme.cost} 🔥`;
+      const action = lockedCreatorTheme ? "Desbloquear con código" : active ? "Tema activo" : owned ? "Aplicar tema" : theme.cost === 0 ? "Obtener gratis" : `Comprar · ${theme.cost} 🔥`;
       const price = lockedCreatorTheme ? "Bloqueado" : (theme.creatorCode && owned) ? "Desbloqueado gratis" : theme.cost === 0 ? "Gratis" : `${theme.cost} 🔥`;
       return `<article class="theme-card ${active ? "theme-active" : ""} ${lockedCreatorTheme ? "theme-locked" : ""}">
         <div class="theme-preview" style="background:${theme.preview}"></div>

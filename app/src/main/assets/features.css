@@ -181,3 +181,91 @@ table td { border-color:var(--mpn-border); }
 .theme-locked .theme-card-footer strong { color:var(--mpn-muted); }
 .creator-codes-panel #creatorCodeMessage { margin:0; min-height:1.2em; }
 .creator-codes-panel #redeemCreatorCode { justify-self:start; }
+
+
+/* Temas de creador y Azul tecnológico: superficies, iconos y botones coordinados. */
+:root[data-app-theme="tech-blue"] {
+  color-scheme: dark;
+  --mpn-bg:#080d16; --mpn-panel:#111d30; --mpn-text:#eaf4ff;
+  --mpn-muted:#a4bdd9; --mpn-accent:#168bff; --mpn-accent-contrast:#ffffff;
+  --mpn-border:#263e60; --bg:#080d16; --card:#111d30; --text:#eaf4ff;
+  --muted:#a4bdd9; --line:#263e60; --accent:#168bff; --accent-dark:#0866c5;
+}
+:root[data-app-theme="pride"] {
+  --mpn-bg:#fff4f7; --mpn-panel:#fffafd; --mpn-text:#332033;
+  --mpn-muted:#765b70; --mpn-accent:#d9447a; --mpn-accent-contrast:#ffffff;
+  --mpn-border:#e8c8d8; --bg:#fff4f7; --card:#fffafd; --text:#332033;
+  --muted:#765b70; --line:#e8c8d8; --accent:#d9447a; --accent-dark:#ad285b;
+}
+:root[data-app-theme="trans"] {
+  --mpn-bg:#f0f9ff; --mpn-panel:#ffffff; --mpn-text:#24394c;
+  --mpn-muted:#5c7185; --mpn-accent:#73bff0; --mpn-accent-contrast:#173047;
+  --mpn-border:#c5e3f7; --bg:#f0f9ff; --card:#ffffff; --text:#24394c;
+  --muted:#5c7185; --line:#c5e3f7; --accent:#73bff0; --accent-dark:#4a9ed4;
+}
+:root[data-app-theme="abrosexual"] {
+  --mpn-bg:#f1f8f1; --mpn-panel:#fffdfd; --mpn-text:#263e31;
+  --mpn-muted:#647b6c; --mpn-accent:#4f9e71; --mpn-accent-contrast:#ffffff;
+  --mpn-border:#c9e1cf; --bg:#f1f8f1; --card:#fffdfd; --text:#263e31;
+  --muted:#647b6c; --line:#c9e1cf; --accent:#4f9e71; --accent-dark:#33784f;
+}
+:root[data-app-theme="paleontology"] {
+  --mpn-bg:#eee9dc; --mpn-panel:#fffaf0; --mpn-text:#2e3d2b;
+  --mpn-muted:#72765c; --mpn-accent:#456c43; --mpn-accent-contrast:#ffffff;
+  --mpn-border:#d3c5a5; --bg:#eee9dc; --card:#fffaf0; --text:#2e3d2b;
+  --muted:#72765c; --line:#d3c5a5; --accent:#456c43; --accent-dark:#2f5030;
+}
+/* Fondo de iconos y estilo de botones siguen la paleta elegida. */
+:root[data-app-theme] .panel-title > span,
+:root[data-app-theme] .inventory-box,
+:root[data-app-theme] .sale-preview,
+:root[data-app-theme] .metric .metric-icon,
+:root[data-app-theme] .help-icon {
+  background:var(--mpn-bg);
+  border-color:var(--mpn-border);
+  color:var(--mpn-accent);
+}
+:root[data-app-theme] .button,
+:root[data-app-theme] .tab,
+:root[data-app-theme] .more-menu-button,
+:root[data-app-theme] .menu-item {
+  border-radius:12px;
+  transition:background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+:root[data-app-theme] .button:not(.secondary),
+:root[data-app-theme] .tab.active {
+  background:var(--mpn-accent);
+  color:var(--mpn-accent-contrast);
+  border-color:var(--mpn-accent);
+  box-shadow:0 3px 9px color-mix(in srgb, var(--mpn-accent) 22%, transparent);
+}
+:root[data-app-theme] .button:not(:disabled):active { transform:translateY(1px) scale(.99); }
+:root[data-app-theme="tech-blue"] .button:not(.secondary) { box-shadow:0 0 0 1px #168bff55, 0 4px 16px #168bff22; }
+:root[data-app-theme="pride"] .button:not(.secondary) { background:linear-gradient(110deg,#e84775,#a45bd2,#398be7); border-color:transparent; }
+:root[data-app-theme="trans"] .button:not(.secondary) { background:linear-gradient(110deg,#8bcfff,#f4a8c8); color:#24394c; border-color:#8bcfff; }
+:root[data-app-theme="abrosexual"] .button:not(.secondary) { background:linear-gradient(110deg,#54a878,#e98db7); color:#173526; border-color:transparent; }
+:root[data-app-theme="paleontology"] .button:not(.secondary) { background:linear-gradient(110deg,#345b3b,#6f874b); border-color:#345b3b; }
+:root[data-app-theme="tech-blue"] .topbar { background:#050a12; color:#eaf4ff; }
+:root[data-app-theme="pride"] .topbar { background:linear-gradient(110deg,#a92d62,#5740a2,#225b9d); color:#fff; }
+:root[data-app-theme="trans"] .topbar { background:linear-gradient(110deg,#8bcfff,#f4a8c8); color:#24394c; }
+:root[data-app-theme="abrosexual"] .topbar { background:linear-gradient(110deg,#397e57,#e98db7); color:#fff; }
+:root[data-app-theme="paleontology"] .topbar { background:#29442e; color:#fff7e6; }
+:root[data-app-theme="tech-blue"] .topbar .eyebrow,
+:root[data-app-theme="pride"] .topbar .eyebrow,
+:root[data-app-theme="abrosexual"] .topbar .eyebrow,
+:root[data-app-theme="paleontology"] .topbar .eyebrow { color:inherit; opacity:.82; }
+:root[data-mode="dark"][data-app-theme="pride"] { --mpn-bg:#211321; --mpn-panel:#342039; --mpn-text:#fff0fa; --mpn-muted:#e0b8d6; --mpn-accent:#d979bd; --mpn-accent-contrast:#27122b; --mpn-border:#71466f; }
+:root[data-mode="dark"][data-app-theme="trans"] { --mpn-bg:#17202c; --mpn-panel:#222f40; --mpn-text:#f0f7ff; --mpn-muted:#b7c9dc; --mpn-accent:#8bcfff; --mpn-accent-contrast:#17202c; --mpn-border:#435b73; }
+:root[data-mode="dark"][data-app-theme="abrosexual"] { --mpn-bg:#14251b; --mpn-panel:#20372a; --mpn-text:#f0fff3; --mpn-muted:#b5d3bc; --mpn-accent:#79c596; --mpn-accent-contrast:#10251a; --mpn-border:#41664c; }
+:root[data-mode="dark"][data-app-theme="paleontology"] { --mpn-bg:#1b2119; --mpn-panel:#2b3325; --mpn-text:#f8f0dc; --mpn-muted:#d1c6a5; --mpn-accent:#9bb879; --mpn-accent-contrast:#172014; --mpn-border:#566348; }
+:root[data-mode="dark"][data-app-theme="tech-blue"] { --mpn-bg:#080d16; --mpn-panel:#111d30; --mpn-text:#eaf4ff; --mpn-muted:#a4bdd9; --mpn-accent:#168bff; --mpn-accent-contrast:#ffffff; --mpn-border:#263e60; }
+.help-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:14px; }
+.help-card h3 { margin-top:0; }
+.help-card ol { padding-left:22px; line-height:1.65; }
+.help-card p { line-height:1.65; }
+.version-panel strong { display:block; font-size:clamp(1.8rem,5vw,2.8rem); color:var(--mpn-accent); margin:10px 0; }
+.more-menu-button { min-width:44px; min-height:44px; font-size:1.5rem; line-height:1; }
+.more-menu { min-width:235px; }
+.menu-item { width:100%; text-align:left; }
+:root[data-app-theme] .theme-card { background:var(--mpn-panel); color:var(--mpn-text); }
+:root[data-app-theme] .theme-preview { border-bottom:1px solid var(--mpn-border); }
