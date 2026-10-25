@@ -601,6 +601,21 @@
       <p id="creatorCodeMessage" class="muted" role="status" aria-live="polite"></p>
     </article>
     <article class="panel"><h3>Desbloqueos especiales</h3><p class="muted">Introduce un código que hayas recibido para desbloquear un tema. Los códigos no se muestran dentro de la aplicación.</p></article>
+    <article class="panel options-panel developer-access-panel">
+      <h3>🛠️ Herramientas de desarrollador</h3>
+      <p class="muted">Área local para pruebas de temas y monedas. No uses estas herramientas en una versión pública de producción.</p>
+      <label for="developerAccessCode">Código de desarrollador
+        <input id="developerAccessCode" type="password" maxlength="60" placeholder="Introduce el código" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </label>
+      <button class="button" id="developerAccessButton" type="button">Acceder a herramientas</button>
+      <p id="developerAccessStatus" class="muted" role="status" aria-live="polite"></p>
+      <div id="developerTools" class="developer-tools hidden">
+        <h4>Modo de pruebas</h4>
+        <p>Concede monedas de prueba para desbloquear Corazones, Vida marina y Contabilidad.</p>
+        <button class="button" id="developerInfiniteCoins" type="button">Cargar saldo máximo de prueba</button>
+        <button class="button secondary" id="developerHideTools" type="button">Ocultar herramientas</button>
+      </div>
+    </article>
   </section>
 
   <section class="view hidden" id="view-version">
