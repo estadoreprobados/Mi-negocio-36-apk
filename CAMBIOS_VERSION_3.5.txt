@@ -1,0 +1,10 @@
+Mi Primer Negocio 36 — versión 3.5
+
+Cambios:
+- Menú principal con icono de tres rayas y orden solicitado: Ajustes, Ayuda, Estadísticas, Tienda de temas, Código de creadores y Versión del sistema.
+- Nuevo apartado Ayuda con guías para las funciones principales.
+- Tienda de temas con Azul tecnológico gratis y temas Pride, Trans, Abrosexual y Paleontología desbloqueables con código.
+- Los temas actualizan la paleta de colores, fondos de iconos y estilo de botones.
+- Los códigos se validan sin distinguir mayúsculas y minúsculas.
+- Pantalla de versión actual de la aplicación.
+- Se conserva el almacenamiento local existente y las funciones anteriores.
