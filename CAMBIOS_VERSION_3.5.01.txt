@@ -1,0 +1,17 @@
+Mi Primer Negocio 36 — Cambios versión 3.5.01
+Fecha de actualización: 25 de octubre de 2026
+Versión: 3.5.01
+Número de compilación: 9
+
+Novedades
+- Temas visuales de temporada para Halloween y Navidad, con cambios completos de paleta, fondos, paneles, controles y botones.
+- Los temas de temporada solo aparecen en la tienda durante sus fechas habilitadas.
+- Al finalizar una temporada, la app restaura el tema que estaba activo antes y conserva los datos del negocio.
+- La sección Versión del sistema muestra versión instalada, compilación, fecha, novedades y notas de compatibilidad.
+- Los códigos de desbloqueo no se incluyen en la pantalla de información de la actualización.
+
+Fechas configuradas
+- Halloween 2026: 25 al 31 de octubre de 2026.
+- Navidad 2026: 1 al 31 de diciembre de 2026.
+
+Nota técnica: la comprobación de fechas usa el reloj local del dispositivo; no es resistente a cambios manuales de fecha.
