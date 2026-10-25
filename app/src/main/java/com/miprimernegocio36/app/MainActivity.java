@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 2048;
     private PermissionRequest pendingWebPermission;
     private static final int CAMERA_PERMISSION_REQUEST = 2049;
+    private boolean pendingNativeScanAfterPermission = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +91,39 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_REQUEST && pendingWebPermission != null) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) pendingWebPermission.grant(pendingWebPermission.getResources());
-            else pendingWebPermission.deny();
-            pendingWebPermission = null;
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            if (pendingWebPermission != null) {
+                if (granted) pendingWebPermission.grant(pendingWebPermission.getResources());
+                else pendingWebPermission.deny();
+                pendingWebPermission = null;
+            }
+            if (pendingNativeScanAfterPermission) {
+                pendingNativeScanAfterPermission = false;
+                if (granted) launchNativeBarcodeScanner();
+                else notifyScannerError("Permiso de cámara denegado. Puedes escribir el código manualmente en el buscador.");
+            }
+        }
+    }
+
+    private void launchNativeBarcodeScanner() {
+        try {
+            if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                notifyScannerError("Este dispositivo no tiene una cámara disponible.");
+                return;
+            }
+            IntentIntegrator integrator = new IntentIntegrator(MainActivity.this);
+            integrator.setCaptureActivity(CaptureActivity.class);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+            integrator.setPrompt("Enfoca el código de barras del producto");
+            integrator.setBeepEnabled(false);
+            integrator.setOrientationLocked(false);
+            integrator.setBarcodeImageEnabled(false);
+            integrator.initiateScan();
+        } catch (Exception e) {
+            android.util.Log.e("MPN36Scanner", "No se pudo iniciar el escáner", e);
+            notifyScannerError("No se pudo iniciar la cámara. Revisa los permisos o escribe el código manualmente.");
+            Toast.makeText(MainActivity.this, "El escáner no pudo abrirse. La aplicación sigue disponible.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -101,23 +131,12 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void startBarcodeScan() {
             runOnUiThread(() -> {
-                try {
-                    if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
-                        notifyScannerError("Este dispositivo no tiene una cámara disponible.");
-                        return;
-                    }
-                    new IntentIntegrator(MainActivity.this)
-                            .setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-                            .setPrompt("Enfoca el código de barras del producto")
-                            .setBeepEnabled(false)
-                            .setOrientationLocked(false)
-                            .initiateScan();
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this,
-                            "No se pudo iniciar el escáner. Puedes escribir el código manualmente.",
-                            Toast.LENGTH_LONG).show();
-                    notifyScannerError("No se pudo iniciar la cámara. Escribe el código manualmente.");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    pendingNativeScanAfterPermission = true;
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
+                    return;
                 }
+                launchNativeBarcodeScanner();
             });
         }
 
@@ -196,6 +215,7 @@ public class MainActivity extends Activity {
             return;
         }
 
+        if (requestCode != IntentIntegrator.REQUEST_CODE) return;
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResult != null) {
             if (scanResult.getContents() != null) {
