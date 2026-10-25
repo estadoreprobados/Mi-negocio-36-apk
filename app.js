@@ -368,7 +368,7 @@
     { id: "accounting", name: "Contabilidad", cost: 20, description: "Libros contables, calculadoras, gráficas y símbolos financieros.", colors: ["#166534", "#dcfce7"], preview: "linear-gradient(135deg,#14532d,#16a34a 55%,#dcfce7)" }
   ];
 
-  const APP_VERSION = { name: "3.6.5", code: 15, buildDate: "25 de octubre de 2026" };
+  const APP_VERSION = { name: "3.6.6", code: 16, buildDate: "25 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -570,8 +570,19 @@
       const lockedCreatorTheme = Boolean(theme.creatorCode) && !owned;
       const action = lockedCreatorTheme ? "Desbloquear con código" : active ? "Tema activo" : owned ? "Aplicar tema" : theme.cost === 0 ? "Obtener gratis" : `Comprar · ${theme.cost} 🔥`;
       const price = lockedCreatorTheme ? "Bloqueado" : (theme.creatorCode && owned) ? "Desbloqueado gratis" : theme.cost === 0 ? "Gratis" : `${theme.cost} 🔥`;
+      const previewIcons = {
+        classic: "🏪", ocean: "🌊🐟", forest: "🌲🍃", violet: "💜✨", sunset: "🌅☀️",
+        hacker: "💻⌨️{ }", nature: "🌿🦋", cbtis36: "🏫📚✏️", "bandera-bi": "💗💜💙",
+        atardecer: "🌇🟠", eclipse: "🌑✨", "tech-blue": "🔷💠⚡", pride: "🏳️‍🌈",
+        trans: "🏳️‍⚧️", abrosexual: "💚🤍💗", paleontology: "🦴🦖🦴",
+        halloween2026: "🎃🕸️💀👻", navidad2026: "🎄❄️🎁", retro: "🖥️💿",
+        hearts: "💗💖💕", "sea-life": "🐠🐟🫧", accounting: "🧾📊🧮"
+      };
       return `<article class="theme-card ${active ? "theme-active" : ""} ${lockedCreatorTheme ? "theme-locked" : ""}">
-        <div class="theme-preview" style="background:${theme.preview}"></div>
+        <div class="theme-preview theme-preview-${theme.id}" style="background:${theme.preview}" role="img" aria-label="Vista previa de ${escapeHtml(theme.name)}">
+          <span class="preview-art" aria-hidden="true">${previewIcons[theme.id] || "🎨"}</span>
+          <span class="preview-palette" aria-hidden="true">${theme.colors.map(color => `<i style="background:${color}"></i>`).join("")}</span>
+        </div>
         <div class="theme-card-body"><h3>${escapeHtml(theme.name)}</h3><p>${escapeHtml(theme.description)}</p>
         <div class="theme-card-footer"><strong>${price}</strong>
         <button class="button ${active || lockedCreatorTheme ? "secondary" : ""}" data-theme-action="${theme.id}" ${active || lockedCreatorTheme ? "disabled" : ""}>${action}</button></div></div>

@@ -1,0 +1,10 @@
+Mi Primer Negocio 36 — versión 3.6.6
+
+- Corregido el aislamiento de las vistas previas: el tema Halloween ya no reemplaza las imágenes de los demás temas.
+- Las tarjetas de temas ahora muestran iconos temáticos y muestras de los colores de cada paleta.
+- Hacker tiene una vista previa de terminal/código; Escolar muestra escuela y libros; Paleontología muestra huesos y dinosaurios.
+- Las vistas previas de las banderas bisexual, LGBT+, trans y abrosexual usan franjas horizontales correspondientes.
+- Halloween y Navidad muestran decoraciones de sus festividades; Corazones, Vida marina y Contabilidad muestran motivos propios.
+- Se incrementa versionCode a 16 y versionName a 3.6.6.
+
+Pruebas realizadas en el código fuente: comprobación sintáctica de JavaScript y sincronización de las copias web/Android. La compilación y la prueba visual final deben hacerse con GitHub Actions y en el dispositivo.
