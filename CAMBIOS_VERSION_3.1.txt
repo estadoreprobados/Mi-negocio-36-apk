@@ -1,0 +1,27 @@
+MI PRIMER NEGOCIO 36 — ACTUALIZACIÓN APK 3.1
+
+Cambios preparados para la versión Android:
+- Temas Hacker, Naturaleza y CBTIS 36 completamente gratis, sin monedas ni compra.
+- Se conserva la tienda de temas y el resto de temas de pago que ya existían.
+- Se añadió importación de productos desde CSV.
+- Se añadió calculadora estimada de impuestos.
+- Se añadió edición de gastos existentes.
+- Se resaltan importes negativos en rojo.
+- Se conserva el respaldo/restauración mediante PDF y la exportación existente.
+- El selector de archivos de Android acepta archivos PDF y CSV.
+- Se incrementó versionCode a 4 y versionName a 3.1 para una nueva compilación.
+
+ARCHIVOS MODIFICADOS:
+1. app/src/main/assets/app.js
+2. app/src/main/assets/features.css
+3. app/src/main/assets/index.html
+4. app/src/main/java/com/miprimernegocio36/app/MainActivity.java
+5. app/build.gradle
+
+IMPORTANTE:
+- La compilación del APK usa los archivos de app/src/main/assets/, no los archivos web duplicados de la raíz.
+- Descomprime este ZIP y conserva las rutas de carpetas. No subas el ZIP como si fuera el código fuente.
+- Para actualizar GitHub, reemplaza los archivos indicados por los que vienen en este paquete.
+- La compilación de publicación requiere que los secretos de firma de Android ya estén configurados en GitHub Actions.
+- Se comprobó la sintaxis JavaScript con node --check y se validó el XML del manifiesto. No se ejecutó una compilación Android completa en este entorno, por lo que aún debe confirmarse con GitHub Actions.
+- La calculadora de impuestos es orientativa y no sustituye asesoría fiscal ni determina obligaciones oficiales.
