@@ -80,3 +80,44 @@ table td { border-color:var(--mpn-border); }
 :root[data-mode="dark"] .tab.active { background:#315f82; color:#fff; }
 :root[data-mode="dark"] input, :root[data-mode="dark"] select, :root[data-mode="dark"] textarea { background:#1b2833; color:#e8edf1; border-color:#344653; }
 :root[data-mode="dark"] .notice { background:#392e1d; color:#f4d6a0; border-color:#6b532b; }
+
+
+/* Temas nuevos gratuitos: Hacker, Naturaleza y CBTIS 36. */
+:root[data-app-theme="hacker"] {
+  color-scheme: dark;
+  --mpn-bg:#020b06; --mpn-panel:#07180e; --mpn-text:#d5ffe1;
+  --mpn-muted:#8bc9a0; --mpn-accent:#39ff88; --mpn-accent-contrast:#001b0b;
+  --mpn-border:#1c5630;
+}
+:root[data-app-theme="nature"] {
+  color-scheme: light;
+  --mpn-bg:#edf4e9; --mpn-panel:#fbfff8; --mpn-text:#203b2b;
+  --mpn-muted:#55715e; --mpn-accent:#47784b; --mpn-accent-contrast:#ffffff;
+  --mpn-border:#cbdcc8;
+}
+:root[data-app-theme="cbtis36"] {
+  color-scheme: light;
+  --mpn-bg:#edf2f9; --mpn-panel:#ffffff; --mpn-text:#142b4c;
+  --mpn-muted:#526984; --mpn-accent:#164a8a; --mpn-accent-contrast:#ffffff;
+  --mpn-border:#cbd7e7;
+}
+/* Si el usuario activa modo oscuro, conserva el contraste también en los temas claros. */
+:root[data-mode="dark"][data-app-theme="nature"],
+:root[data-mode="dark"][data-app-theme="cbtis36"] {
+  color-scheme: dark;
+  --mpn-bg:#121a22; --mpn-panel:#1b2833; --mpn-text:#e8edf1;
+  --mpn-muted:#a5b4bf; --mpn-accent:#4c8db5; --mpn-accent-contrast:#ffffff;
+  --mpn-border:#344653;
+}
+:root[data-mode="dark"][data-app-theme="hacker"] {
+  --mpn-bg:#020b06; --mpn-panel:#07180e; --mpn-text:#d5ffe1;
+  --mpn-muted:#8bc9a0; --mpn-accent:#39ff88; --mpn-accent-contrast:#001b0b;
+  --mpn-border:#1c5630;
+}
+
+/* Funciones añadidas: importación CSV, calculadora de impuestos y gastos editables. */
+.negative { color: var(--danger, #b42318) !important; font-weight: 750 !important; }
+.top-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.tax-tool .tax-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.tax-tool p { margin:12px 0 0; }
+@media (max-width:520px) { .top-actions { width:100%; } .top-actions .button { flex:1; } .tax-tool .tax-fields { grid-template-columns:1fr; } }

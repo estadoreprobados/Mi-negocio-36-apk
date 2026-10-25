@@ -21,7 +21,11 @@
     <p class="eyebrow">ADMINISTRACIÓN DE NEGOCIOS</p>
     <h1>Mi Primer Negocio <span>36</span></h1>
   </div>
-  <button id="exportCsvTop" class="button secondary">Exportar CSV</button>
+  <div class="top-actions">
+    <button id="importCsvTop" class="button secondary" type="button">Importar CSV</button>
+    <input id="importCsvFile" type="file" accept=".csv,text/csv" class="hidden">
+    <button id="exportCsvTop" class="button secondary" type="button">Exportar CSV</button>
+  </div>
 </header>
 
 <main class="container">
@@ -373,7 +377,8 @@
         </select>
       </label>
       <div class="form-actions">
-        <button class="button" type="submit">Agregar gasto</button>
+        <button class="button" id="expenseSubmitButton" type="submit">Agregar gasto</button>
+        <button class="button secondary hidden" id="cancelExpenseEdit" type="button">Cancelar edición</button>
       </div>
     </form>
 
@@ -493,11 +498,11 @@
       <div class="fire-wallet"><span aria-hidden="true">🔥</span> <strong id="fireCoins">0</strong> monedas</div>
     </div>
     <article class="panel shop-intro">
-      <h3>Gana monedas manteniendo tu racha</h3>
-      <p>Completa 7 días consecutivos con al menos una venta al día para ganar una moneda de fuego. Las monedas son puntos de la app, no dinero real.</p>
+      <h3>Temas para personalizar tu app</h3>
+      <p>Los temas Hacker, Naturaleza y CBTIS 36 son completamente gratis. Los demás temas conservan su sistema de monedas.</p>
     </article>
     <div id="themeShop" class="theme-shop"></div>
-    <p class="muted footnote">Los temas comprados se guardan en este dispositivo. Si borras los datos de la app, podrías perder las monedas y compras locales.</p>
+    <p class="muted footnote">Los temas Hacker, Naturaleza y CBTIS 36 siempre están disponibles gratis. Tus preferencias se guardan en este dispositivo.</p>
   </section>
 
 
@@ -522,6 +527,19 @@
           <option value="dark">Oscuro</option>
         </select>
       </label>
+    </article>
+    <article class="panel options-panel tax-tool">
+      <h3>Calculadora de impuestos (estimación)</h3>
+      <p class="muted">Calcula un porcentaje sobre una cantidad. No sustituye una determinación fiscal oficial.</p>
+      <div class="tax-fields">
+        <label for="taxAmount">Cantidad antes de impuesto
+          <input id="taxAmount" type="number" min="0" step="0.01" value="100">
+        </label>
+        <label for="taxRate">Porcentaje (%)
+          <input id="taxRate" type="number" min="0" max="100" step="0.01" value="16">
+        </label>
+      </div>
+      <p>Impuesto: <strong id="taxValue">$16.00</strong> · Total: <strong id="taxTotal">$116.00</strong></p>
     </article>
     <article class="panel options-panel">
       <h3>Importar / exportar datos mediante PDF</h3>

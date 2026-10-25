@@ -85,7 +85,12 @@
     purchasedThemes: Array.isArray(data.gamification?.purchasedThemes) ? data.gamification.purchasedThemes : ["classic"]
   };
   if (!data.gamification.purchasedThemes.includes("classic")) data.gamification.purchasedThemes.unshift("classic");
+  // Los tres temas nuevos son gratuitos y quedan disponibles incluso en datos de versiones anteriores.
+  ["hacker", "nature", "cbtis36"].forEach(id => {
+    if (!data.gamification.purchasedThemes.includes(id)) data.gamification.purchasedThemes.push(id);
+  });
   let salesChart = null;
+  let editingExpenseId = null;
   let comparisonChart = null;
   let statsMoneyChart = null;
   let statsExpenseChart = null;
@@ -219,7 +224,7 @@
         <td>${escapeHtml(e.name)}</td>
         <td>${e.type === "fixed" ? "Fijo" : "Variable"}</td>
         <td>${money(e.amount)}</td>
-        <td><button class="row-button danger" data-delete-expense="${escapeHtml(e.id)}">Eliminar</button></td>
+        <td><button class="row-button" data-edit-expense="${escapeHtml(e.id)}">Editar</button> <button class="row-button danger" data-delete-expense="${escapeHtml(e.id)}">Eliminar</button></td>
       </tr>
     `).join("") || emptyRow(5);
 
@@ -330,7 +335,10 @@
     { id: "ocean", name: "Océano", cost: 3, description: "Azules tranquilos y claros.", colors: ["#173b56", "#7db5d0"], preview: "linear-gradient(135deg,#173b56 50%,#7db5d0 50%)" },
     { id: "forest", name: "Bosque", cost: 5, description: "Verdes apagados y beige tierra.", colors: ["#334536", "#c5b58f"], preview: "linear-gradient(135deg,#334536 50%,#c5b58f 50%)" },
     { id: "violet", name: "Neón violeta", cost: 7, description: "Violeta y rosa brillante.", colors: ["#24113f", "#e879f9"], preview: "linear-gradient(135deg,#24113f 50%,#e879f9 50%)" },
-    { id: "sunset", name: "Terracota", cost: 9, description: "Arcilla, café y arena cálida.", colors: ["#543b2d", "#c98b68"], preview: "linear-gradient(135deg,#543b2d 50%,#c98b68 50%)" }
+    { id: "sunset", name: "Terracota", cost: 9, description: "Arcilla, café y arena cálida.", colors: ["#543b2d", "#c98b68"], preview: "linear-gradient(135deg,#543b2d 50%,#c98b68 50%)" },
+    { id: "hacker", name: "Hacker", cost: 0, description: "Negro profundo y verde neón. Gratis para siempre.", colors: ["#001b0b", "#39ff88"], preview: "linear-gradient(135deg,#001b0b 50%,#39ff88 50%)" },
+    { id: "nature", name: "Naturaleza", cost: 0, description: "Verdes de bosque y tonos tierra. Gratis para siempre.", colors: ["#234d35", "#d5e6c9"], preview: "linear-gradient(135deg,#234d35 50%,#d5e6c9 50%)" },
+    { id: "cbtis36", name: "CBTIS 36", cost: 0, description: "Azul escolar y blanco. Gratis para siempre.", colors: ["#123b70", "#e6eef9"], preview: "linear-gradient(135deg,#123b70 50%,#e6eef9 50%)" }
   ];
 
   function saleDates() {
@@ -525,18 +533,22 @@
     if (!theme) return;
     const owned = data.gamification.purchasedThemes.includes(id);
     if (!owned) {
-      if (data.gamification.coins < theme.cost) {
-        toast(`Necesitas ${theme.cost} monedas de fuego para comprar este tema.`);
-        return;
+      if (theme.cost === 0) {
+        data.gamification.purchasedThemes.push(id);
+      } else {
+        if (data.gamification.coins < theme.cost) {
+          toast(`Necesitas ${theme.cost} monedas de fuego para comprar este tema.`);
+          return;
+        }
+        if (!confirm(`¿Comprar "${theme.name}" por ${theme.cost} monedas de fuego?`)) return;
+        data.gamification.coins -= theme.cost;
+        data.gamification.purchasedThemes.push(id);
       }
-      if (!confirm(`¿Comprar "${theme.name}" por ${theme.cost} monedas de fuego?`)) return;
-      data.gamification.coins -= theme.cost;
-      data.gamification.purchasedThemes.push(id);
     }
     data.settings.theme = id;
     applyTheme();
     save();
-    toast(owned ? `Tema "${theme.name}" aplicado.` : `¡Compraste "${theme.name}"!`);
+    toast(owned || theme.cost === 0 ? `Tema "${theme.name}" aplicado.` : `¡Compraste "${theme.name}"!`);
   }
 
   $("themeShop")?.addEventListener("click", e => {
@@ -781,34 +793,62 @@
     toast("Venta eliminada y stock restaurado.");
   });
 
+  function resetExpenseForm() {
+    editingExpenseId = null;
+    $("expenseForm").reset();
+    $("expenseDate").value = today();
+    $("expenseSubmitButton").textContent = "Agregar gasto";
+    $("cancelExpenseEdit").classList.add("hidden");
+  }
+
+  $("cancelExpenseEdit").addEventListener("click", resetExpenseForm);
+
   $("expenseForm").addEventListener("submit", e => {
     e.preventDefault();
-
     const name = $("expenseName").value.trim();
     const amount = num("expenseAmount");
     const date = $("expenseDate").value;
-
     if (!name || amount <= 0 || !date) {
       toast("Revisa los datos del gasto.");
       return;
     }
-
-    data.expenses.push({
-      id: uid(), name, amount, date, type: $("expenseType").value
-    });
-
-    $("expenseForm").reset();
-    $("expenseDate").value = today();
+    if (editingExpenseId) {
+      const item = data.expenses.find(x => x.id === editingExpenseId);
+      if (!item) { resetExpenseForm(); return; }
+      item.name = name;
+      item.amount = amount;
+      item.date = date;
+      item.type = $("expenseType").value;
+      resetExpenseForm();
+      save();
+      toast("Gasto actualizado.");
+      return;
+    }
+    data.expenses.push({ id: uid(), name, amount, date, type: $("expenseType").value });
+    resetExpenseForm();
     save();
     toast("Gasto agregado.");
   });
 
   $("expenseRows").addEventListener("click", e => {
-    const b = e.target.closest("[data-delete-expense]");
-    if (!b) return;
-
-    if (confirm("¿Eliminar este gasto?")) {
-      data.expenses = data.expenses.filter(x => x.id !== b.dataset.deleteExpense);
+    const edit = e.target.closest("[data-edit-expense]");
+    const remove = e.target.closest("[data-delete-expense]");
+    if (edit) {
+      const item = data.expenses.find(x => x.id === edit.dataset.editExpense);
+      if (!item) return;
+      editingExpenseId = item.id;
+      $("expenseName").value = item.name;
+      $("expenseAmount").value = item.amount;
+      $("expenseDate").value = item.date;
+      $("expenseType").value = item.type || "variable";
+      $("expenseSubmitButton").textContent = "Guardar cambios";
+      $("cancelExpenseEdit").classList.remove("hidden");
+      $("expenseName").focus();
+      return;
+    }
+    if (remove && confirm("¿Eliminar este gasto?")) {
+      data.expenses = data.expenses.filter(x => x.id !== remove.dataset.deleteExpense);
+      if (editingExpenseId === remove.dataset.deleteExpense) resetExpenseForm();
       save();
       toast("Gasto eliminado.");
     }
@@ -984,6 +1024,97 @@ function downloadCsv() {
   if ($("exportBackupPdf")) $("exportBackupPdf").addEventListener("click", exportBackupPdf);
   if ($("importBackupPdf")) $("importBackupPdf").addEventListener("change", e => importBackupPdf(e.target.files && e.target.files[0]));
 
+  function updateTax() {
+    const amount = Math.max(0, Number($("taxAmount").value) || 0);
+    const rate = Math.min(100, Math.max(0, Number($("taxRate").value) || 0));
+    const tax = amount * rate / 100;
+    $("taxValue").textContent = money(tax);
+    $("taxTotal").textContent = money(amount + tax);
+  }
+  ["taxAmount", "taxRate"].forEach(id => $(id).addEventListener("input", updateTax));
+  updateTax();
+
+  function parseCsv(text) {
+    const rows = []; let row = [], field = "", quoted = false;
+    text = text.replace(/^\uFEFF/, "");
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"' && quoted && text[i + 1] === '"') { field += '"'; i++; }
+      else if (ch === '"') quoted = !quoted;
+      else if (ch === "," && !quoted) { row.push(field); field = ""; }
+      else if ((ch === "\n" || ch === "\r") && !quoted) {
+        if (ch === "\r" && text[i + 1] === "\n") i++;
+        row.push(field); if (row.some(v => v.trim())) rows.push(row);
+        row = []; field = "";
+      } else field += ch;
+    }
+    row.push(field); if (row.some(v => v.trim())) rows.push(row);
+    return rows;
+  }
+
+  $("importCsvTop").addEventListener("click", () => $("importCsvFile").click());
+  $("importCsvFile").addEventListener("change", async e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const rows = parseCsv(await file.text());
+      if (rows.length < 2) throw new Error("El CSV está vacío o no contiene filas de datos.");
+      let headerRow = rows.findIndex(r => r.some(v =>
+        ["producto", "producto o concepto", "nombre", "nombre del producto"].includes(String(v).trim().toLowerCase())
+      ));
+      if (headerRow < 0) headerRow = 0;
+      const headers = rows[headerRow].map(x => x.trim().toLowerCase());
+      const dataRows = rows.slice(headerRow + 1);
+      const idx = (...names) => headers.findIndex(h => names.includes(h));
+      const nameIdx = idx("producto", "producto o concepto", "nombre", "nombre del producto", "name");
+      const stockIdx = idx("existencias", "stock", "cantidad", "unidades");
+      const priceIdx = idx("precio", "precio de venta", "precio o monto", "price");
+      const materialsIdx = idx("materiales", "costo de materiales", "costo unitario", "materials", "costo");
+      const laborIdx = idx("mano de obra", "labor");
+      const minIdx = idx("stock mínimo", "minstock", "mínimo", "min stock");
+      const typeIdx = idx("tipo", "type");
+      if (nameIdx < 0) throw new Error("No encuentro la columna Producto o Nombre. Usa Producto, Existencias, Precio, Materiales, Mano de obra y Stock mínimo.");
+      let added = 0, updated = 0, skipped = 0;
+      for (const r of dataRows) {
+        const name = (r[nameIdx] || "").trim();
+        if (!name) { skipped++; continue; }
+        if (typeIdx >= 0 && (r[typeIdx] || "").trim().toLowerCase() !== "producto") { skipped++; continue; }
+        const parse = (i, def = 0) => {
+          if (i < 0) return def;
+          const v = String(r[i] ?? "").trim().replace(/[$\s]/g, "").replace(/,(?=\d{3}(?:\D|$))/g, "");
+          const n = Number(v); return Number.isFinite(n) ? n : NaN;
+        };
+        const stock = stockIdx < 0 ? 0 : parse(stockIdx, 0);
+        const price = priceIdx < 0 ? 0 : parse(priceIdx, 0);
+        const materials = parse(materialsIdx, 0), labor = parse(laborIdx, 0), minStock = parse(minIdx, 3);
+        if ([stock, price, materials, labor, minStock].some(n => !Number.isFinite(n) || n < 0) ||
+            !Number.isInteger(stock) || !Number.isInteger(minStock)) { skipped++; continue; }
+        const existing = data.products.find(p => p.name.toLowerCase() === name.toLowerCase());
+        if (existing) {
+          existing.stock = stock; existing.price = price; existing.materials = materials;
+          existing.labor = labor; existing.minStock = minStock; updated++;
+        } else {
+          data.products.push({ id: uid(), name, materials, labor, price, stock, minStock, createdAt: today() });
+          added++;
+        }
+      }
+      if (!added && !updated) throw new Error("No se encontraron productos válidos. Revisa los encabezados y los datos.");
+      save();
+      toast(`CSV importado: ${added} nuevos, ${updated} actualizados, ${skipped} omitidos.`);
+    } catch (err) {
+      toast(err.message || "No se pudo leer el CSV.");
+    } finally { e.target.value = ""; }
+  });
+
+  function markNegativeValues() {
+    document.querySelectorAll("td, strong, span").forEach(el => {
+      const t = (el.textContent || "").trim();
+      el.classList.toggle("negative", /(?:^|\s|\()-\s*(?:[$€£]|MXN|USD|EUR)?\s*\d/.test(t));
+    });
+  }
+  const negativeObserver = new MutationObserver(markNegativeValues);
+  negativeObserver.observe(document.querySelector("main"), { subtree: true, childList: true, characterData: true });
+
   const currencySelect = $("currencySelect");
   if (currencySelect) {
     currencySelect.value = data.settings.currency || "MXN";
@@ -995,6 +1126,7 @@ function downloadCsv() {
         return;
       }
       data.settings.currency = chosen;
+      updateTax();
       save();
       toast("Moneda actualizada a " + chosen + ". No se realizó conversión de importes.");
     });
