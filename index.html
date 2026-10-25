@@ -6,9 +6,6 @@
   <meta name="theme-color" content="#111827">
   <title>Mi Primer Negocio 36</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -18,12 +15,11 @@
     <p class="eyebrow">ADMINISTRACIÓN DE NEGOCIOS</p>
     <h1>Mi Primer Negocio <span>36</span></h1>
   </div>
-  <button id="exportCsvTop" class="button secondary">Exportar CSV</button>
+  <div class="top-actions"><button id="importCsvTop" class="button secondary" type="button">Importar CSV</button><input id="importCsvFile" type="file" accept=".csv,text/csv" class="hidden"><button id="exportCsvTop" class="button secondary">Exportar CSV</button></div>
 </header>
 
 <main class="container">
   <div class="notice" id="storageNotice">Tus datos se guardan en este navegador. Esta versión aún no sincroniza entre dispositivos ni separa cuentas en la nube.</div>
-  <div class="notice" id="offlineStatus" role="status" aria-live="polite">Preparando modo sin conexión…</div>
 
   <section class="panel currency-settings" aria-labelledby="currencyTitle">
     <div class="panel-title"><div><p class="eyebrow">CONFIGURACIÓN</p><h2 id="currencyTitle">Moneda del negocio</h2></div><span class="muted">Código ISO 4217</span></div>
@@ -63,6 +59,20 @@
         </select>
       </label>
       <p class="muted currency-help">Los importes se mostrarán con esta moneda en el panel, ventas, gastos, reportes y exportaciones. Cambiar la moneda solo cambia la forma de mostrar los importes; no convierte cantidades ni actualiza tipos de cambio.</p>
+    </div>
+    <div class="settings-grid">
+      <label for="themeSelect">Tema de la aplicación
+        <select id="themeSelect">
+          <option value="default">Azul y tierra</option><option value="dark">Oscuro</option>
+          <option value="hacker">Hacker</option><option value="nature">Naturaleza</option><option value="cbtis36">CBTIS 36</option>
+        </select>
+      </label>
+      <div class="tax-tool">
+        <h3>Calculadora de impuestos (estimación)</h3>
+        <div class="tax-fields"><label for="taxAmount">Cantidad antes de impuesto ($)<input id="taxAmount" type="number" min="0" step="0.01" value="100"></label><label for="taxRate">Tasa (%)<input id="taxRate" type="number" min="0" max="100" step="0.01" value="16"></label></div>
+        <p>Impuesto: <strong id="taxValue">$16.00</strong> · Total: <strong id="taxTotal">$116.00</strong></p>
+        <small class="muted">Es una calculadora orientativa, no determina el impuesto que legalmente corresponde a tu negocio.</small>
+      </div>
     </div>
   </section>
 
@@ -152,7 +162,7 @@
       <label>Monto ($)<input id="expenseAmount" type="number" min="0.01" step="0.01" required placeholder="0.00"></label>
       <label>Fecha<input id="expenseDate" type="date" required></label>
       <label>Tipo<select id="expenseType"><option value="fixed">Gasto fijo</option><option value="variable">Gasto variable</option></select></label>
-      <div class="form-actions"><button class="button" type="submit">Agregar gasto</button></div>
+      <div class="form-actions"><button class="button" id="expenseSubmit" type="submit">Agregar gasto</button><button class="button secondary hidden" id="cancelExpenseEdit" type="button">Cancelar edición</button></div>
     </form>
     <article class="panel"><div class="panel-title"><h3>Gastos registrados</h3><strong id="expenseTotal">$0.00</strong></div>
       <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Acción</th></tr></thead><tbody id="expenseRows"></tbody></table></div>
@@ -177,68 +187,9 @@
       <div class="table-wrap"><table><thead><tr><th>Producto</th><th>Unidades vendidas</th><th>Ingresos</th><th>Utilidad bruta</th></tr></thead><tbody id="reportProductRows"></tbody></table></div>
     </article>
   </section>
-
-  <section class="view hidden" id="view-options">
-    <div class="section-heading">
-      <div><p class="eyebrow">PERSONALIZA LA APP</p><h2>Opciones</h2></div>
-    </div>
-    <article class="panel options-panel">
-      <h3>Nombre de tu negocio</h3>
-      <p class="muted">Aparecerá en la aplicación y en los reportes PDF.</p>
-      <label for="businessName">Nombre del negocio
-        <input id="businessName" type="text" maxlength="70" placeholder="Ej. Mi tiendita" autocomplete="organization">
-      </label>
-      <button class="button" id="saveBusinessName" type="button">Guardar nombre</button>
-    </article>
-    <article class="panel options-panel">
-      <h3>Apariencia</h3>
-      <p class="muted">Elige cómo quieres ver la aplicación.</p>
-      <label for="themeMode">Modo de color
-        <select id="themeMode">
-          <option value="light">Claro</option>
-          <option value="dark">Oscuro</option>
-        </select>
-      </label>
-    </article>
-    <article class="panel options-panel">
-      <h3>Importar / exportar datos mediante PDF</h3>
-      <p class="muted">El PDF de respaldo generado aquí contiene los datos necesarios para restaurarlos. Los PDF externos o los reportes antiguos no se pueden importar.</p>
-      <button class="button" id="exportBackupPdf" type="button">Exportar respaldo PDF</button>
-      <label for="importBackupPdf">Seleccionar PDF de respaldo
-        <input id="importBackupPdf" type="file" accept="application/pdf,.pdf">
-      </label>
-      <p class="muted footnote">La importación reemplaza los datos actuales. Exporta un respaldo antes de continuar.</p>
-    </article>
-  </section>
-
   <footer>Mi Primer Negocio 36 · Herramienta de apoyo para proyectos escolares</footer>
 </main>
 <div id="toast" role="status" class="toast hidden"></div>
 <script src="app.js"></script>
-<script>
-  (function () {
-    const status = document.getElementById('offlineStatus');
-    function updateStatus() {
-      if (!status) return;
-      status.textContent = navigator.onLine
-        ? 'Con conexión. Los datos locales siguen guardándose en este dispositivo.'
-        : 'Sin internet: puedes usar los datos guardados en este dispositivo. La sincronización en la nube no está disponible.';
-      status.style.background = navigator.onLine ? '#ecfdf3' : '#fff4e5';
-      status.style.color = navigator.onLine ? '#05603a' : '#93370d';
-      status.style.borderColor = navigator.onLine ? '#abefc6' : '#fedf89';
-    }
-    window.addEventListener('online', updateStatus);
-    window.addEventListener('offline', updateStatus);
-    updateStatus();
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js').catch(function (err) {
-          console.error('No se pudo activar el modo sin conexión:', err);
-          if (status) status.textContent = 'No se pudo preparar el modo sin conexión. Abre la página con internet y vuelve a cargarla.';
-        });
-      });
-    }
-  })();
-</script>
 </body>
 </html>

@@ -1,29 +1,24 @@
-# Mi Primer Negocio 36 — Paquete Android
+# Mi Primer Negocio 36
 
-Este paquete contiene:
-- La versión web/PWA actual en `web/`.
-- Un proyecto Android sencillo con WebView.
-- Un flujo de GitHub Actions para compilar un APK de prueba automáticamente.
+Aplicación web para un pequeño negocio escolar del CBTIS No. 36.
+
+## Funciones
+- Productos: materiales, mano de obra, costo total, precio de venta y ganancia por unidad.
+- Gastos fijos: inicia con Internet ($100), Transporte ($150) y Bolsas ($80).
+- Ventas: fecha, producto, cantidad, precio, total de venta y utilidad estimada.
+- Resumen: ventas totales, utilidad bruta, gastos y ganancia neta estimada.
+- Exportación del resumen a CSV.
+- Diseño adaptable a celulares, tablets y computadoras.
+
+Mi Primer Negocio 36
+
+Aplicación gratuita de uso informativo y educativo que permite acceder a la página web de Mi Primer Negocio 36 desde Android.
+
+Seguridad: El APK debe descargarse únicamente desde las publicaciones de este repositorio. Se recomienda comprobar el archivo antes de instalarlo.
+
+Privacidad: La aplicación está diseñada para mostrar una página web. El tratamiento de datos puede depender del sitio web y de los servicios externos que utilice.
+
+Reportes: Si detectas un error o un posible problema de seguridad, repórtalo mediante la sección Issues de este repositorio.
 
 ## Importante
-Este ZIP **no contiene un APK ya compilado**. En este entorno no hay Android SDK/Gradle para generar y probar un APK real. Al subir este proyecto a GitHub, la acción de GitHub Actions compilará `app-debug.apk` y lo publicará como un artefacto descargable.
-
-La app Android abre la versión publicada en:
-https://estadoreprobados.github.io/Mi-negocio-36-demo/
-
-Para que funcione sin conexión, la web debe estar publicada con su `manifest.json` y `sw.js`, y el teléfono debe abrirla al menos una vez con internet para que el service worker guarde los recursos. Prueba el modo avión antes de usarla en un negocio real.
-
-## Cómo usarlo desde Android
-1. Descarga y extrae este ZIP.
-2. En tu repositorio de GitHub, crea una rama nueva o un repositorio separado para probar.
-3. Sube el contenido de esta carpeta (incluidos `.github`, `app`, `web`, `build.gradle`, `settings.gradle`, `gradle.properties` y `AndroidManifest.xml` está dentro de `app/src/main`).
-4. En GitHub, abre la pestaña **Actions** y espera a que termine `Build Android APK`.
-5. Abre la ejecución exitosa, baja a **Artifacts** y descarga `Mi-Primer-Negocio-36-debug-apk`.
-6. Extrae el artefacto ZIP y encontrarás `app-debug.apk`. Instálalo en tu Android para probar.
-
-## Limitaciones actuales
-- Es un APK de depuración (`debug`), útil para pruebas; no es una compilación final firmada para distribución comercial.
-- La aplicación web carga desde GitHub Pages, por lo que la primera apertura requiere internet. El modo sin conexión depende del caché del service worker.
-- Los datos actuales siguen guardándose localmente en el navegador/WebView de ese dispositivo. No incluye aún cuentas reales, sincronización multiusuario ni nube.
-- No ingreses datos financieros confidenciales hasta completar una revisión de seguridad y respaldos.
-- No se garantiza que todas las funciones (por ejemplo, descargas CSV o PDF/CDN) funcionen igual dentro del WebView; deben probarse en el APK.
+La aplicación no requiere servidor ni dependencias. Los datos se guardan en `localStorage` del navegador, por lo que no se sincronizan automáticamente entre dispositivos. No borres los datos del navegador si quieres conservarlos. Es un prototipo escolar, no un sistema contable profesional.
