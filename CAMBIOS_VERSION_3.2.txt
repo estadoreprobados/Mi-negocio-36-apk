@@ -1,0 +1,13 @@
+Mi Primer Negocio 36 — Cambios v3.2
+
+1. La calculadora de impuestos ahora tiene una pestaña propia llamada “Impuestos 🧮”, visible en la navegación principal.
+2. El tema que antes aparecía como “CBTIS 36” ahora se muestra como “Escolar”. Conserva su identificador interno para no perder la selección guardada.
+3. Al escribir el nombre del negocio en Opciones, se muestra una vista previa debajo de “Mi Primer Negocio 36”. Al guardar, queda guardado en este dispositivo.
+4. Se mantiene el acceso a la calculadora desde la navegación principal y se actualiza el cálculo al escribir o cambiar los campos.
+
+Archivos principales modificados para el APK:
+- app/src/main/assets/index.html
+- app/src/main/assets/app.js
+- app/src/main/assets/features.css
+
+Sube el contenido de este ZIP al repositorio del APK conservando las rutas y genera un nuevo APK con GitHub Actions.
