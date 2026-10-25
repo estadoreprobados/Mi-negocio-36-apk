@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.journeyapps.barcodescanner.CaptureActivity;
 
 public class MainActivity extends Activity {
     private WebView webView;
@@ -127,6 +128,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void notifyScannerError(String message) {
+        if (webView == null) return;
+        webView.post(() -> webView.evaluateJavascript(
+                "window.onNativeBarcodeError && window.onNativeBarcodeError(" + JSONObject.quote(message) + ")", null));
+    }
+
     private class DownloadBridge {
         @JavascriptInterface
         public void startBarcodeScan() {
@@ -138,12 +145,6 @@ public class MainActivity extends Activity {
                 }
                 launchNativeBarcodeScanner();
             });
-        }
-
-        private void notifyScannerError(String message) {
-            if (webView == null) return;
-            webView.post(() -> webView.evaluateJavascript(
-                    "window.onNativeBarcodeError && window.onNativeBarcodeError(" + JSONObject.quote(message) + ")", null));
         }
 
         @JavascriptInterface

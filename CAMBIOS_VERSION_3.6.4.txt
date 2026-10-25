@@ -1,0 +1,9 @@
+Mi Primer Negocio 36 v3.6.4
+
+Corrección de compilación del escáner:
+- Se importa la actividad CaptureActivity de ZXing.
+- notifyScannerError ahora pertenece a MainActivity, donde se usa.
+- Se mantiene el permiso CAMERA y el manejo de cancelación/errores.
+- Se incrementa versionCode a 14 y versionName a 3.6.4.
+
+Compilar con GitHub Actions y probar el escáner en un dispositivo Android.
