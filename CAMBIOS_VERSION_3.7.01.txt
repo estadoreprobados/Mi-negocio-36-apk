@@ -1,0 +1,14 @@
+Mi Primer Negocio 36 — Versión 3.7.01
+
+Actualización en preparación basada en el código 3.7.0.
+
+Cambios y objetivos de esta entrega:
+- Documentar mejoras de productos, fotografías locales, favoritos, reabastecimiento y calculadora de precios que estén presentes en la base.
+- Incorporar el módulo de empleados y la calculadora de mano de obra: horas normales, horas extras, salarios y costo laboral por producto o pedido.
+- Ampliar el reporte PDF para abarcar los datos disponibles de los módulos de la aplicación.
+- Adaptar Cyberpunk y Galaxia a modo claro y oscuro, con fondos específicos y vistas previas separadas.
+- Añadir instrucciones correspondientes en la sección Ayuda.
+- Mantener README y «Versión del sistema» alineados con la descripción de esta actualización.
+- Proteger los datos locales y validar los respaldos antes de cambios de almacenamiento.
+
+Importante: este archivo documenta el alcance previsto. Antes de publicar, comprobar en el código y en el dispositivo que cada función esté implementada; no presentar como disponible una función que siga pendiente. La migración completa a Android nativo no está terminada en esta base WebView.
