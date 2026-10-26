@@ -374,7 +374,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.7.0", code: 17, buildDate: "26 de octubre de 2026" };
+  const APP_VERSION = { name: "3.7.01", code: 18, buildDate: "26 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
