@@ -51,11 +51,14 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle :app:assembleRelease --stacktrace
 
+      - name: Renombrar APK
+        run: cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Mi-Primer-Negocio-36.apk
+
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
-          name: Mi-Primer-Negocio-36-release-apk
-          path: app/build/outputs/apk/release/app-release.apk
+          name: Mi-Primer-Negocio-36
+          path: app/build/outputs/apk/release/Mi-Primer-Negocio-36.apk
           if-no-files-found: error
 
       - name: Eliminar clave temporal
