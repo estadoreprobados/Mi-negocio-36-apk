@@ -22,3 +22,7 @@ Reportes: Si detectas un error o un posible problema de seguridad, repórtalo me
 
 ## Importante
 La aplicación no requiere servidor ni dependencias. Los datos se guardan en `localStorage` del navegador, por lo que no se sincronizan automáticamente entre dispositivos. No borres los datos del navegador si quieres conservarlos. Es un prototipo escolar, no un sistema contable profesional.
+
+
+## Versión 3.7.0 (paquete de trabajo)
+Incluye mejoras iniciales de interfaz, tarjetas de producto con imágenes, favoritos, ajustes visuales, calculadora de precios, lista de reabastecimiento y mascota Manolito con opción para ocultarla. La compatibilidad multiplataforma permanece planificada para la versión 3.8.

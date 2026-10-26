@@ -91,7 +91,7 @@
   data.cashCuts = Array.isArray(data.cashCuts) ? data.cashCuts : [];
   data.suppliers = Array.isArray(data.suppliers) ? data.suppliers : [];
   data.purchases = Array.isArray(data.purchases) ? data.purchases : [];
-  data.settings = { currency: "MXN", theme: "classic", businessName: "", mode: "light", ...(data.settings || {}) };
+  data.settings = { currency: "MXN", theme: "classic", businessName: "", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", ...(data.settings || {}) };
   data.gamification = {
     coins: Math.max(0, Number(data.gamification?.coins) || 0),
     rewardedMilestones: Array.isArray(data.gamification?.rewardedMilestones) ? data.gamification.rewardedMilestones : [],
@@ -99,7 +99,7 @@
   };
   if (!data.gamification.purchasedThemes.includes("classic")) data.gamification.purchasedThemes.unshift("classic");
   // Los tres temas nuevos son gratuitos y quedan disponibles incluso en datos de versiones anteriores.
-  ["hacker", "nature", "cbtis36", "tech-blue"].forEach(id => {
+  ["hacker", "nature", "cbtis36", "tech-blue", "cyberpunk", "galaxy", "vaporwave"].forEach(id => {
     if (!data.gamification.purchasedThemes.includes(id)) data.gamification.purchasedThemes.push(id);
   });
   let salesChart = null;
@@ -189,10 +189,13 @@
   function renderProducts() {
     const q = $("productSearch").value.trim().toLowerCase();
     const list = data.products.filter(p => p.name.toLowerCase().includes(q));
-
+    const cards = $("productCards");
+    if (cards) cards.innerHTML = list.map(p => `<article class="product-card"><div class="product-card-image">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">` : `<span aria-hidden="true">📦</span>`}</div><div class="product-card-body"><strong>${escapeHtml(p.name)}</strong><p>${money(p.price)} · Stock: ${p.stock}</p><p class="muted">Costo ${money(productCost(p))} · Ganancia ${money(p.price-productCost(p))}</p><div class="product-card-actions"><button type="button" class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ Favorito" : "☆ Favorito"}</button><button type="button" class="row-button" data-edit-product="${escapeHtml(p.id)}">Editar</button></div></div></article>`).join("") || `<p class="muted">No hay productos que coincidan.</p>`;
+    if (cards) cards.classList.toggle("hidden", data.settings.productView !== "grid");
+    const tableWrap = $("productTableWrap"); if (tableWrap) tableWrap.classList.toggle("hidden", data.settings.productView === "grid");
     $("productRows").innerHTML = list.map(p => `
       <tr>
-        <td>${escapeHtml(p.name)}</td>
+        <td><button class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ " : "☆ "}</button>${p.image ? `<img class="table-product-image" src="${p.image}" alt="">` : ""}${escapeHtml(p.name)}</td>
         <td>${money(productCost(p))}</td>
         <td>${money(p.price)}</td>
         <td>${money(p.price - productCost(p))}</td>
@@ -365,10 +368,13 @@
     { id: "retro", name: "Retro", cost: 0, creatorCode: "v3.6", seasonal: "retro", description: "Interfaz clásica inspirada en Windows 7: cristal azul Aero, bordes brillantes, botones degradados y tipografía Segoe UI. Disponible hasta el 1 de enero de 2027.", colors: ["#d97736", "#f2dfb3"], preview: "linear-gradient(135deg,#d9f1ff 0%,#4c9bd5 28%,#1b5b96 58%,#dcefff 100%)" },
     { id: "hearts", name: "Corazones", cost: 15, description: "Rosas, corazones y detalles románticos.", colors: ["#c02669", "#ffe4ef"], preview: "linear-gradient(135deg,#6d123f,#e84383 55%,#ffe4ef)" },
     { id: "sea-life", name: "Vida marina", cost: 18, description: "Un océano decorado con peces, burbujas y olas.", colors: ["#075985", "#67e8f9"], preview: "linear-gradient(135deg,#082f49,#0284c7 55%,#67e8f9)" },
-    { id: "accounting", name: "Contabilidad", cost: 20, description: "Libros contables, calculadoras, gráficas y símbolos financieros.", colors: ["#166534", "#dcfce7"], preview: "linear-gradient(135deg,#14532d,#16a34a 55%,#dcfce7)" }
+    { id: "accounting", name: "Contabilidad", cost: 20, description: "Libros contables, calculadoras, gráficas y símbolos financieros.", colors: ["#166534", "#dcfce7"], preview: "linear-gradient(135deg,#14532d,#16a34a 55%,#dcfce7)" },
+    { id: "cyberpunk", name: "Cyberpunk", cost: 0, description: "Neón cian y violeta con una estética futurista.", colors: ["#21113f", "#22e6e6", "#ff4fd8"], preview: "linear-gradient(135deg,#120b25 0%,#542080 48%,#22e6e6 100%)" },
+    { id: "galaxy", name: "Galaxia", cost: 0, description: "Azules cósmicos, violeta y luz estelar.", colors: ["#101637", "#7256d8", "#75d7ff"], preview: "linear-gradient(135deg,#080e2c 0%,#493c9a 55%,#75d7ff 100%)" },
+    { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.6.6", code: 16, buildDate: "25 de octubre de 2026" };
+  const APP_VERSION = { name: "3.7.0", code: 17, buildDate: "26 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -576,7 +582,7 @@
         atardecer: "🌇🟠", eclipse: "🌑✨", "tech-blue": "🔷💠⚡", pride: "🏳️‍🌈",
         trans: "🏳️‍⚧️", abrosexual: "💚🤍💗", paleontology: "🦴🦖🦴",
         halloween2026: "🎃🕸️💀👻", navidad2026: "🎄❄️🎁", retro: "🖥️💿",
-        hearts: "💗💖💕", "sea-life": "🐠🐟🫧", accounting: "🧾📊🧮"
+        hearts: "💗💖💕", "sea-life": "🐠🐟🫧", accounting: "🧾📊🧮", cyberpunk: "🌃⚡", galaxy: "🌌✨", vaporwave: "🌅💿"
       };
       return `<article class="theme-card ${active ? "theme-active" : ""} ${lockedCreatorTheme ? "theme-locked" : ""}">
         <div class="theme-preview theme-preview-${theme.id}" style="background:${theme.preview}" role="img" aria-label="Vista previa de ${escapeHtml(theme.name)}">
@@ -838,6 +844,8 @@
       p.price = price;
       p.minStock = minStock;
       p.barcode = barcode;
+      p.favorite = Boolean($("productFavorite")?.checked);
+      if (pendingProductImage) p.image = pendingProductImage;
 
       const diff = stock - p.stock;
       if (diff !== 0) {
@@ -852,12 +860,14 @@
     } else {
       data.products.push({
         id: uid(), name, materials, labor, price, stock, minStock, barcode,
-        createdAt: today()
+        image: pendingProductImage || "", favorite: Boolean($("productFavorite")?.checked), createdAt: today()
       });
       toast("Producto agregado.");
     }
 
     $("productForm").reset();
+    pendingProductImage = "";
+    if ($("productImageFile")) $("productImageFile").value = "";
     $("productId").value = "";
     if ($("productBarcode")) $("productBarcode").value = "";
     $("productLabor").value = "0";
@@ -869,6 +879,8 @@
   });
 
   $("cancelProductEdit").addEventListener("click", () => {
+    pendingProductImage = "";
+    if ($("productImageFile")) $("productImageFile").value = "";
     $("productForm").reset();
     $("productId").value = "";
     if ($("productBarcode")) $("productBarcode").value = "";
@@ -880,8 +892,10 @@
   });
 
   $("productRows").addEventListener("click", e => {
+    const favorite = e.target.closest("[data-favorite-product]");
     const edit = e.target.closest("[data-edit-product]");
     const del = e.target.closest("[data-delete-product]");
+    if (favorite) { const p = product(favorite.dataset.favoriteProduct); if (p) { p.favorite = !p.favorite; save(); toast(p.favorite ? "Producto añadido a favoritos." : "Producto quitado de favoritos."); } return; }
 
     if (edit) {
       const p = product(edit.dataset.editProduct);
@@ -889,6 +903,8 @@
 
       $("productId").value = p.id;
       $("productName").value = p.name;
+      if ($("productFavorite")) $("productFavorite").checked = Boolean(p.favorite);
+      pendingProductImage = p.image || "";
       if ($("productBarcode")) $("productBarcode").value = p.barcode || "";
       $("productMaterials").value = p.materials;
       $("productLabor").value = p.labor;
@@ -1561,6 +1577,57 @@ function downloadCsv() {
   window.onNativeBarcodeError = function(message){toast(String(message||"No se pudo iniciar el escáner."));};
   function stopBarcodeScanner(){if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null;}const video=$("posVideo");if(video)video.srcObject=null;$("posScannerWrap")?.classList.add("hidden");}
   $("posScanButton")?.addEventListener("click",startBarcodeScanner);$("posStopScan")?.addEventListener("click",stopBarcodeScanner);
+  // Funciones ligeras v3.7: imágenes, favoritos, reabastecimiento, calculadora y Manolito.
+  let pendingProductImage = "";
+  $("productImageFile")?.addEventListener("change", async e => {
+    const file = e.target.files?.[0]; if (!file) return;
+    if (!file.type.startsWith("image/")) { toast("Selecciona un archivo de imagen."); e.target.value=""; return; }
+    if (file.size > 2 * 1024 * 1024) { toast("La imagen debe pesar menos de 2 MB."); e.target.value=""; return; }
+    try { pendingProductImage = await new Promise((resolve,reject) => { const reader=new FileReader(); reader.onload=()=>resolve(String(reader.result)); reader.onerror=reject; reader.readAsDataURL(file); }); toast("Imagen lista para guardar con el producto."); }
+    catch { toast("No se pudo leer la imagen."); }
+  });
+  function updatePriceCalculator() {
+    const cost = Math.max(0, Number($("priceCalcCost")?.value) || 0);
+    const margin = Math.min(99.99, Math.max(0, Number($("priceCalcMargin")?.value) || 0));
+    const price = margin >= 100 ? 0 : cost / (1 - margin / 100);
+    if ($("priceCalcResult")) $("priceCalcResult").textContent = money(price);
+    if ($("priceCalcProfit")) $("priceCalcProfit").textContent = money(price - cost);
+  }
+  $("priceCalcCost")?.addEventListener("input", updatePriceCalculator);
+  $("priceCalcMargin")?.addEventListener("input", updatePriceCalculator);
+  $("productGridToggle")?.addEventListener("click", () => { data.settings.productView="grid"; save(); });
+  $("productListToggle")?.addEventListener("click", () => { data.settings.productView="list"; save(); });
+  function renderRestockList() {
+    const panel=$("restockPanel"), list=$("restockList"); if (!panel || !list) return;
+    const low=data.products.filter(p=>Number(p.stock)<=Number(p.minStock));
+    list.innerHTML=low.length?low.map(p=>`<div class="restock-row"><div><strong>${escapeHtml(p.name)}</strong><small>Stock ${p.stock} · mínimo ${p.minStock}</small></div><label>Cantidad a comprar<input type="number" min="1" step="1" value="${Math.max(1,Number(p.minStock)-Number(p.stock))}" data-restock-qty="${escapeHtml(p.id)}"></label><strong>${money(productCost(p)*Math.max(1,Number(p.minStock)-Number(p.stock)))}</strong></div>`).join(""):'<p class="muted">No hay productos por reabastecer.</p>';
+    panel.classList.remove("hidden");
+  }
+  $("showRestockList")?.addEventListener("click",renderRestockList);
+  $("closeRestockList")?.addEventListener("click",()=>$ ("restockPanel").classList.add("hidden"));
+  function applyV37Preferences() {
+    const root=document.documentElement;
+    root.style.setProperty("--mpn-accent-custom", data.settings.accentColor || "#315f82");
+    root.dataset.fontScale=data.settings.fontScale || "normal";
+    const mascotOn=data.settings.mascotEnabled !== false;
+    if ($("mascotEnabled")) $("mascotEnabled").checked=mascotOn;
+    if ($("mascotPanel")) $("mascotPanel").classList.toggle("hidden",!mascotOn);
+    if ($("mascotPanel") && mascotOn) { const messages=["Estoy aquí para ayudarte a organizar tu negocio.","Revisa los productos con poco inventario.","Puedes fijar tus productos favoritos para encontrarlos rápido."]; $("mascotMessage").textContent=messages[new Date().getDate()%messages.length]; }
+    if ($("accentColor")) $("accentColor").value=data.settings.accentColor || "#315f82";
+    if ($("fontScale")) $("fontScale").value=data.settings.fontScale || "normal";
+    if ($("dashboardCards")) $("dashboardCards").value=data.settings.dashboardCards || "all";
+    if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard",data.settings.dashboardCards==="compact");
+  }
+  $("mascotEnabled")?.addEventListener("change",e=>{data.settings.mascotEnabled=e.target.checked;save();toast(e.target.checked?"Manolito está activado.":"Manolito está oculto.");});
+  $("accentColor")?.addEventListener("input",e=>{data.settings.accentColor=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});
+  $("fontScale")?.addEventListener("change",e=>{data.settings.fontScale=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});
+  $("dashboardCards")?.addEventListener("change",e=>{data.settings.dashboardCards=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});
+  const originalSaveV37 = save;
+  // Las preferencias se reaplican cada vez que se renderizan los datos.
+  const originalRenderAllV37 = renderAll;
+  renderAll = function(){ originalRenderAllV37(); applyV37Preferences(); updatePriceCalculator(); };
+  applyV37Preferences(); updatePriceCalculator();
+
   const originalGo = go;
   // El render de operaciones se activa al entrar a la sección y al terminar las operaciones.
   document.querySelectorAll('[data-view="operations"]').forEach(b=>b.addEventListener("click",renderOperations));

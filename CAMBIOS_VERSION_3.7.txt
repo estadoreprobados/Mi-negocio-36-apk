@@ -1,0 +1,15 @@
+Mi Primer Negocio 36 — Versión 3.7.0 (paquete de trabajo)
+
+Cambios incluidos en esta propuesta:
+- Actualización visual de navegación y menú lateral derecho.
+- Acciones rápidas en Inicio.
+- Mascota Manolito con opción para ocultarla desde Ajustes.
+- Preferencias visuales: color de acento y tamaño de letra.
+- Catálogo de productos en tarjetas con fotografía o vista de lista.
+- Carga local de imagen para cada producto y favoritos.
+- Calculadora de precios basada en margen sobre precio de venta.
+- Lista de reabastecimiento para productos con existencias iguales o inferiores al mínimo.
+- Nombre del APK generado: Mi-Primer-Negocio-36.apk.
+
+Pendiente de pruebas: compilación de GitHub Actions, cámara/escáner en el dispositivo, restauración de respaldos y pruebas de regresión de las funciones previas.
+La compatibilidad con iPhone, Windows y Linux queda reservada para la versión 3.8.

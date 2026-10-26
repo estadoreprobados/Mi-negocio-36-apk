@@ -1,9 +1,11 @@
-const CACHE_NAME = "mpn36-offline-v1";
+const CACHE_NAME = "mpn36-offline-v3.7";
 const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
+  "./features.css",
   "./app.js",
+  "./manolito.jpg",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png"
