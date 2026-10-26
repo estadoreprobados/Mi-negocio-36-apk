@@ -1,0 +1,16 @@
+Imágenes de Manolito para Mi Primer Negocio 36
+Archivos:
+- manolito_feliz.jpg
+- manolito_sorprendido.jpg
+- manolito_guino.jpg
+- manolito_enojado.jpg
+- manolito_enamorado.jpg
+- manolito_dormido.jpg
+
+Ruta recomendada en el repositorio Android:
+app/src/main/assets/images/
+
+Crea la carpeta images dentro de app/src/main/assets si no existe y coloca ahí las seis imágenes.
+La ruta raíz del sitio web también puede necesitar una copia en images/ si la versión GitHub Pages usa la raíz del repositorio.
+
+Para que cambien según el diálogo, el código de Manolito debe asignar el archivo correspondiente al estado o diálogo activo. Solo subir las imágenes no las conecta automáticamente.
