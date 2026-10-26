@@ -778,3 +778,8 @@ footer { color: var(--muted); }
 #view-employees .mini-summary > div { padding:12px; border:1px solid var(--mpn-border); border-radius:10px; background:var(--mpn-bg); }
 #view-employees .mini-summary span, #view-employees .mini-summary strong { display:block; }
 #view-employees .mini-summary strong { margin-top:5px; font-size:1.1rem; }
+
+/* v3.7.2: controles compactos de Manolito */
+.mascot-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mascot-actions .button{font-size:.88rem;padding:8px 12px}
+@media(max-width:520px){.mascot-actions .button{flex:1 1 42%;min-width:120px}}

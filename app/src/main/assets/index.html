@@ -130,7 +130,8 @@
     </article>
     <section class="panel mascot-panel" id="mascotPanel">
       <img src="manolito.jpg" alt="Manolito, mascota de Mi Primer Negocio 36" class="mascot-avatar">
-      <div class="mascot-copy"><strong>¡Hola! Soy Manolito</strong><p id="mascotMessage">Estoy aquí para ayudarte a organizar tu negocio.</p></div>
+      <div class="mascot-copy"><strong>¡Hola! Soy Manolito</strong><p id="mascotMessage" aria-live="polite">Estoy aquí para ayudarte a organizar tu negocio.</p>
+        <div class="mascot-actions"><button class="button secondary" type="button" id="mascotAdviceButton">Dame un consejo</button><button class="button secondary" type="button" data-goto="products">Ver productos</button><button class="button" type="button" data-goto="sales">Registrar venta</button></div></div>
     </section>
     <section class="panel quick-actions-panel" id="quickActionsPanel">
       <h3>Acciones rápidas</h3>
@@ -668,23 +669,25 @@
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.7.01</strong><p>Mi Primer Negocio 36</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.7.2</strong><p>Mi Primer Negocio 36</p>
       <div class="version-facts">
-        <p><span>Número de compilación</span><strong id="appBuildNumber">18</strong></p>
+        <p><span>Número de compilación</span><strong id="appBuildNumber">19</strong></p>
         <p><span>Actualización preparada</span><strong id="appBuildDate">26 de octubre de 2026</strong></p>
       </div>
     </article>
     <article class="panel version-panel">
       <h3>Novedades de esta actualización</h3>
       <ul class="release-list">
-        <li><strong>Empleados y mano de obra:</strong> registro de trabajadores, puesto, tarifa por hora, horas normales y extras, con estimación del pago bruto.</li>
-        <li><strong>Reporte PDF ampliado:</strong> agrega secciones de inventario, ventas, gastos, empleados, clientes, proveedores, compras, notas, movimientos de stock, crédito y cortes de caja según los registros disponibles.</li>
-        <li><strong>Versión 3.7.01:</strong> documentación de novedades y número de compilación actualizado.</li>
-        <li><strong>Temas de temporada:</strong> Halloween y Navidad con cambios visuales completos en fondos, paneles, botones, menú y controles.</li>
-        <li><strong>Disponibilidad por fechas:</strong> los temas de temporada solo aparecen en la tienda durante sus fechas habilitadas.</li>
-        <li><strong>Restauración automática:</strong> al terminar una temporada, la aplicación vuelve al tema anterior sin borrar los datos del negocio.</li>
-        <li><strong>Personalización:</strong> se conserva el tema seleccionado y la configuración guardada localmente.</li>
-        <li><strong>Seguridad de la información:</strong> esta pantalla muestra las novedades públicas, no códigos de desbloqueo.</li>
+        <li><strong>Manolito interactivo, sin IA:</strong> ofrece consejos predeterminados basados en los datos locales del negocio y accesos directos a Productos y Ventas. No usa servicios de IA ni envía información a internet.</li>
+        <li><strong>Consejos contextuales:</strong> puede avisar si hay productos en el mínimo o por debajo, si no hay ventas registradas hoy o si conviene completar los registros.</li>
+        <li><strong>Control de la mascota:</strong> la opción de Ajustes permite mostrar u ocultar a Manolito.</li>
+        <li><strong>Empleados y mano de obra:</strong> registro de nombre, puesto, tarifa por hora, horas normales y horas extra; cálculo estimado del pago bruto y opción para eliminar registros.</li>
+        <li><strong>Costos por producto:</strong> el costo unitario se calcula con materiales más mano de obra introducida en cada producto.</li>
+        <li><strong>Reporte PDF ampliado:</strong> incluye las secciones disponibles de inventario, ventas, gastos, empleados, clientes, proveedores, compras, notas, movimientos de stock, crédito y cortes de caja cuando hay registros.</li>
+        <li><strong>Personalización visual:</strong> temas Cyberpunk y Galaxia con paletas específicas para modo claro y oscuro; las preferencias se guardan localmente.</li>
+        <li><strong>Versión 3.7.2, compilación 19:</strong> se actualizan la pantalla de versión y la documentación.</li>
+        <li><strong>Correcciones:</strong> el botón «Dame un consejo» ahora ejecuta una acción y muestra recomendaciones; se agregan accesos rápidos desde la mascota.</li>
+        <li><strong>Privacidad:</strong> Manolito funciona sin IA ni servicios externos. Los datos del negocio permanecen en el almacenamiento local de la aplicación.</li>
       </ul>
     </article>
     <article class="panel version-panel">
