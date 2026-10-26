@@ -9,6 +9,7 @@
 
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="features.css">
+  <meta name="application-name" content="Mi Primer Negocio 36">
 
   <script defer src="chart.umd.min.js"></script>
   <script defer src="jspdf.umd.min.js"></script>
@@ -126,6 +127,19 @@
         <div id="streakCalendar" class="streak-calendar" aria-label="Calendario de rachas"></div>
       </div>
     </article>
+    <section class="panel mascot-panel" id="mascotPanel">
+      <img src="manolito.jpg" alt="Manolito, mascota de Mi Primer Negocio 36" class="mascot-avatar">
+      <div class="mascot-copy"><strong>¡Hola! Soy Manolito</strong><p id="mascotMessage">Estoy aquí para ayudarte a organizar tu negocio.</p></div>
+    </section>
+    <section class="panel quick-actions-panel" id="quickActionsPanel">
+      <h3>Acciones rápidas</h3>
+      <div class="quick-actions">
+        <button class="button" type="button" data-goto="products">＋ Producto</button>
+        <button class="button" type="button" data-goto="sales">🛒 Registrar venta</button>
+        <button class="button secondary" type="button" data-goto="expenses">＋ Gasto</button>
+        <button class="button secondary" type="button" data-goto="operations">▦ Operaciones</button>
+      </div>
+    </section>
     <div class="section-heading">
       <div>
         <p class="eyebrow">VISTA GENERAL</p>
@@ -222,6 +236,11 @@
       <label>Código de barras (opcional)
         <input id="productBarcode" maxlength="80" placeholder="Escanea o escribe el código">
       </label>
+      <label>Fotografía del producto (opcional)
+        <input id="productImageFile" type="file" accept="image/*" capture="environment">
+      </label>
+      <label class="favorite-edit-label"><input id="productFavorite" type="checkbox"> Marcar como favorito</label>
+      <p class="muted image-help">La imagen se guarda en este dispositivo. Usa imágenes pequeñas para no llenar el almacenamiento.</p>
 
       <label>Costo de materiales
         <input id="productMaterials" type="number" min="0" step="0.01" required placeholder="0.00">
@@ -254,7 +273,9 @@
         <h3>Lista de productos</h3>
         <input id="productSearch" class="search" placeholder="Buscar producto…">
       </div>
-      <div class="table-wrap">
+      <div class="product-view-controls"><button class="button secondary" id="productGridToggle" type="button">▦ Vista con imágenes</button><button class="button secondary" id="productListToggle" type="button">☰ Vista de lista</button><button class="button secondary" id="showRestockList" type="button">🛍 Lista de reabastecimiento</button></div>
+      <div id="productCards" class="product-cards hidden"></div>
+      <div class="table-wrap" id="productTableWrap">
         <table>
           <thead>
             <tr>
@@ -272,6 +293,12 @@
       <p class="muted footnote">La ganancia por unidad es una estimación: precio menos materiales y mano de obra.</p>
     </article>
 
+    <article class="panel options-panel" id="priceCalculatorPanel">
+      <h3>Calculadora de precios</h3><p class="muted">Calcula un precio sugerido usando el margen deseado sobre el precio de venta.</p>
+      <div class="price-calculator-fields"><label for="priceCalcCost">Costo unitario<input id="priceCalcCost" type="number" min="0" step="0.01" value="0"></label><label for="priceCalcMargin">Margen deseado (%)<input id="priceCalcMargin" type="number" min="0" max="99.99" step="0.01" value="25"></label></div>
+      <p>Precio sugerido: <strong id="priceCalcResult">$0.00</strong> · Ganancia: <strong id="priceCalcProfit">$0.00</strong></p>
+    </article>
+    <article class="panel hidden" id="restockPanel"><div class="panel-title"><h3>Lista de compras para reabastecer</h3><button type="button" class="button secondary" id="closeRestockList">Cerrar</button></div><div id="restockList"></div></article>
     <article class="panel">
       <div class="panel-title">
         <h3>Movimiento de inventario</h3>
@@ -674,6 +701,16 @@
       </label>
     </article>
 
+    <article class="panel options-panel">
+      <h3>Personalización visual</h3>
+      <label for="accentColor">Color de acento<input id="accentColor" type="color" value="#315f82"></label>
+      <label for="fontScale">Tamaño de letra<select id="fontScale"><option value="small">Pequeño</option><option value="normal" selected>Normal</option><option value="large">Grande</option></select></label>
+      <label for="dashboardCards">Tarjetas del inicio<select id="dashboardCards"><option value="all">Mostrar todas</option><option value="compact">Vista compacta</option></select></label>
+    </article>
+    <article class="panel options-panel">
+      <h3>Mascota de la aplicación</h3><p class="muted">Puedes ocultar a Manolito cuando prefieras una interfaz más sencilla.</p>
+      <label class="mascot-toggle-label"><input type="checkbox" id="mascotEnabled" checked> Mostrar a Manolito</label>
+    </article>
     <article class="panel options-panel">
       <h3>Importar / exportar datos mediante PDF</h3>
       <p class="muted">El PDF de respaldo generado aquí contiene los datos necesarios para restaurarlos. Los PDF externos o los reportes antiguos no se pueden importar.</p>
