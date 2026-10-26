@@ -767,3 +767,14 @@ footer { color: var(--muted); }
 :root[data-app-theme="cyberpunk"] { --mpn-bg:#100b1e; --mpn-panel:#201333; --mpn-text:#f5eaff; --mpn-muted:#c2a8d8; --mpn-accent:#22e6e6; --mpn-accent-contrast:#130c25; --mpn-border:#633c83; }
 :root[data-app-theme="galaxy"] { --mpn-bg:#0b1230; --mpn-panel:#171e46; --mpn-text:#edf1ff; --mpn-muted:#b5bce9; --mpn-accent:#75d7ff; --mpn-accent-contrast:#101637; --mpn-border:#3a477e; }
 :root[data-app-theme="vaporwave"] { --mpn-bg:#fff0fb; --mpn-panel:#fffaff; --mpn-text:#39205a; --mpn-muted:#76558e; --mpn-accent:#8c5cff; --mpn-accent-contrast:#fff; --mpn-border:#f0b8e8; }
+
+/* v3.7.01: modos claros específicos para Cyberpunk y Galaxia. */
+:root[data-mode="light"][data-app-theme="cyberpunk"] { --mpn-bg:#f6f0ff; --mpn-panel:#ffffff; --mpn-text:#26123f; --mpn-muted:#65517a; --mpn-accent:#7a3fd1; --mpn-accent-contrast:#ffffff; --mpn-border:#d9c6f0; }
+:root[data-mode="light"][data-app-theme="galaxy"] { --mpn-bg:#eef5ff; --mpn-panel:#ffffff; --mpn-text:#17284f; --mpn-muted:#53658e; --mpn-accent:#5a55c8; --mpn-accent-contrast:#ffffff; --mpn-border:#c7d6f5; }
+.employee-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--mpn-border); }
+.employee-row p { margin:4px 0; color:var(--mpn-muted); }
+.employee-row small { color:var(--mpn-muted); }
+#view-employees .mini-summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:12px 0; }
+#view-employees .mini-summary > div { padding:12px; border:1px solid var(--mpn-border); border-radius:10px; background:var(--mpn-bg); }
+#view-employees .mini-summary span, #view-employees .mini-summary strong { display:block; }
+#view-employees .mini-summary strong { margin-top:5px; font-size:1.1rem; }
