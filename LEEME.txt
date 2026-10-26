@@ -1,17 +1,9 @@
-Mi Primer Negocio 36 — versión 3.7.2
+Mi Primer Negocio 36 v3.7.3
 
-Este ZIP contiene el código fuente actualizado. No es un APK instalado ni una prueba de que la compilación ya haya terminado.
+Para compilar desde GitHub, conserva las carpetas del proyecto y sube los archivos respetando sus rutas. La aplicación Android usa los archivos de app/src/main/assets/. Ejecuta GitHub Actions y espera el resultado exitoso antes de descargar el APK.
 
-1. Haz una copia del repositorio y exporta un respaldo JSON desde la app.
-2. Sube el contenido manteniendo las rutas del ZIP.
-3. Comprueba que se actualicen las copias Android dentro de app/src/main/assets/. El WebView carga esos archivos.
-4. Abre GitHub Actions y espera a que la compilación termine correctamente.
-5. Descarga el APK de esa ejecución e instálalo sin borrar los datos anteriores.
-6. En Menú → Versión del sistema verifica versión 3.7.2 y compilación 19.
-7. Prueba la mascota, empleados, PDF, ventas e inventario.
+Antes de actualizar: exporta un respaldo JSON desde Reportes. No borres los datos de la aplicación.
 
-Manolito es una mascota con consejos predeterminados, sin IA. El botón «Dame un consejo» utiliza información local para sugerir revisar inventario, registrar ventas o completar los registros.
+Cambios principales: menú lateral, reorganización de Clientes y Proveedores, carrito de ventas multi-producto con lector de barras, calculadora de mano de obra y diálogos locales de Manolito sin IA. Consulta CAMBIOS_VERSION_3.7.3.txt.
 
-Antes de reemplazar archivos, conserva una copia del repositorio. No desinstales la app ni borres sus datos sin comprobar que tienes un respaldo JSON válido.
-
-Consulta CAMBIOS_VERSION_3.7.2.txt y README.md para la lista detallada de novedades, ajustes y limitaciones.
+Importante: el código está preparado para probarse, pero debe compilarse y validarse en el dispositivo Android antes de considerarse una versión estable.

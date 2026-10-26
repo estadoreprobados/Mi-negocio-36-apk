@@ -232,8 +232,8 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
+        if (webView != null) {
+            webView.evaluateJavascript("if (window.__mpnGoDashboard) window.__mpnGoDashboard();", null);
         } else {
             super.onBackPressed();
         }

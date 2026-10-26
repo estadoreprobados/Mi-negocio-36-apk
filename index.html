@@ -18,6 +18,24 @@
 <body>
 
 <header class="topbar">
+  <div class="left-menu-wrap"><button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Abrir menú principal" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">☰</span></button><div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Menú principal">
+        <button class="menu-item" data-view="dashboard" role="menuitem">🏠 Resumen</button>
+        <button class="menu-item" data-view="products" role="menuitem">📦 Productos</button>
+        <button class="menu-item" data-view="sales" role="menuitem">🛒 Ventas</button>
+        <button class="menu-item" data-view="expenses" role="menuitem">💸 Gastos</button>
+        <button class="menu-item" data-view="employees" role="menuitem">👷 Empleados</button>
+        <button class="menu-item" data-view="reports" role="menuitem">📊 Reportes</button>
+        <button class="menu-item" data-view="notes" role="menuitem">📝 Notas</button>
+        <button class="menu-item" data-view="taxes" role="menuitem">🧮 Impuestos</button>
+        <button class="menu-item" data-view="customers" role="menuitem">👥 Clientes</button>
+        <button class="menu-item" data-view="suppliers" role="menuitem">🚚 Proveedores</button>
+        <button class="menu-item" data-view="options" role="menuitem">⚙️ Ajustes</button>
+        <button class="menu-item" data-view="help" role="menuitem">❔ Ayuda</button>
+        <button class="menu-item" data-view="statistics" role="menuitem">📈 Estadísticas</button>
+        <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
+        <button class="menu-item" data-view="creators" role="menuitem">🧩 Desbloquear temas</button>
+        <button class="menu-item" data-view="version" role="menuitem">📱 Versión del sistema</button>
+      </div></div>
   <div>
     <p class="eyebrow">ADMINISTRACIÓN DE NEGOCIOS</p>
     <h1>Mi Primer Negocio <span>36</span></h1>
@@ -27,17 +45,7 @@
     <button id="importCsvTop" class="button secondary" type="button">Importar CSV</button>
     <input id="importCsvFile" type="file" accept=".csv,text/csv" class="hidden">
     <button id="exportCsvTop" class="button secondary" type="button">Exportar CSV</button>
-    <div class="more-menu-wrap">
-      <button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Abrir menú" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">☰</span></button>
-      <div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Menú principal">
-        <button class="menu-item" data-view="options" role="menuitem">⚙️ Ajustes</button>
-        <button class="menu-item" data-view="help" role="menuitem">❔ Ayuda</button>
-        <button class="menu-item" data-view="statistics" role="menuitem">📊 Estadísticas</button>
-        <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
-        <button class="menu-item" data-view="creators" role="menuitem">🧩 Desbloquear temas</button>
-        <button class="menu-item" data-view="version" role="menuitem">📱 Versión del sistema</button>
-      </div>
-    </div>
+
   </div>
 </header>
 
@@ -101,17 +109,6 @@
   </section>
 
 
-  <nav class="tabs" aria-label="Secciones">
-    <button class="tab active" data-view="dashboard">Resumen</button>
-    <button class="tab" data-view="products">Productos</button>
-    <button class="tab" data-view="sales">Ventas</button>
-    <button class="tab" data-view="expenses">Gastos</button>
-    <button class="tab" data-view="employees">Empleados y mano de obra</button>
-    <button class="tab" data-view="reports">Reportes</button>
-    <button class="tab" data-view="notes">Notas 📝</button>
-    <button class="tab" data-view="taxes">Impuestos 🧮</button>
-    <button class="tab" data-view="operations">Operaciones ✨</button>
-  </nav>
 
   <section class="view" id="view-dashboard">
     <article class="panel streak-panel">
@@ -139,7 +136,7 @@
         <button class="button" type="button" data-goto="products">＋ Producto</button>
         <button class="button" type="button" data-goto="sales">🛒 Registrar venta</button>
         <button class="button secondary" type="button" data-goto="expenses">＋ Gasto</button>
-        <button class="button secondary" type="button" data-goto="operations">▦ Operaciones</button>
+        <button class="button secondary" type="button" data-goto="customers">👥 Clientes</button><button class="button secondary" type="button" data-goto="suppliers">🚚 Proveedores</button>
       </div>
     </section>
     <div class="section-heading">
@@ -400,6 +397,10 @@
     </article>
   </section>
 
+  <section class="view hidden" id="view-customers"><div class="section-heading"><div><p class="eyebrow">RELACIÓN CON CLIENTES</p><h2>Clientes y fiado</h2><p class="muted">Registra clientes, deudas y abonos.</p></div></div><div id="customersContent"></div></section>
+
+  <section class="view hidden" id="view-suppliers"><div class="section-heading"><div><p class="eyebrow">ABASTECIMIENTO</p><h2>Proveedores y compras</h2><p class="muted">Registra proveedores y compras para aumentar existencias.</p></div></div><div id="suppliersContent"></div></section>
+
   <section class="view hidden" id="view-expenses">
     <div class="section-heading">
       <div>
@@ -466,6 +467,7 @@
       </form>
       <p class="muted footnote">En México, el pago real de horas extra depende de los límites legales y las circunstancias de la jornada. Verifica la normativa aplicable.</p>
     </article>
+    <article class="panel"><h3>Calculadora de mano de obra por unidad</h3><p class="muted">Selecciona un empleado e indica los minutos que tarda en fabricar una unidad. El cálculo usa su pago por hora guardado.</p><div class="labor-calculator-fields"><label>Empleado<select id="laborEmployeeSelect"><option value="">Selecciona un empleado</option></select></label><label>Minutos por unidad<input id="laborMinutesPerUnit" type="number" min="0.01" step="0.01" value="15"></label><label>Unidades fabricadas (opcional)<input id="laborUnits" type="number" min="1" step="1" value="1"></label></div><div class="inline-actions"><button class="button" id="calculateLaborCost" type="button">Calcular mano de obra</button><button class="button secondary" id="applyLaborCost" type="button" disabled>Usar costo por unidad en producto</button></div><div class="mini-summary" id="laborCalculationResult"><div><span>Costo de mano de obra por unidad</span><strong>$0.00</strong></div></div><p class="muted footnote">El resultado es una estimación. No incluye prestaciones, cargas patronales ni otros costos indirectos.</p></article>
     <article class="panel"><h3>Resumen de empleados</h3><div id="employeeSummary" class="mini-summary"></div><div id="employeeList" class="compact-list"></div></article>
   </section>
 
@@ -624,7 +626,7 @@
     <div class="help-grid">
       <article class="panel help-card"><h3>📦 Productos e inventario</h3><ol><li>Abre la pestaña <b>Productos</b>.</li><li>Completa el nombre, costos, precio de venta y existencias iniciales.</li><li>Guarda el producto. Usa las herramientas de inventario para registrar entradas o salidas y revisar las existencias.</li></ol></article>
       <article class="panel help-card"><h3>🛒 Registrar ventas</h3><ol><li>Entra en <b>Ventas</b> y selecciona un producto.</li><li>Indica la cantidad y revisa el precio y el total.</li><li>Registra la venta. Las existencias y los indicadores se actualizarán según la operación.</li></ol></article>
-      <article class="panel help-card"><h3>🧾 Operaciones: punto de venta, fiado y caja</h3><ol><li>Abre la pestaña <b>Operaciones</b> de la barra principal.</li><li>En <b>Punto de venta</b>, busca o escanea productos, añádelos al carrito y selecciona la forma de pago antes de cobrar.</li><li>Para el <b>fiado</b>, guarda primero al cliente y registra la venta a crédito; registra los abonos en el apartado de clientes.</li><li>En <b>Corte de caja</b>, introduce el fondo inicial y realiza el corte al terminar tu jornada. Compara el efectivo esperado con el efectivo real.</li><li>En <b>Proveedores y compras</b>, registra el proveedor y la compra para actualizar existencias.</li><li>En <b>Copias de seguridad</b>, exporta un archivo JSON y guárdalo en un lugar seguro. Importarlo reemplaza los datos actuales.</li></ol><p class="muted">La lectura con cámara requiere permiso. Si no está disponible, puedes escribir el código de barras en el buscador.</p></article>
+      <article class="panel help-card"><h3>🧾 Operaciones: punto de venta, fiado y caja</h3><ol><li>Abre el menú de tres rayas y entra en <b>Ventas</b>, <b>Clientes</b> o <b>Proveedores</b>.</li><li>En <b>Ventas</b>, busca o escanea productos, añade dos o más productos distintos al carrito y selecciona la forma de pago antes de cobrar.</li><li>Para el <b>fiado</b>, guarda primero al cliente y registra la venta a crédito; registra los abonos en <b>Clientes</b>.</li><li>En <b>Corte de caja</b>, introduce el fondo inicial y realiza el corte al terminar tu jornada. Compara el efectivo esperado con el efectivo real.</li><li>En <b>Proveedores</b>, registra al proveedor y la compra para actualizar existencias.</li><li>En <b>Reportes</b>, usa las opciones de copias de seguridad y guarda el archivo JSON en un lugar seguro. Importarlo reemplaza los datos actuales.</li></ol><p class="muted">La lectura con cámara requiere permiso. Si no está disponible, puedes escribir el código de barras en el buscador.</p></article>
       <article class="panel help-card"><h3>👷 Empleados y mano de obra</h3><ol><li>Abre la pestaña <b>Empleados y mano de obra</b>.</li><li>Registra el nombre, puesto y pago por hora del trabajador.</li><li>Escribe las horas normales y las horas extras del periodo.</li><li>Selecciona el multiplicador para las horas extras y guarda el registro.</li><li>Revisa el pago bruto estimado en el resumen y genera el reporte PDF para incluir estos registros.</li></ol><p class="muted">El cálculo es orientativo; verifica las reglas laborales y de nómina aplicables.</p></article>
       <article class="panel help-card"><h3>🧾 Registrar gastos</h3><ol><li>Abre <b>Gastos</b>.</li><li>Agrega la descripción, el importe y la fecha.</li><li>Guarda el gasto y revisa su efecto en el resumen y los reportes.</li></ol></article>
       <article class="panel help-card"><h3>📊 Resumen y estadísticas</h3><p>El <b>Resumen</b> presenta indicadores del negocio y la racha de ventas. En <b>Estadísticas</b> puedes revisar gráficas y cambiar el periodo cuando la opción esté disponible.</p></article>
@@ -669,7 +671,7 @@
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.7.2</strong><p>Mi Primer Negocio 36</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.7.3</strong><p>Mi Primer Negocio 36</p>
       <div class="version-facts">
         <p><span>Número de compilación</span><strong id="appBuildNumber">19</strong></p>
         <p><span>Actualización preparada</span><strong id="appBuildDate">26 de octubre de 2026</strong></p>
@@ -685,7 +687,7 @@
         <li><strong>Costos por producto:</strong> el costo unitario se calcula con materiales más mano de obra introducida en cada producto.</li>
         <li><strong>Reporte PDF ampliado:</strong> incluye las secciones disponibles de inventario, ventas, gastos, empleados, clientes, proveedores, compras, notas, movimientos de stock, crédito y cortes de caja cuando hay registros.</li>
         <li><strong>Personalización visual:</strong> temas Cyberpunk y Galaxia con paletas específicas para modo claro y oscuro; las preferencias se guardan localmente.</li>
-        <li><strong>Versión 3.7.2, compilación 19:</strong> se actualizan la pantalla de versión y la documentación.</li>
+        <li><strong>Versión 3.7.3, compilación 20:</strong> menú lateral izquierdo; Clientes y Proveedores como apartados independientes; punto de venta dentro de Ventas con carrito multi-producto y lector de barras; calculadora de mano de obra por unidad conectada al pago por hora de un empleado; más diálogos de Manolito sin IA con cambios de imagen; botón Atrás para regresar al Resumen.</li>
         <li><strong>Correcciones:</strong> el botón «Dame un consejo» ahora ejecuta una acción y muestra recomendaciones; se agregan accesos rápidos desde la mascota.</li>
         <li><strong>Privacidad:</strong> Manolito funciona sin IA ni servicios externos. Los datos del negocio permanecen en el almacenamiento local de la aplicación.</li>
       </ul>

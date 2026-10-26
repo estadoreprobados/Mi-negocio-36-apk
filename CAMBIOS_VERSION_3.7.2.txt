@@ -1,4 +1,4 @@
-Mi Primer Negocio 36 — Cambios de la versión 3.7.2
+Mi Primer Negocio 36 — Cambios de la versión 3.7.3
 Fecha: 26 de octubre de 2026
 Compilación Android: 19
 
@@ -11,7 +11,7 @@ NOVEDADES
 6. El costo unitario de producto sigue calculándose con materiales más mano de obra introducida en el producto. Los pagos de empleados no se asignan automáticamente a productos porque la app no tiene una distribución por horas/producto configurada.
 7. Reporte PDF ampliado con las secciones existentes de inventario, ventas, gastos, empleados, clientes, proveedores, compras, notas, movimientos de stock, crédito y cortes de caja, cuando haya datos disponibles. Un PDF es un reporte y no un respaldo restaurable.
 8. Temas Cyberpunk y Galaxia conservan paletas para modo claro y oscuro.
-9. Se actualizan la pantalla Versión del sistema, README y documentación de cambios a 3.7.2 / compilación 19.
+9. Se actualizan la pantalla Versión del sistema, README y documentación de cambios a 3.7.3 / compilación 20.
 
 CORRECCIONES Y AJUSTES
 - El botón «Dame un consejo» de Manolito ahora ejecuta una acción y cambia el mensaje según el estado de los registros locales.
@@ -22,7 +22,7 @@ CORRECCIONES Y AJUSTES
 DATOS Y ACTUALIZACIÓN
 - La aplicación conserva el almacenamiento local existente. No borres los datos de la app ni la desinstales sin antes exportar y comprobar un respaldo JSON.
 - Al reemplazar archivos en el repositorio Android, asegúrate de actualizar tanto los archivos raíz como app/src/main/assets/. El APK Android carga los archivos incluidos en app/src/main/assets/.
-- Después del commit, ejecuta GitHub Actions y comprueba que termine en verde. Instala el APK de esa ejecución y verifica Versión del sistema = 3.7.2 y compilación = 19.
+- Después del commit, ejecuta GitHub Actions y comprueba que termine en verde. Instala el APK de esa ejecución y verifica Versión del sistema = 3.7.3 y compilación = 19.
 
 LIMITACIONES CONOCIDAS
 - Los consejos de Manolito son reglas sencillas predeterminadas; no comprende texto libre ni aprende.

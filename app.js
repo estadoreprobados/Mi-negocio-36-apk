@@ -378,7 +378,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.7.2", code: 19, buildDate: "26 de octubre de 2026" };
+  const APP_VERSION = { name: "3.7.3", code: 20, buildDate: "26 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -764,9 +764,7 @@
     document.querySelectorAll(".view").forEach(v =>
       v.classList.toggle("hidden", v.id !== "view-" + view)
     );
-    document.querySelectorAll(".tab").forEach(b =>
-      b.classList.toggle("active", b.dataset.view === view)
-    );
+    document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.view === view));
     document.querySelectorAll(".menu-item").forEach(b =>
       b.classList.toggle("active", b.dataset.view === view)
     );
@@ -781,6 +779,10 @@
     if (view === "shop") renderShop();
     if (view === "taxes") updateTax();
     if (view === "version") renderSystemVersion();
+    if (view === "employees") renderEmployees();
+    if (view === "customers" || view === "suppliers") renderOperations();
+    if (view === "sales") { renderSales(); renderPosCart(); }
+    window.__mpnCurrentView = view;
   }
 
   function renderSystemVersion() {
@@ -812,7 +814,7 @@
       moreMenuButton.setAttribute("aria-expanded", String(open));
     });
     document.addEventListener("click", e => {
-      if (!e.target.closest(".more-menu-wrap")) {
+      if (!e.target.closest(".left-menu-wrap")) {
         moreMenu.classList.add("hidden");
         moreMenuButton.setAttribute("aria-expanded", "false");
       }
@@ -1662,33 +1664,41 @@ function downloadCsv() {
     const mascotOn=data.settings.mascotEnabled !== false;
     if ($("mascotEnabled")) $("mascotEnabled").checked=mascotOn;
     if ($("mascotPanel")) $("mascotPanel").classList.toggle("hidden",!mascotOn);
-    if ($("mascotPanel") && mascotOn && !window.__mpnManolitoMessageChosen) { $("mascotMessage").textContent="¡Hola! Pulsa «Dame un consejo» para revisar tu negocio. Mis consejos funcionan sin IA y sin enviar tus datos a internet."; }
+    if ($("mascotPanel") && mascotOn && !window.__mpnManolitoMessageChosen) { $("mascotMessage").textContent="¡Hola! Tengo varios consejos y diálogos. Pulsa «Dame un consejo» para escuchar otro."; }
 
     if ($("accentColor")) $("accentColor").value=data.settings.accentColor || "#315f82";
     if ($("fontScale")) $("fontScale").value=data.settings.fontScale || "normal";
     if ($("dashboardCards")) $("dashboardCards").value=data.settings.dashboardCards || "all";
     if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard",data.settings.dashboardCards==="compact");
   }
-  // Manolito: mascota interactiva de consejos predefinidos; no usa IA ni servicios externos.
-  function getManolitoAdvice() {
-    const low = (data.products || []).filter(p => Number(p.stock) <= Number(p.minStock));
-    const todaySales = (data.sales || []).filter(s => s.date === today());
-    const tips = [];
-    if (low.length) tips.push(`Tienes ${low.length} producto(s) en el mínimo o por debajo del stock. Revisa Inventario y prepara una reposición.`);
-    if (!todaySales.length) tips.push("Todavía no hay ventas registradas hoy. Si vendiste algo, recuerda registrarlo para mantener el inventario actualizado.");
-    if (!(data.products || []).length) tips.push("Empieza registrando tu primer producto con su costo, precio de venta y existencias.");
-    if (!(data.expenses || []).length) tips.push("Registra los gastos del negocio para que el cálculo de ganancias sea más útil.");
-    if ((data.products || []).length && (data.sales || []).length) tips.push("Revisa periódicamente los costos y precios de tus productos para comprobar que el margen siga siendo conveniente.");
-    if (!tips.length) tips.push("¡Vas bien! Mantén al día tus ventas, gastos y existencias. Los reportes serán más útiles cuando tus registros estén completos.");
-    return tips[Math.floor(Math.random() * tips.length)];
+  // Manolito: diálogos predefinidos sin IA, sin conexión ni servicios externos.
+  const manolitoDialogues = [
+    {text:"¡Hola! Vamos paso a paso. Registra tus productos con costos reales para conocer mejor tu ganancia.", image:"manolito.jpg"},
+    {text:"¡Ojo! Hay productos con pocas existencias. Revisa el stock mínimo antes de aceptar más pedidos.", image:"icon-192.png", condition:()=>data.products.some(p=>Number(p.stock)<=Number(p.minStock))},
+    {text:"¿Vendiste hoy? Registra cada venta para mantener las existencias y los reportes al día.", image:"manolito.jpg", condition:()=>(data.sales||[]).filter(s=>s.date===today()).length===0},
+    {text:"Los gastos pequeños también cuentan. Anota empaques, transporte e internet para estimar mejor la ganancia.", image:"icon-512.png", condition:()=>(data.expenses||[]).length===0},
+    {text:"Antes de poner un precio, suma materiales y mano de obra. Luego decide el margen que quieres ganar.", image:"manolito.jpg"},
+    {text:"¡Hora de revisar las cuentas! Si un cliente te debe, registra sus abonos para que el saldo sea correcto.", image:"icon-192.png", condition:()=>(data.creditMovements||[]).some(m=>m.type==="charge")},
+    {text:"Haz una copia de seguridad con frecuencia. Así tendrás una copia de tus datos si cambias de dispositivo.", image:"icon-512.png"},
+    {text:"¡Buen trabajo! Revisa el resumen y los reportes antes de decidir qué producto conviene reponer.", image:"manolito.jpg"},
+    {text:"No olvides comparar el costo de compra con el precio de venta. Vender mucho no siempre significa ganar mucho.", image:"icon-192.png"},
+    {text:"Puedes usar el lector de barras en Ventas. Si la cámara no funciona, escribe el código o el nombre del producto.", image:"manolito.jpg"}
+  ];
+  let manolitoLastDialogue = -1;
+  function getManolitoDialogue() {
+    const eligible=manolitoDialogues.filter(d=>!d.condition||d.condition());
+    const pool=eligible.length>1?eligible.filter((d)=>manolitoDialogues.indexOf(d)!==manolitoLastDialogue):eligible;
+    const chosen=pool[Math.floor(Math.random()*pool.length)]||manolitoDialogues[0];
+    manolitoLastDialogue=manolitoDialogues.indexOf(chosen);
+    return chosen;
   }
-  $("mascotAdviceButton")?.addEventListener("click", () => {
-    if ($("mascotMessage")) { window.__mpnManolitoMessageChosen = true; $("mascotMessage").textContent = getManolitoAdvice(); }
-  });
-  document.querySelectorAll('[data-goto="products"], [data-goto="sales"]').forEach(button => {
-    button.addEventListener("click", () => { window.__mpnManolitoMessageChosen = false; });
-  });
-
+  function showManolitoDialogue() {
+    const d=getManolitoDialogue(); const message=$("mascotMessage"); const avatar=document.querySelector(".mascot-avatar");
+    if(message) { window.__mpnManolitoMessageChosen=true; message.textContent=d.text; }
+    if(avatar) { avatar.src=d.image; avatar.alt="Manolito: consejo de administración"; avatar.classList.remove("mascot-react"); void avatar.offsetWidth; avatar.classList.add("mascot-react"); }
+  }
+  $("mascotAdviceButton")?.addEventListener("click",showManolitoDialogue);
+  document.querySelectorAll('[data-goto="products"], [data-goto="sales"]').forEach(button => button.addEventListener("click", () => { window.__mpnManolitoMessageChosen = false; }));
   $("mascotEnabled")?.addEventListener("change",e=>{data.settings.mascotEnabled=e.target.checked;save();toast(e.target.checked?"Manolito está activado.":"Manolito está oculto.");});
   $("accentColor")?.addEventListener("input",e=>{data.settings.accentColor=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});
   $("fontScale")?.addEventListener("change",e=>{data.settings.fontScale=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});
@@ -1701,7 +1711,6 @@ function downloadCsv() {
 
   const originalGo = go;
   // El render de operaciones se activa al entrar a la sección y al terminar las operaciones.
-  document.querySelectorAll('[data-view="operations"]').forEach(b=>b.addEventListener("click",renderOperations));
   renderOperations();
 
   $("saleDate").value = today();
@@ -1709,6 +1718,48 @@ function downloadCsv() {
   $("reportFrom").value = addDays(today(), -29);
   $("reportTo").value = today();
 
+
+  // Reorganización v3.7.3: elimina Operaciones como pantalla y distribuye sus tarjetas por sección.
+  function moveOpsCard(match, targetId) {
+    const cards=[...document.querySelectorAll("#view-operations .ops-card")];
+    const card=cards.find(c=>(c.querySelector("h3")?.textContent||"").toLowerCase().includes(match));
+    const target=$(targetId); if(card&&target) target.appendChild(card);
+  }
+  moveOpsCard("punto de venta","view-sales");
+  moveOpsCard("fiado y clientes","customersContent");
+  moveOpsCard("proveedores y compras","suppliersContent");
+  moveOpsCard("corte de caja","view-reports");
+  moveOpsCard("copias de seguridad","view-reports");
+  moveOpsCard("estado de los datos","view-reports");
+  const oldOps=$("view-operations"); if(oldOps) oldOps.remove();
+
+  let laborCostPerUnit = null;
+  function syncLaborEmployeeOptions() {
+    const select=$("laborEmployeeSelect"); if(!select)return; const old=select.value;
+    select.innerHTML='<option value="">Selecciona un empleado</option>'+(data.employees||[]).map(e=>`<option value="${escapeHtml(e.id)}">${escapeHtml(e.name)} · ${money(Number(e.rate)||0)}/h</option>`).join("");
+    if((data.employees||[]).some(e=>e.id===old))select.value=old;
+  }
+  function calculateLaborCost() {
+    const employee=(data.employees||[]).find(e=>e.id===$("laborEmployeeSelect")?.value);
+    const minutes=Number($("laborMinutesPerUnit")?.value); const units=Number($("laborUnits")?.value)||1;
+    if(!employee){toast("Primero registra y selecciona un empleado con pago por hora.");return;}
+    if(!(minutes>0)||!Number.isFinite(minutes)||!(units>0)){toast("Escribe minutos por unidad y una cantidad válida de unidades.");return;}
+    laborCostPerUnit=(Number(employee.rate)||0)*(minutes/60);
+    const total=laborCostPerUnit*units; const result=$("laborCalculationResult");
+    if(result)result.innerHTML=`<div><span>Costo de mano de obra por unidad</span><strong>${money(laborCostPerUnit)}</strong></div><div><span>Costo total para ${units} unidad(es)</span><strong>${money(total)}</strong></div>`;
+    $("applyLaborCost").disabled=false;
+  }
+  $("calculateLaborCost")?.addEventListener("click",calculateLaborCost);
+  $("applyLaborCost")?.addEventListener("click",()=>{if(laborCostPerUnit===null){toast("Primero calcula el costo.");return;}go("products");const field=$("productLabor");if(field){field.value=laborCostPerUnit.toFixed(2);field.dispatchEvent(new Event("input",{bubbles:true}));field.focus();toast("Costo por unidad colocado en el formulario de producto. Guarda el producto para conservarlo.");}});
+  const priorRenderEmployees=renderEmployees;
+  renderEmployees=function(){priorRenderEmployees();syncLaborEmployeeOptions();};
+  // El botón Atrás del dispositivo y Escape vuelven al resumen en lugar de salir de la pantalla actual.
+  window.__mpnGoDashboard = function(){ if(window.__mpnCurrentView && window.__mpnCurrentView!=="dashboard") { go("dashboard"); return true; } return false; };
+  window.addEventListener("popstate",()=>{ if(window.__mpnCurrentView!=="dashboard")go("dashboard"); });
+  document.addEventListener("keydown",e=>{if(e.key==="Escape" && window.__mpnCurrentView!=="dashboard")go("dashboard");});
+  // La calculadora se actualiza también al entrar en la pantalla de empleados.
+
   renderAll();
   renderOperations();
+  syncLaborEmployeeOptions();
 })();

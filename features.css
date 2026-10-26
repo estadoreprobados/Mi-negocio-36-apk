@@ -783,3 +783,22 @@ footer { color: var(--muted); }
 .mascot-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .mascot-actions .button{font-size:.88rem;padding:8px 12px}
 @media(max-width:520px){.mascot-actions .button{flex:1 1 42%;min-width:120px}}
+
+
+/* v3.7.3: menú lateral izquierdo y diseño móvil */
+.topbar { display:flex; align-items:center; gap:14px; }
+.left-menu-wrap { position:relative; flex:0 0 auto; z-index:1200; }
+.topbar > div:nth-child(2) { flex:1; min-width:0; }
+.more-menu { position:fixed !important; top:72px !important; left:10px !important; right:auto !important; width:min(290px, calc(100vw - 20px)); max-height:calc(100vh - 90px); overflow:auto; z-index:1300; border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:3px; }
+.more-menu.hidden { display:none !important; }
+.more-menu .menu-item { width:100%; text-align:left; padding:12px 14px; border-radius:9px; }
+.tabs { display:none !important; }
+#view-sales .ops-card { margin-top:18px; }
+#view-customers .ops-card, #view-suppliers .ops-card { margin-top:8px; }
+#view-reports .ops-card { margin-top:18px; }
+.labor-calculator-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:12px 0; }
+.labor-calculator-fields label { display:grid; gap:6px; }
+.mascot-avatar { transition:transform .22s ease, filter .22s ease; }
+.mascot-avatar.mascot-react { animation:mpn-mascot-react .32s ease; }
+@keyframes mpn-mascot-react { 0%{transform:scale(.94) rotate(-3deg)} 55%{transform:scale(1.06) rotate(2deg)} 100%{transform:scale(1) rotate(0)} }
+@media(max-width:600px){.topbar{align-items:flex-start;gap:10px}.topbar h1{font-size:1.15rem}.top-actions{justify-content:flex-end}.more-menu{top:66px!important}.left-menu-wrap{padding-top:4px}}
