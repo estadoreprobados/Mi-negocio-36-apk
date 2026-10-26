@@ -1,0 +1,19 @@
+Mi Primer Negocio 36 — Versión 3.7.3
+Fecha: 26 de octubre de 2026
+Compilación Android: 20
+
+Novedades y correcciones
+
+1. Menú lateral izquierdo: Productos, Ventas, Gastos, Empleados, Reportes, Notas, Impuestos, Clientes y Proveedores ahora se abren desde el menú de tres rayas de la esquina superior izquierda. También conserva Ajustes, Ayuda, Estadísticas, tienda de temas, códigos de creador y versión del sistema.
+2. Se elimina Operaciones como apartado independiente. Punto de venta se integra en Ventas; fiado, deudas y abonos pasan a Clientes; proveedores y compras pasan a Proveedores; corte de caja, respaldo e integridad de datos se encuentran en Reportes.
+3. Ventas con carrito: permite añadir varios productos distintos, aumentar/disminuir cantidades, quitar artículos, escanear códigos de barras o introducirlos manualmente. Al cobrar valida existencias y actualiza stock. Las ventas a crédito requieren seleccionar cliente.
+4. Calculadora de mano de obra: permite seleccionar un empleado guardado, introducir minutos por unidad y cantidad, calcular costo laboral unitario y transferirlo al formulario del producto. Debe guardarse el producto para conservar el costo.
+5. Manolito sin IA: diálogos predeterminados variados con consejos sobre inventario, ventas, gastos, precios, clientes y respaldos. La ilustración alterna entre recursos locales según el diálogo; no consulta servicios externos.
+6. Botón Atrás/Escape: desde una sección regresa al Resumen, en vez de retroceder por la navegación interna.
+7. Versión del sistema actualizada a 3.7.3, compilación 20.
+
+Privacidad y límites
+Los diálogos de Manolito funcionan sin IA. La lectura de barras depende del permiso de cámara y del soporte de la plataforma; si no está disponible, escribe el código. El cálculo laboral es una estimación, no una nómina oficial. La actualización no debe borrar los datos locales existentes.
+
+Pruebas pendientes
+Este código requiere compilación con GitHub Actions y pruebas reales en Android. Antes de instalar, exporta un respaldo JSON. No se considera verificado hasta probar navegación, alta de productos, cálculo laboral, ventas con varios artículos, lectura de barras, clientes, proveedores, reportes y persistencia de datos.
