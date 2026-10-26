@@ -378,7 +378,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.7.01", code: 18, buildDate: "26 de octubre de 2026" };
+  const APP_VERSION = { name: "3.7.2", code: 19, buildDate: "26 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -1662,12 +1662,33 @@ function downloadCsv() {
     const mascotOn=data.settings.mascotEnabled !== false;
     if ($("mascotEnabled")) $("mascotEnabled").checked=mascotOn;
     if ($("mascotPanel")) $("mascotPanel").classList.toggle("hidden",!mascotOn);
-    if ($("mascotPanel") && mascotOn) { const messages=["Estoy aquí para ayudarte a organizar tu negocio.","Revisa los productos con poco inventario.","Puedes fijar tus productos favoritos para encontrarlos rápido."]; $("mascotMessage").textContent=messages[new Date().getDate()%messages.length]; }
+    if ($("mascotPanel") && mascotOn && !window.__mpnManolitoMessageChosen) { $("mascotMessage").textContent="¡Hola! Pulsa «Dame un consejo» para revisar tu negocio. Mis consejos funcionan sin IA y sin enviar tus datos a internet."; }
+
     if ($("accentColor")) $("accentColor").value=data.settings.accentColor || "#315f82";
     if ($("fontScale")) $("fontScale").value=data.settings.fontScale || "normal";
     if ($("dashboardCards")) $("dashboardCards").value=data.settings.dashboardCards || "all";
     if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard",data.settings.dashboardCards==="compact");
   }
+  // Manolito: mascota interactiva de consejos predefinidos; no usa IA ni servicios externos.
+  function getManolitoAdvice() {
+    const low = (data.products || []).filter(p => Number(p.stock) <= Number(p.minStock));
+    const todaySales = (data.sales || []).filter(s => s.date === today());
+    const tips = [];
+    if (low.length) tips.push(`Tienes ${low.length} producto(s) en el mínimo o por debajo del stock. Revisa Inventario y prepara una reposición.`);
+    if (!todaySales.length) tips.push("Todavía no hay ventas registradas hoy. Si vendiste algo, recuerda registrarlo para mantener el inventario actualizado.");
+    if (!(data.products || []).length) tips.push("Empieza registrando tu primer producto con su costo, precio de venta y existencias.");
+    if (!(data.expenses || []).length) tips.push("Registra los gastos del negocio para que el cálculo de ganancias sea más útil.");
+    if ((data.products || []).length && (data.sales || []).length) tips.push("Revisa periódicamente los costos y precios de tus productos para comprobar que el margen siga siendo conveniente.");
+    if (!tips.length) tips.push("¡Vas bien! Mantén al día tus ventas, gastos y existencias. Los reportes serán más útiles cuando tus registros estén completos.");
+    return tips[Math.floor(Math.random() * tips.length)];
+  }
+  $("mascotAdviceButton")?.addEventListener("click", () => {
+    if ($("mascotMessage")) { window.__mpnManolitoMessageChosen = true; $("mascotMessage").textContent = getManolitoAdvice(); }
+  });
+  document.querySelectorAll('[data-goto="products"], [data-goto="sales"]').forEach(button => {
+    button.addEventListener("click", () => { window.__mpnManolitoMessageChosen = false; });
+  });
+
   $("mascotEnabled")?.addEventListener("change",e=>{data.settings.mascotEnabled=e.target.checked;save();toast(e.target.checked?"Manolito está activado.":"Manolito está oculto.");});
   $("accentColor")?.addEventListener("input",e=>{data.settings.accentColor=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});
   $("fontScale")?.addEventListener("change",e=>{data.settings.fontScale=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});

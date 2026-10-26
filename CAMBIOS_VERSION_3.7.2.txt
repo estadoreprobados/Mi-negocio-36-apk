@@ -1,0 +1,31 @@
+Mi Primer Negocio 36 — Cambios de la versión 3.7.2
+Fecha: 26 de octubre de 2026
+Compilación Android: 19
+
+NOVEDADES
+1. Manolito interactivo sin inteligencia artificial. La mascota ofrece consejos predeterminados y contextuales usando datos que ya existen en la app. No necesita conexión, no usa API de IA y no envía datos del negocio a servicios externos.
+2. Consejos basados en el negocio: detecta productos que están en el mínimo o por debajo, ausencia de ventas registradas en el día y oportunidades para completar registros de productos o gastos.
+3. Accesos rápidos de Manolito a Productos y Ventas.
+4. La mascota puede ocultarse o mostrarse desde Ajustes; la preferencia se guarda localmente.
+5. Se conserva el módulo Empleados y mano de obra: nombre, puesto, tarifa por hora, horas normales y extras, multiplicador de horas extra y estimación del pago bruto. El cálculo es orientativo, no sustituye nómina ni asesoría laboral.
+6. El costo unitario de producto sigue calculándose con materiales más mano de obra introducida en el producto. Los pagos de empleados no se asignan automáticamente a productos porque la app no tiene una distribución por horas/producto configurada.
+7. Reporte PDF ampliado con las secciones existentes de inventario, ventas, gastos, empleados, clientes, proveedores, compras, notas, movimientos de stock, crédito y cortes de caja, cuando haya datos disponibles. Un PDF es un reporte y no un respaldo restaurable.
+8. Temas Cyberpunk y Galaxia conservan paletas para modo claro y oscuro.
+9. Se actualizan la pantalla Versión del sistema, README y documentación de cambios a 3.7.2 / compilación 19.
+
+CORRECCIONES Y AJUSTES
+- El botón «Dame un consejo» de Manolito ahora ejecuta una acción y cambia el mensaje según el estado de los registros locales.
+- Se añaden accesos directos visibles a Productos y Registrar venta.
+- Se explica explícitamente que Manolito no es IA y funciona sin servicios externos.
+- Se actualizan los datos de versión para evitar que la interfaz muestre 3.7.01 en el nuevo APK.
+
+DATOS Y ACTUALIZACIÓN
+- La aplicación conserva el almacenamiento local existente. No borres los datos de la app ni la desinstales sin antes exportar y comprobar un respaldo JSON.
+- Al reemplazar archivos en el repositorio Android, asegúrate de actualizar tanto los archivos raíz como app/src/main/assets/. El APK Android carga los archivos incluidos en app/src/main/assets/.
+- Después del commit, ejecuta GitHub Actions y comprueba que termine en verde. Instala el APK de esa ejecución y verifica Versión del sistema = 3.7.2 y compilación = 19.
+
+LIMITACIONES CONOCIDAS
+- Los consejos de Manolito son reglas sencillas predeterminadas; no comprende texto libre ni aprende.
+- El pago de empleados es una estimación, no un cálculo legal de nómina.
+- Las funciones que requieren internet o bibliotecas remotas pueden necesitar conexión según la implementación actual.
+- Este ZIP contiene código actualizado, pero no se ha compilado ni probado en el dispositivo Android del usuario. Antes de distribuirlo, validar la compilación en GitHub Actions y ejecutar pruebas funcionales.
