@@ -63,6 +63,8 @@
           cashCuts: Array.isArray(d.cashCuts) ? d.cashCuts : [],
           suppliers: Array.isArray(d.suppliers) ? d.suppliers : [],
           purchases: Array.isArray(d.purchases) ? d.purchases : [],
+          employees: Array.isArray(d.employees) ? d.employees : [],
+          laborRecords: Array.isArray(d.laborRecords) ? d.laborRecords : [],
           settings: {
             ...(d.settings || {}),
             currency: d.settings?.currency || "MXN"
@@ -78,7 +80,7 @@
       sales: [],
       expenses: [],
       stockMoves: [],
-      notes: [], customers: [], creditMovements: [], cashCuts: [], suppliers: [], purchases: [],
+      notes: [], customers: [], creditMovements: [], cashCuts: [], suppliers: [], purchases: [], employees: [], laborRecords: [],
       settings: { currency: "MXN", theme: "classic" },
       gamification: { coins: 0, rewardedMilestones: [], purchasedThemes: ["classic"] }
     };
@@ -91,6 +93,8 @@
   data.cashCuts = Array.isArray(data.cashCuts) ? data.cashCuts : [];
   data.suppliers = Array.isArray(data.suppliers) ? data.suppliers : [];
   data.purchases = Array.isArray(data.purchases) ? data.purchases : [];
+  data.employees = Array.isArray(data.employees) ? data.employees : [];
+  data.laborRecords = Array.isArray(data.laborRecords) ? data.laborRecords : [];
   data.settings = { currency: "MXN", theme: "classic", businessName: "", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", ...(data.settings || {}) };
   data.gamification = {
     coins: Math.max(0, Number(data.gamification?.coins) || 0),
@@ -704,6 +708,32 @@
       </article>`).join("");
   }
 
+  function renderEmployees() {
+    const list = $("employeeList");
+    const summary = $("employeeSummary");
+    if (!list || !summary) return;
+    const rows = data.employees || [];
+    summary.innerHTML = `<div><span>Empleados</span><strong>${rows.length}</strong></div><div><span>Pago bruto estimado del periodo</span><strong>${money(rows.reduce((sum,e)=>sum+(Number(e.hours)||0)*(Number(e.rate)||0)+(Number(e.overtime)||0)*(Number(e.rate)||0)*(Number(e.multiplier)||2),0))}</strong></div>`;
+    list.innerHTML = rows.length ? rows.map(e => `<article class="employee-row"><div><strong>${escapeHtml(e.name)}</strong><p>${escapeHtml(e.role||"Sin puesto especificado")}</p><small>${Number(e.hours)||0} h normales · ${Number(e.overtime)||0} h extras · ${money((Number(e.hours)||0)*(Number(e.rate)||0)+(Number(e.overtime)||0)*(Number(e.rate)||0)*(Number(e.multiplier)||2))}</small></div><button class="row-button danger" type="button" data-delete-employee="${escapeHtml(e.id)}">Eliminar</button></article>`).join("") : '<p class="muted">Todavía no hay empleados registrados.</p>';
+  }
+
+  const employeeForm = $("employeeForm");
+  if (employeeForm) employeeForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const name = $("employeeName").value.trim();
+    if (!name) { toast("Escribe el nombre del empleado."); return; }
+    data.employees.push({ id: uid(), name, role: $("employeeRole").value.trim(), rate: Math.max(0, Number($("employeeRate").value)||0), hours: Math.max(0, Number($("employeeHours").value)||0), overtime: Math.max(0, Number($("employeeOvertime").value)||0), multiplier: Number($("employeeMultiplier").value)||2, date: today() });
+    employeeForm.reset(); $("employeeRate").value = "0"; $("employeeHours").value = "0"; $("employeeOvertime").value = "0"; $("employeeMultiplier").value = "2";
+    save(); toast("Empleado guardado.");
+  });
+  $("employeeList")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-delete-employee]");
+    if (!button) return;
+    if (!confirm("¿Eliminar este empleado? Esta acción no se puede deshacer.")) return;
+    data.employees = data.employees.filter(e => e.id !== button.dataset.deleteEmployee);
+    save(); toast("Empleado eliminado.");
+  });
+
   function renderAll() {
     renderProducts();
     renderSales();
@@ -714,6 +744,7 @@
     renderStatistics();
     renderShop();
     renderNotes();
+    renderEmployees();
     applyTheme();
     renderSystemVersion();
   }
@@ -1211,11 +1242,30 @@ function downloadCsv() {
       doc.addPage();
       y = 20;
     }
+    const reportSections = [
+      ["Inventario completo", (data.products||[]).map(p => `Producto: ${p.name||""} | Materiales: ${money(p.materials)} | Mano de obra/unidad: ${money(p.labor)} | Precio: ${money(p.price)} | Existencias: ${p.stock} | Mínimo: ${p.minStock}`)],
+      ["Ventas registradas", (data.sales||[]).filter(x => (!from || (x.date||"") >= from) && (!to || (x.date||"") <= to)).map(x => `Venta: ${x.name||x.productName||x.productId||"Producto"} | Fecha: ${x.date||""} | Cantidad: ${x.qty||x.quantity||1} | Precio: ${money(x.price)} | Total: ${money((Number(x.qty||x.quantity)||1)*(Number(x.price)||0))}`)],
+      ["Gastos registrados", (data.expenses||[]).filter(x => (!from || (x.date||"") >= from) && (!to || (x.date||"") <= to)).map(x => `Gasto: ${x.description||x.name||"Gasto"} | Fecha: ${x.date||""} | Importe: ${money(x.amount)}`)],
+      ["Empleados y mano de obra", (data.employees||[]).map(e => `Empleado: ${e.name} | Puesto: ${e.role||""} | Tarifa/hora: ${money(e.rate)} | Horas normales: ${e.hours} | Horas extras: ${e.overtime} | Multiplicador extra: ${e.multiplier}x | Pago bruto estimado: ${money((Number(e.hours)||0)*(Number(e.rate)||0)+(Number(e.overtime)||0)*(Number(e.rate)||0)*(Number(e.multiplier)||2))}`)],
+      ["Clientes y saldos registrados", (data.customers||[]).map(c => `Cliente: ${c.name||""} | Teléfono: ${c.phone||""} | Saldo registrado: ${money(c.balance||c.debt||0)}`)],
+      ["Proveedores", (data.suppliers||[]).map(x => `Proveedor: ${x.name||""} | Contacto: ${x.contact||""}`)],
+      ["Compras", (data.purchases||[]).map(x => `Compra: ${x.productName||x.productId||"Producto"} | Fecha: ${x.date||""} | Cantidad: ${x.qty||x.quantity||0} | Costo: ${money(x.cost||x.total||0)}`)],
+      ["Notas", (data.notes||[]).map(x => `Nota (${x.date||"sin fecha"}): ${x.text||""}`)],
+      ["Movimientos de inventario", (data.stockMoves||[]).map(x => `Movimiento: ${x.productName||x.productId||"Producto"} | Fecha: ${x.date||""} | Tipo: ${x.type||""} | Cantidad: ${x.qty||x.quantity||0} | Motivo: ${x.note||x.reason||""}`)],
+      ["Abonos y movimientos de crédito", (data.creditMovements||[]).map(x => `Movimiento: ${x.customerName||x.customerId||"Cliente"} | Fecha: ${x.date||""} | Tipo: ${x.type||""} | Importe: ${money(x.amount||0)} | Concepto: ${x.description||""}`)],
+      ["Cortes de caja", (data.cashCuts||[]).map(x => `Corte: ${x.date||""} | Fondo inicial: ${money(x.opening||x.openingCash||0)} | Efectivo contado: ${money(x.counted||x.actualCash||0)} | Diferencia: ${money(x.difference||0)}`)]
+    ];
+    reportSections.forEach(([title, lines]) => {
+      doc.addPage(); let sy = 18; doc.setFontSize(13); doc.text(title, 14, sy); sy += 9; doc.setFontSize(8);
+      if (!lines.length) lines = ["Sin registros en este apartado."];
+      lines.forEach(line => {
+        const wrapped = doc.splitTextToSize(String(line), 180);
+        if (sy + wrapped.length * 4 > 282) { doc.addPage(); sy = 18; }
+        doc.text(wrapped, 14, sy); sy += wrapped.length * 4 + 2;
+      });
+    });
     doc.setFontSize(8);
-    doc.text(
-      "Reporte estimado para control escolar. Verifica tus registros antes de tomar decisiones.",
-      14, y + 5
-    );
+    doc.text("Reporte generado con los registros disponibles en este dispositivo. Los cálculos son estimaciones y deben verificarse.", 14, 287);
     
     const filename = "reporte-mi-primer-negocio-36.pdf";
 

@@ -106,6 +106,7 @@
     <button class="tab" data-view="products">Productos</button>
     <button class="tab" data-view="sales">Ventas</button>
     <button class="tab" data-view="expenses">Gastos</button>
+    <button class="tab" data-view="employees">Empleados y mano de obra</button>
     <button class="tab" data-view="reports">Reportes</button>
     <button class="tab" data-view="notes">Notas 📝</button>
     <button class="tab" data-view="taxes">Impuestos 🧮</button>
@@ -450,6 +451,23 @@
     </article>
   </section>
 
+  <section class="view hidden" id="view-employees">
+    <div class="section-heading"><div><p class="eyebrow">PERSONAL Y COSTOS</p><h2>Empleados y mano de obra</h2></div></div>
+    <article class="panel"><h3>Registrar empleado y jornada</h3><p class="muted">Introduce el total de horas del periodo. El cálculo es estimado y no sustituye una nómina legal.</p>
+      <form id="employeeForm" class="form-grid">
+        <label>Nombre del empleado<input id="employeeName" required maxlength="100" placeholder="Nombre completo"></label>
+        <label>Puesto (opcional)<input id="employeeRole" maxlength="80" placeholder="Ej. Ventas"></label>
+        <label>Pago por hora<input id="employeeRate" type="number" min="0" step="0.01" value="0" required></label>
+        <label>Horas normales del periodo<input id="employeeHours" type="number" min="0" step="0.25" value="0" required></label>
+        <label>Horas extras<input id="employeeOvertime" type="number" min="0" step="0.25" value="0" required></label>
+        <label>Multiplicador de horas extras<select id="employeeMultiplier"><option value="2">Doble (2×)</option><option value="3">Triple (3×)</option></select></label>
+        <div class="form-actions"><button class="button" type="submit">Guardar empleado</button></div>
+      </form>
+      <p class="muted footnote">En México, el pago real de horas extra depende de los límites legales y las circunstancias de la jornada. Verifica la normativa aplicable.</p>
+    </article>
+    <article class="panel"><h3>Resumen de empleados</h3><div id="employeeSummary" class="mini-summary"></div><div id="employeeList" class="compact-list"></div></article>
+  </section>
+
   <section class="view hidden" id="view-reports">
     <div class="section-heading">
       <div>
@@ -606,6 +624,7 @@
       <article class="panel help-card"><h3>📦 Productos e inventario</h3><ol><li>Abre la pestaña <b>Productos</b>.</li><li>Completa el nombre, costos, precio de venta y existencias iniciales.</li><li>Guarda el producto. Usa las herramientas de inventario para registrar entradas o salidas y revisar las existencias.</li></ol></article>
       <article class="panel help-card"><h3>🛒 Registrar ventas</h3><ol><li>Entra en <b>Ventas</b> y selecciona un producto.</li><li>Indica la cantidad y revisa el precio y el total.</li><li>Registra la venta. Las existencias y los indicadores se actualizarán según la operación.</li></ol></article>
       <article class="panel help-card"><h3>🧾 Operaciones: punto de venta, fiado y caja</h3><ol><li>Abre la pestaña <b>Operaciones</b> de la barra principal.</li><li>En <b>Punto de venta</b>, busca o escanea productos, añádelos al carrito y selecciona la forma de pago antes de cobrar.</li><li>Para el <b>fiado</b>, guarda primero al cliente y registra la venta a crédito; registra los abonos en el apartado de clientes.</li><li>En <b>Corte de caja</b>, introduce el fondo inicial y realiza el corte al terminar tu jornada. Compara el efectivo esperado con el efectivo real.</li><li>En <b>Proveedores y compras</b>, registra el proveedor y la compra para actualizar existencias.</li><li>En <b>Copias de seguridad</b>, exporta un archivo JSON y guárdalo en un lugar seguro. Importarlo reemplaza los datos actuales.</li></ol><p class="muted">La lectura con cámara requiere permiso. Si no está disponible, puedes escribir el código de barras en el buscador.</p></article>
+      <article class="panel help-card"><h3>👷 Empleados y mano de obra</h3><ol><li>Abre la pestaña <b>Empleados y mano de obra</b>.</li><li>Registra el nombre, puesto y pago por hora del trabajador.</li><li>Escribe las horas normales y las horas extras del periodo.</li><li>Selecciona el multiplicador para las horas extras y guarda el registro.</li><li>Revisa el pago bruto estimado en el resumen y genera el reporte PDF para incluir estos registros.</li></ol><p class="muted">El cálculo es orientativo; verifica las reglas laborales y de nómina aplicables.</p></article>
       <article class="panel help-card"><h3>🧾 Registrar gastos</h3><ol><li>Abre <b>Gastos</b>.</li><li>Agrega la descripción, el importe y la fecha.</li><li>Guarda el gasto y revisa su efecto en el resumen y los reportes.</li></ol></article>
       <article class="panel help-card"><h3>📊 Resumen y estadísticas</h3><p>El <b>Resumen</b> presenta indicadores del negocio y la racha de ventas. En <b>Estadísticas</b> puedes revisar gráficas y cambiar el periodo cuando la opción esté disponible.</p></article>
       <article class="panel help-card"><h3>📄 Reportes y archivos</h3><p>En <b>Reportes</b> genera archivos PDF o CSV para consultar o guardar información. Las descargas se guardan mediante Android. También puedes usar las opciones de importación y exportación disponibles.</p><p class="muted">Consejo: conserva una copia de respaldo antes de importar datos, ya que algunas importaciones pueden reemplazar la información existente.</p></article>
@@ -649,15 +668,18 @@
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.6.1</strong><p>Mi Primer Negocio 36</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.7.01</strong><p>Mi Primer Negocio 36</p>
       <div class="version-facts">
-        <p><span>Número de compilación</span><strong id="appBuildNumber">10</strong></p>
-        <p><span>Actualización preparada</span><strong id="appBuildDate">25 de octubre de 2026</strong></p>
+        <p><span>Número de compilación</span><strong id="appBuildNumber">18</strong></p>
+        <p><span>Actualización preparada</span><strong id="appBuildDate">26 de octubre de 2026</strong></p>
       </div>
     </article>
     <article class="panel version-panel">
       <h3>Novedades de esta actualización</h3>
       <ul class="release-list">
+        <li><strong>Empleados y mano de obra:</strong> registro de trabajadores, puesto, tarifa por hora, horas normales y extras, con estimación del pago bruto.</li>
+        <li><strong>Reporte PDF ampliado:</strong> agrega secciones de inventario, ventas, gastos, empleados, clientes, proveedores, compras, notas, movimientos de stock, crédito y cortes de caja según los registros disponibles.</li>
+        <li><strong>Versión 3.7.01:</strong> documentación de novedades y número de compilación actualizado.</li>
         <li><strong>Temas de temporada:</strong> Halloween y Navidad con cambios visuales completos en fondos, paneles, botones, menú y controles.</li>
         <li><strong>Disponibilidad por fechas:</strong> los temas de temporada solo aparecen en la tienda durante sus fechas habilitadas.</li>
         <li><strong>Restauración automática:</strong> al terminar una temporada, la aplicación vuelve al tema anterior sin borrar los datos del negocio.</li>
@@ -668,7 +690,7 @@
     <article class="panel version-panel">
       <h3>Compatibilidad, datos y privacidad</h3>
       <p>La aplicación requiere Android 6.0 o posterior. Los datos del negocio se guardan en este dispositivo y no se sincronizan automáticamente con otros teléfonos.</p>
-      <p>Exporta un respaldo PDF antes de reinstalar la aplicación, borrar sus datos o cambiar de dispositivo.</p>
+      <p>Exporta un respaldo JSON antes de reinstalar la aplicación, borrar sus datos o cambiar de dispositivo. El PDF es un reporte de consulta y no sustituye un respaldo restaurable.</p>
       <p class="muted footnote">Las fechas de temporada se comprueban con el reloj del dispositivo, que puede modificarse manualmente.</p>
     </article>
   </section>
