@@ -573,7 +573,7 @@
   }
 
   function renderShop() {
-    if (!$ ("themeShop")) return;
+    if (!$("themeShop")) return;
     $("fireCoins").textContent = String(data.gamification.coins);
     const available = THEMES.filter(theme => seasonalThemeIsAvailable(theme));
     const groups = [
@@ -1057,36 +1057,71 @@
   $("saleQty").addEventListener("input", updateSalePreview);
   $("salePrice").addEventListener("input", updateSalePreview);
 
+  let saleCart = [];
+  function renderSaleCart() {
+    const list = $("saleCartList");
+    if (!list) return;
+    list.innerHTML = saleCart.length ? saleCart.map((line, index) => `<div class="pos-cart-row"><div><strong>${escapeHtml(line.name)}</strong><small>${money(line.price)} c/u · stock disponible ${product(line.productId)?.stock ?? 0}</small></div><div class="qty-controls"><button type="button" data-sale-cart-minus="${index}" aria-label="Restar">−</button><strong>${line.qty}</strong><button type="button" data-sale-cart-plus="${index}" aria-label="Sumar">+</button><button type="button" data-sale-cart-remove="${index}" aria-label="Quitar">×</button></div><strong>${money(line.qty * line.price)}</strong></div>`).join("") : '<p class="muted">Todavía no agregas productos.</p>';
+    $("saleCartTotal").textContent = money(saleCart.reduce((sum, line) => sum + line.qty * line.price, 0));
+  }
+
   $("saleForm").addEventListener("submit", e => {
     e.preventDefault();
-
     const p = product($("saleProduct").value);
     const qty = num("saleQty");
     const price = num("salePrice");
     const date = $("saleDate").value;
-
-    if (!p || !Number.isInteger(qty) || qty < 1 || price < 0 || !date) {
-      toast("Revisa los datos de la venta.");
-      return;
-    }
-    if (qty > p.stock) {
-      toast("Inventario insuficiente. Disponibles: " + p.stock);
-      return;
-    }
-
-    p.stock -= qty;
-    data.sales.push({
-      id: uid(), productId: p.id, name: p.name,
-      qty, price, cost: productCost(p), date
-    });
-    data.stockMoves.push({
-      id: uid(), date, productId: p.id, name: p.name,
-      typeLabel: "Venta", qty, reason: "Descuento automático"
-    });
-
+    if (!p || !Number.isInteger(qty) || qty < 1 || price < 0 || !date) { toast("Revisa los datos del producto."); return; }
+    const alreadyAdded = saleCart.filter(line => line.productId === p.id).reduce((sum, line) => sum + line.qty, 0);
+    if (alreadyAdded + qty > p.stock) { toast("Inventario insuficiente. Disponibles: " + Math.max(0, p.stock - alreadyAdded)); return; }
+    const existing = saleCart.find(line => line.productId === p.id && line.price === price);
+    if (existing) existing.qty += qty;
+    else saleCart.push({ productId: p.id, name: p.name, qty, price, cost: productCost(p), date });
     $("saleQty").value = "1";
-    save({ saleRegisteredToday: date === today() });
-    toast(date === today() ? "Venta registrada. Las ventas de hoy cuentan para tu racha." : "Venta registrada e inventario actualizado.");
+    renderSaleCart();
+    toast("Producto agregado a la venta. Puedes agregar más productos.");
+  });
+
+  $("saleCartList")?.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const index = Number(b.dataset.saleCartPlus ?? b.dataset.saleCartMinus ?? b.dataset.saleCartRemove);
+    const line = saleCart[index]; if (!line) return;
+    if (b.dataset.saleCartRemove !== undefined) saleCart.splice(index, 1);
+    else if (b.dataset.saleCartPlus !== undefined) {
+      const p = product(line.productId);
+      const totalSameProduct = saleCart.filter(x => x.productId === line.productId).reduce((sum, x) => sum + x.qty, 0);
+      if (!p || totalSameProduct >= p.stock) { toast("No hay existencias suficientes."); return; }
+      line.qty++;
+    } else if (b.dataset.saleCartMinus !== undefined) { line.qty--; if (line.qty <= 0) saleCart.splice(index, 1); }
+    renderSaleCart();
+  });
+
+  $("saleCancelButton")?.addEventListener("click", () => {
+    if (!saleCart.length) { toast("No hay una operación pendiente que cancelar."); return; }
+    if (!confirm("¿Cancelar esta operación? No se registrará ninguna venta ni se modificará el inventario.")) return;
+    saleCart = []; renderSaleCart(); toast("Operación cancelada. No se registró ninguna venta.");
+  });
+
+  $("saleConfirmButton")?.addEventListener("click", () => {
+    if (!saleCart.length) { toast("Agrega al menos un producto antes de confirmar."); return; }
+    for (const line of saleCart) {
+      const p = product(line.productId);
+      const totalForProduct = saleCart.filter(x => x.productId === line.productId).reduce((sum, x) => sum + x.qty, 0);
+      if (!p || p.stock < totalForProduct) { toast("El inventario cambió. Revisa los productos de la venta."); return; }
+    }
+    const total = saleCart.reduce((sum, line) => sum + line.qty * line.price, 0);
+    if (!confirm(`¿Confirmar una venta de ${saleCart.length} línea(s) por ${money(total)}?`)) return;
+    const date = saleCart[0].date || $("saleDate").value;
+    const registeredToday = saleCart.some(line => line.date === today());
+    for (const line of saleCart) {
+      const p = product(line.productId);
+      p.stock -= line.qty;
+      data.sales.push({ id: uid(), productId: p.id, name: p.name, qty: line.qty, price: line.price, cost: line.cost, date: line.date || date });
+      data.stockMoves.push({ id: uid(), date: line.date || date, productId: p.id, name: p.name, typeLabel: "Venta", qty: line.qty, reason: "Descuento automático" });
+    }
+    saleCart = []; renderSaleCart();
+    save({ saleRegisteredToday: registeredToday });
+    toast("Venta completa registrada una sola vez. Inventario actualizado.");
   });
 
   $("saleRows").addEventListener("click", e => {
@@ -1623,6 +1658,7 @@ function downloadCsv() {
     ["posCustomer","creditCustomer","debtCustomer"].forEach(id=>{const el=$(id);if(!el)return;const old=el.value;const empty=id==="posCustomer"?'<option value="">Venta sin cliente</option>':'<option value="">Selecciona un cliente</option>';el.innerHTML=empty+customers.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)} · saldo ${money(customerBalance(c.id))}</option>`).join("");if(customers.some(c=>c.id===old))el.value=old;});
     const supplierEl=$("purchaseSupplier");if(supplierEl){const old=supplierEl.value;supplierEl.innerHTML='<option value="">Selecciona proveedor</option>'+suppliers.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`).join("");if(suppliers.some(s=>s.id===old))supplierEl.value=old;}
     const productEl=$("purchaseProduct");if(productEl){const old=productEl.value;productEl.innerHTML='<option value="">Selecciona producto</option>'+products.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · stock ${p.stock}</option>`).join("");if(products.some(p=>p.id===old))productEl.value=old;}
+    if(typeof updatePurchaseCostPreview === "function") updatePurchaseCostPreview();
   }
   function renderPosCart(){
     const el=$("posCartList");if(!el)return;
@@ -1652,6 +1688,9 @@ function downloadCsv() {
   $("supplierForm")?.addEventListener("submit",e=>{e.preventDefault();const id=$("supplierEditId").value;const name=$("supplierName").value.trim();if(!name)return;const contact=$("supplierContact").value.trim();if(id){const supplier=data.suppliers.find(x=>x.id===id);if(!supplier){toast("No se encontró el proveedor.");resetSupplierForm();return;}supplier.name=name;supplier.contact=contact;toast("Proveedor actualizado.");}else{data.suppliers.push({id:uid(),name,contact,createdAt:today()});toast("Proveedor guardado.");}resetSupplierForm();save();syncOperationSelects();renderOperations();});
   $("supplierCancelEdit")?.addEventListener("click",resetSupplierForm);
   $("supplierList")?.addEventListener("click",e=>{const button=e.target.closest("[data-edit-supplier]");if(!button)return;const supplier=data.suppliers.find(x=>x.id===button.dataset.editSupplier);if(!supplier)return;$("supplierEditId").value=supplier.id;$("supplierName").value=supplier.name||"";$("supplierContact").value=supplier.contact||"";$("supplierSaveButton").textContent="Guardar cambios";$("supplierCancelEdit").classList.remove("hidden");$("supplierName").focus();$("supplierForm").scrollIntoView({behavior:"smooth",block:"center"});});
+  function updatePurchaseCostPreview(){const p=product($("purchaseProduct")?.value);const qty=Math.max(0,Number($("purchaseQty")?.value)||0);const total=p?Math.max(0,Number(productCost(p))||0)*qty:0;const costEl=$("purchaseCost");if(costEl)costEl.value=total.toFixed(2);const hint=$("purchaseCostHint");if(hint)hint.textContent=p?`Costo unitario estimado: ${money(productCost(p))} · cantidad: ${qty} · costo total: ${money(total)}. Puedes ajustar el total si la factura del proveedor es diferente.`:"Selecciona un producto para calcular el costo total automáticamente.";}
+  $("purchaseProduct")?.addEventListener("change",updatePurchaseCostPreview);
+  $("purchaseQty")?.addEventListener("input",updatePurchaseCostPreview);
   $("purchaseForm")?.addEventListener("submit",e=>{e.preventDefault();const supplierId=$("purchaseSupplier").value,productId=$("purchaseProduct").value,qty=Number($("purchaseQty").value),cost=Number($("purchaseCost").value);const p=product(productId),s=data.suppliers.find(x=>x.id===supplierId);if(!s||!p||!Number.isInteger(qty)||qty<1||cost<0){toast("Revisa proveedor, producto, cantidad y costo.");return;}p.stock+=qty;data.purchases.push({id:uid(),date:today(),supplierId,productId,productName:p.name,qty,cost});data.stockMoves.push({id:uid(),date:today(),productId,name:p.name,typeLabel:"Compra a proveedor",qty,reason:s.name});if(cost>0)data.expenses.push({id:uid(),concept:`Compra de ${p.name} · ${s.name}`,amount:cost,date:today(),category:"Inventario"});$("purchaseForm").reset();$("purchaseQty").value="1";$("purchaseCost").value="0";save();syncOperationSelects();renderOperations();toast("Compra registrada y stock actualizado.");});
   function renderOperations(){
     syncOperationSelects();renderPosCart();

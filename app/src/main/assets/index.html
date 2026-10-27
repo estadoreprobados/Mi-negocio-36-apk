@@ -384,9 +384,19 @@
       </div>
 
       <div class="form-actions">
-        <button class="button" type="submit">Registrar venta</button>
+        <button class="button" type="submit">Agregar producto a la venta</button>
       </div>
     </form>
+
+    <article class="panel" id="saleCartPanel">
+      <div class="panel-title"><h3>Productos de esta venta</h3></div>
+      <div id="saleCartList" class="pos-cart-list"><p class="muted">Todavía no agregas productos.</p></div>
+      <div class="pos-total"><span>Total de la venta</span><strong id="saleCartTotal">$0.00</strong></div>
+      <div class="form-actions">
+        <button class="button" id="saleConfirmButton" type="button">Confirmar venta</button>
+        <button class="button secondary" id="saleCancelButton" type="button">Cancelar operación</button>
+      </div>
+    </article>
 
     <article class="panel">
       <div class="panel-title"><h3>Historial de ventas</h3></div>
@@ -627,7 +637,7 @@
       </article>
       <article class="panel ops-card"><p class="eyebrow">04 · ABASTECIMIENTO</p><h3>Proveedores y compras</h3>
         <form id="supplierForm" class="stack-form"><input id="supplierEditId" type="hidden" value=""><label>Nombre del proveedor<input id="supplierName" required maxlength="100"></label><label>Contacto (opcional)<input id="supplierContact" maxlength="100"></label><div class="inline-actions"><button class="button" id="supplierSaveButton" type="submit">Guardar proveedor</button><button class="button secondary hidden" id="supplierCancelEdit" type="button">Cancelar edición</button></div></form>
-        <form id="purchaseForm" class="stack-form"><label>Proveedor<select id="purchaseSupplier" required></select></label><label>Producto recibido<select id="purchaseProduct" required></select></label><label>Cantidad<input id="purchaseQty" type="number" min="1" step="1" required value="1"></label><label>Costo total de compra<input id="purchaseCost" type="number" min="0" step="0.01" required value="0"></label><button class="button secondary" type="submit">Registrar compra y sumar stock</button></form><div id="supplierList" class="compact-list"></div>
+        <form id="purchaseForm" class="stack-form"><label>Proveedor<select id="purchaseSupplier" required></select></label><label>Producto recibido<select id="purchaseProduct" required></select></label><label>Cantidad<input id="purchaseQty" type="number" min="1" step="1" required value="1"></label><label>Costo total de compra<input id="purchaseCost" type="number" min="0" step="0.01" required value="0"></label><p class="muted footnote" id="purchaseCostHint">El costo total se calcula automáticamente según el costo del producto y la cantidad; puedes ajustarlo si el proveedor cobra otro importe.</p><button class="button secondary" type="submit">Registrar compra y sumar stock</button></form><div id="supplierList" class="compact-list"></div>
       </article>
       <article class="panel ops-card"><p class="eyebrow">05 · RESPALDO PORTÁTIL</p><h3>Copias de seguridad</h3><p class="muted">Exporta un archivo JSON para trasladar los datos entre dispositivos. Incluye el tema desbloqueado, clientes, fiado, caja y proveedores.</p><div class="inline-actions"><button class="button" id="exportJsonBackup" type="button">Exportar respaldo JSON</button><label class="button secondary file-button">Importar respaldo JSON<input id="importJsonBackup" type="file" accept="application/json,.json"></label></div><p class="muted footnote">Importar reemplaza los datos actuales. Guarda una copia antes de importar.</p>
       </article>
@@ -697,10 +707,12 @@
       <ul class="release-list">
         <li><strong>Edición de empleados:</strong> modifica nombre, puesto, pago por hora, horas normales, horas extra y multiplicador sin eliminar y volver a registrar al empleado. La edición conserva su identificador.</li>
         <li><strong>Frecuencia de gastos:</strong> cada gasto puede marcarse como único, semanal, quincenal (cada 15 días), mensual, bimestral (cada 2 meses), trimestral, semestral o anual. Se muestra su periodicidad y equivalente mensual estimado; el registro no genera cargos automáticamente.</li>
-        <li><strong>Ventas con varios productos:</strong> usa el punto de venta integrado en Ventas para añadir varios productos al carrito, ajustar cantidades, revisar el total y registrar la operación. Se valida el stock de cada artículo y se descuenta de cada producto vendido.</li>
+        <li><strong>Ventas con varios productos:</strong> en el apartado Ventas puedes agregar varios productos al carrito, ajustar cantidades, revisar el total, cancelar la operación sin registrar nada o confirmar la venta una sola vez. Se valida el stock de cada artículo y se descuenta de cada producto vendido.</li>
         <li><strong>Corrección del precio al cambiar de producto:</strong> al seleccionar otro producto en el formulario de venta, el precio unitario se vuelve a cargar desde ese producto y se actualizan el stock disponible y el total, evitando conservar el precio anterior.</li>
         <li><strong>Edición de clientes:</strong> permite cambiar nombre y teléfono de un cliente existente sin borrar su historial de movimientos ni modificar sus saldos pendientes.</li>
         <li><strong>Edición de proveedores:</strong> permite actualizar el nombre y contacto de proveedores existentes sin eliminar sus compras registradas.</li>
+        <li><strong>Costo automático de compras:</strong> al seleccionar un producto y escribir la cantidad recibida, se calcula el costo total estimado usando el costo del producto. El importe se puede ajustar si la factura del proveedor es diferente.</li>
+        <li><strong>Vistas previas de temas aisladas:</strong> las tarjetas de temas mantienen una vista previa y una paleta propias para reducir interferencias visuales al seleccionar Halloween u otro tema.</li>
         <li><strong>Versión sincronizada:</strong> aplicación actualizada a 3.7.5, compilación 22, en la pantalla de versión, JavaScript y configuración de Android.</li>
       </ul>
     </article>
