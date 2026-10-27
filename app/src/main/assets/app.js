@@ -237,13 +237,14 @@
     `).join("") || emptyRow(6);
   }
 
+  function expenseMonthlyEquivalent(e) { const amount = Number(e.amount)||0; if ((e.frequency||"once") === "once") return null; return ({weekly:amount*52/12,biweekly:amount*26/12,monthly:amount,bimonthly:amount/2,quarterly:amount/3,semiannual:amount/6,annual:amount/12})[e.frequency] ?? amount; }
   function renderExpenses() {
     $("expenseRows").innerHTML = data.expenses.slice().reverse().map(e => `
       <tr>
         <td>${escapeHtml(e.date)}</td>
         <td>${escapeHtml(e.name)}</td>
-        <td>${e.type === "fixed" ? "Fijo" : "Variable"}</td>
-        <td>${money(e.amount)}</td>
+        <td>${e.type === "fixed" ? "Fijo" : "Variable"} · ${({once:"Único",weekly:"Semanal",biweekly:"Quincenal",monthly:"Mensual",bimonthly:"Bimestral",quarterly:"Trimestral",semiannual:"Semestral",annual:"Anual"})[e.frequency||"once"] || "Único"}</td>
+        <td>${money(e.amount)}<small class="muted"> · ${expenseMonthlyEquivalent(e) === null ? "gasto único" : `aprox. ${money(expenseMonthlyEquivalent(e))}/mes`}</small></td>
         <td><button class="row-button" data-edit-expense="${escapeHtml(e.id)}">Editar</button> <button class="row-button danger" data-delete-expense="${escapeHtml(e.id)}">Eliminar</button></td>
       </tr>
     `).join("") || emptyRow(5);
@@ -378,7 +379,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.7.4", code: 21, buildDate: "26 de octubre de 2026" };
+  const APP_VERSION = { name: "3.7.5", code: 22, buildDate: "26 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -732,24 +733,28 @@
     if (!list || !summary) return;
     const rows = data.employees || [];
     summary.innerHTML = `<div><span>Empleados</span><strong>${rows.length}</strong></div><div><span>Pago bruto estimado del periodo</span><strong>${money(rows.reduce((sum,e)=>sum+(Number(e.hours)||0)*(Number(e.rate)||0)+(Number(e.overtime)||0)*(Number(e.rate)||0)*(Number(e.multiplier)||2),0))}</strong></div>`;
-    list.innerHTML = rows.length ? rows.map(e => `<article class="employee-row"><div><strong>${escapeHtml(e.name)}</strong><p>${escapeHtml(e.role||"Sin puesto especificado")}</p><small>${Number(e.hours)||0} h normales · ${Number(e.overtime)||0} h extras · ${money((Number(e.hours)||0)*(Number(e.rate)||0)+(Number(e.overtime)||0)*(Number(e.rate)||0)*(Number(e.multiplier)||2))}</small></div><button class="row-button danger" type="button" data-delete-employee="${escapeHtml(e.id)}">Eliminar</button></article>`).join("") : '<p class="muted">Todavía no hay empleados registrados.</p>';
+    list.innerHTML = rows.length ? rows.map(e => `<article class="employee-row"><div><strong>${escapeHtml(e.name)}</strong><p>${escapeHtml(e.role||"Sin puesto especificado")}</p><small>${Number(e.hours)||0} h normales · ${Number(e.overtime)||0} h extras · ${money((Number(e.hours)||0)*(Number(e.rate)||0)+(Number(e.overtime)||0)*(Number(e.rate)||0)*(Number(e.multiplier)||2))}</small></div><div class="inline-actions"><button class="row-button" type="button" data-edit-employee="${escapeHtml(e.id)}">Editar</button><button class="row-button danger" type="button" data-delete-employee="${escapeHtml(e.id)}">Eliminar</button></div></article>`).join("") : '<p class="muted">Todavía no hay empleados registrados.</p>';
   }
 
   const employeeForm = $("employeeForm");
+  function resetEmployeeForm() { employeeForm?.reset(); $("employeeEditId").value = ""; $("employeeRate").value = "0"; $("employeeHours").value = "0"; $("employeeOvertime").value = "0"; $("employeeMultiplier").value = "2"; $("employeeSubmitButton").textContent = "Guardar empleado"; $("employeeCancelEdit").classList.add("hidden"); }
   if (employeeForm) employeeForm.addEventListener("submit", event => {
     event.preventDefault();
+    const id = $("employeeEditId").value;
     const name = $("employeeName").value.trim();
     if (!name) { toast("Escribe el nombre del empleado."); return; }
-    data.employees.push({ id: uid(), name, role: $("employeeRole").value.trim(), rate: Math.max(0, Number($("employeeRate").value)||0), hours: Math.max(0, Number($("employeeHours").value)||0), overtime: Math.max(0, Number($("employeeOvertime").value)||0), multiplier: Number($("employeeMultiplier").value)||2, date: today() });
-    employeeForm.reset(); $("employeeRate").value = "0"; $("employeeHours").value = "0"; $("employeeOvertime").value = "0"; $("employeeMultiplier").value = "2";
-    save(); toast("Empleado guardado.");
+    const fields = { name, role: $("employeeRole").value.trim(), rate: Math.max(0, Number($("employeeRate").value)||0), hours: Math.max(0, Number($("employeeHours").value)||0), overtime: Math.max(0, Number($("employeeOvertime").value)||0), multiplier: Number($("employeeMultiplier").value)||2 };
+    if (id) { const employee = data.employees.find(x => x.id === id); if (!employee) { toast("No se encontró el empleado."); resetEmployeeForm(); return; } Object.assign(employee, fields); toast("Empleado actualizado."); }
+    else { data.employees.push({ id: uid(), ...fields, date: today() }); toast("Empleado guardado."); }
+    resetEmployeeForm(); save(); renderEmployees();
   });
+  $("employeeCancelEdit")?.addEventListener("click", resetEmployeeForm);
   $("employeeList")?.addEventListener("click", event => {
-    const button = event.target.closest("[data-delete-employee]");
-    if (!button) return;
+    const edit = event.target.closest("[data-edit-employee]");
+    if (edit) { const employee = data.employees.find(x => x.id === edit.dataset.editEmployee); if (!employee) return; $("employeeEditId").value = employee.id; $("employeeName").value = employee.name || ""; $("employeeRole").value = employee.role || ""; $("employeeRate").value = Number(employee.rate)||0; $("employeeHours").value = Number(employee.hours)||0; $("employeeOvertime").value = Number(employee.overtime)||0; $("employeeMultiplier").value = String(Number(employee.multiplier)||2); $("employeeSubmitButton").textContent = "Guardar cambios"; $("employeeCancelEdit").classList.remove("hidden"); $("employeeName").focus(); employeeForm.scrollIntoView({behavior:"smooth",block:"center"}); return; }
+    const button = event.target.closest("[data-delete-employee]"); if (!button) return;
     if (!confirm("¿Eliminar este empleado? Esta acción no se puede deshacer.")) return;
-    data.employees = data.employees.filter(e => e.id !== button.dataset.deleteEmployee);
-    save(); toast("Empleado eliminado.");
+    data.employees = data.employees.filter(e => e.id !== button.dataset.deleteEmployee); save(); renderEmployees(); toast("Empleado eliminado.");
   });
 
   function renderAll() {
@@ -1044,7 +1049,9 @@
   });
 
   $("saleProduct").addEventListener("change", () => {
-    $("salePrice").value = product($("saleProduct").value)?.price ?? "";
+    const selectedProduct = product($("saleProduct").value);
+    // Siempre sustituir el precio anterior por el precio del producto recién seleccionado.
+    $("salePrice").value = selectedProduct ? String(Number(selectedProduct.price) || 0) : "";
     updateSalePreview();
   });
   $("saleQty").addEventListener("input", updateSalePreview);
@@ -1129,12 +1136,13 @@
       item.amount = amount;
       item.date = date;
       item.type = $("expenseType").value;
+      item.frequency = $("expenseFrequency").value;
       resetExpenseForm();
       save();
       toast("Gasto actualizado.");
       return;
     }
-    data.expenses.push({ id: uid(), name, amount, date, type: $("expenseType").value });
+    data.expenses.push({ id: uid(), name, amount, date, type: $("expenseType").value, frequency: $("expenseFrequency").value });
     resetExpenseForm();
     save();
     toast("Gasto agregado.");
@@ -1151,6 +1159,7 @@
       $("expenseAmount").value = item.amount;
       $("expenseDate").value = item.date;
       $("expenseType").value = item.type || "variable";
+      $("expenseFrequency").value = item.frequency || "once";
       $("expenseSubmitButton").textContent = "Guardar cambios";
       $("cancelExpenseEdit").classList.remove("hidden");
       $("expenseName").focus();
@@ -1639,13 +1648,16 @@ function downloadCsv() {
   $("customerList")?.addEventListener("click",e=>{const button=e.target.closest("[data-edit-customer]");if(!button)return;const customer=data.customers.find(c=>c.id===button.dataset.editCustomer);if(!customer)return;$("customerEditId").value=customer.id;$("customerName").value=customer.name;$("customerPhone").value=customer.phone||"";$("customerInitialDebtWrap").classList.add("hidden");$("customerSaveButton").textContent="Guardar cambios";$("customerCancelEdit").classList.remove("hidden");$("customerName").focus();$("customerForm").scrollIntoView({behavior:"smooth",block:"center"});});
   $("customerDebtForm")?.addEventListener("submit",e=>{e.preventDefault();const customerId=$("debtCustomer").value;const amount=Number($("debtAmount").value);const description=$("debtDescription").value.trim()||"Deuda agregada manualmente";if(!customerId||!(amount>0)||!Number.isFinite(amount)){toast("Selecciona un cliente e introduce una deuda mayor que cero.");return;}data.creditMovements.push({id:uid(),customerId,type:"charge",amount,date:today(),description});$("debtAmount").value="";$("debtDescription").value="";save();syncOperationSelects();renderOperations();toast("Deuda agregada al saldo del cliente.");});
   $("creditPaymentForm")?.addEventListener("submit",e=>{e.preventDefault();const customerId=$("creditCustomer").value,amount=Number($("creditAmount").value);if(!customerId||!(amount>0)){toast("Selecciona cliente e importe válido.");return;}if(amount>customerBalance(customerId)){toast("El abono supera el saldo pendiente.");return;}data.creditMovements.push({id:uid(),customerId,type:"payment",amount,date:today(),description:"Abono recibido"});$("creditAmount").value="";save();syncOperationSelects();renderOperations();toast("Abono registrado.");});
-  $("supplierForm")?.addEventListener("submit",e=>{e.preventDefault();const name=$("supplierName").value.trim();if(!name)return;data.suppliers.push({id:uid(),name,contact:$("supplierContact").value.trim(),createdAt:today()});$("supplierForm").reset();save();syncOperationSelects();renderOperations();toast("Proveedor guardado.");});
+  function resetSupplierForm(){ $("supplierForm").reset(); $("supplierEditId").value=""; $("supplierSaveButton").textContent="Guardar proveedor"; $("supplierCancelEdit").classList.add("hidden"); }
+  $("supplierForm")?.addEventListener("submit",e=>{e.preventDefault();const id=$("supplierEditId").value;const name=$("supplierName").value.trim();if(!name)return;const contact=$("supplierContact").value.trim();if(id){const supplier=data.suppliers.find(x=>x.id===id);if(!supplier){toast("No se encontró el proveedor.");resetSupplierForm();return;}supplier.name=name;supplier.contact=contact;toast("Proveedor actualizado.");}else{data.suppliers.push({id:uid(),name,contact,createdAt:today()});toast("Proveedor guardado.");}resetSupplierForm();save();syncOperationSelects();renderOperations();});
+  $("supplierCancelEdit")?.addEventListener("click",resetSupplierForm);
+  $("supplierList")?.addEventListener("click",e=>{const button=e.target.closest("[data-edit-supplier]");if(!button)return;const supplier=data.suppliers.find(x=>x.id===button.dataset.editSupplier);if(!supplier)return;$("supplierEditId").value=supplier.id;$("supplierName").value=supplier.name||"";$("supplierContact").value=supplier.contact||"";$("supplierSaveButton").textContent="Guardar cambios";$("supplierCancelEdit").classList.remove("hidden");$("supplierName").focus();$("supplierForm").scrollIntoView({behavior:"smooth",block:"center"});});
   $("purchaseForm")?.addEventListener("submit",e=>{e.preventDefault();const supplierId=$("purchaseSupplier").value,productId=$("purchaseProduct").value,qty=Number($("purchaseQty").value),cost=Number($("purchaseCost").value);const p=product(productId),s=data.suppliers.find(x=>x.id===supplierId);if(!s||!p||!Number.isInteger(qty)||qty<1||cost<0){toast("Revisa proveedor, producto, cantidad y costo.");return;}p.stock+=qty;data.purchases.push({id:uid(),date:today(),supplierId,productId,productName:p.name,qty,cost});data.stockMoves.push({id:uid(),date:today(),productId,name:p.name,typeLabel:"Compra a proveedor",qty,reason:s.name});if(cost>0)data.expenses.push({id:uid(),concept:`Compra de ${p.name} · ${s.name}`,amount:cost,date:today(),category:"Inventario"});$("purchaseForm").reset();$("purchaseQty").value="1";$("purchaseCost").value="0";save();syncOperationSelects();renderOperations();toast("Compra registrada y stock actualizado.");});
   function renderOperations(){
     syncOperationSelects();renderPosCart();
     const credit=$("creditSummary");if(credit){const due=data.customers.reduce((s,c)=>s+Math.max(0,customerBalance(c.id)),0);credit.innerHTML=`<div><span>Saldo total por cobrar</span><strong>${money(due)}</strong></div><div><span>Clientes</span><strong>${data.customers.length}</strong></div>`;}
     const customers=$("customerList");if(customers)customers.innerHTML=data.customers.length?data.customers.map(c=>`<div class="compact-row customer-row"><div class="customer-row-main"><strong>${escapeHtml(c.name)}</strong><small>${escapeHtml(c.phone||"Sin teléfono")}</small><small>Debe: ${money(Math.max(0,customerBalance(c.id)))}</small></div><strong>${money(Math.max(0,customerBalance(c.id)))}</strong><button type="button" class="button secondary customer-edit-button" data-edit-customer="${escapeHtml(c.id)}">Editar</button></div>`).join(""):'<p class="muted">Todavía no hay clientes.</p>';
-    const suppliers=$("supplierList");if(suppliers)suppliers.innerHTML=data.suppliers.length?data.suppliers.map(s=>`<div class="compact-row"><div><strong>${escapeHtml(s.name)}</strong><small>${escapeHtml(s.contact||"Sin contacto")}</small></div><small>${data.purchases.filter(p=>p.supplierId===s.id).length} compras</small></div>`).join(""):'<p class="muted">Todavía no hay proveedores.</p>';
+    const suppliers=$("supplierList");if(suppliers)suppliers.innerHTML=data.suppliers.length?data.suppliers.map(s=>`<div class="compact-row"><div><strong>${escapeHtml(s.name)}</strong><small>${escapeHtml(s.contact||"Sin contacto")}</small></div><small>${data.purchases.filter(p=>p.supplierId===s.id).length} compras</small><button type="button" class="button secondary" data-edit-supplier="${escapeHtml(s.id)}">Editar</button></div>`).join(""):'<p class="muted">Todavía no hay proveedores.</p>';
     const lastCut=data.cashCuts[data.cashCuts.length-1];const salesSinceCut=data.sales.slice(lastCut?.salesIndex||0);
     const cashSales=salesSinceCut.filter(s=>(s.payment||"efectivo")==="efectivo").reduce((sum,s)=>sum+s.qty*s.price,0);const cashExpense=data.expenses.slice(lastCut?.expenseIndex||0).reduce((sum,e)=>sum+Number(e.amount||0),0);
     const cs=$("cashSummary");if(cs)cs.innerHTML=`<div><span>Ventas registradas desde el último corte</span><strong>${money(salesSinceCut.reduce((s,x)=>s+x.qty*x.price,0))}</strong></div><div><span>Ventas no fiadas</span><strong>${money(cashSales)}</strong></div><div><span>Gastos registrados</span><strong>${money(cashExpense)}</strong></div><div><span>Movimientos de ventas</span><strong>${salesSinceCut.length}</strong></div>`;
