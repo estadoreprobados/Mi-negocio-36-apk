@@ -1,0 +1,12 @@
+Mi Primer Negocio 36 — versión 3.7.5 (compilación 22)
+
+Novedades exclusivas de esta versión:
+- Editar empleados: nombre, puesto, pago por hora, horas normales, horas extra y multiplicador.
+- Gastos con frecuencia única, semanal, quincenal (cada 15 días), mensual, bimestral, trimestral, semestral y anual. Se muestra equivalente mensual estimado; no se generan pagos automáticos.
+- Ventas con varios productos mediante el carrito del punto de venta: cantidades, total y validación del stock de cada artículo.
+- Corrección de precio en el formulario de ventas: al cambiar el producto, se carga su precio y se recalcula el total.
+- Edición de clientes sin borrar sus saldos o movimientos.
+- Edición de proveedores sin borrar las compras vinculadas.
+- Sincronización de la versión visible, el JavaScript y la configuración de compilación Android.
+
+Antes de publicar: compilar con GitHub Actions y probar en Android la edición de cada registro, frecuencia de gastos, carrito, stock y precios. Exporta un respaldo JSON antes de actualizar.

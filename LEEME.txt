@@ -1,9 +1,9 @@
-Mi Primer Negocio 36 v3.7.3
+Mi Primer Negocio 36 v3.7.5
 
 Para compilar desde GitHub, conserva las carpetas del proyecto y sube los archivos respetando sus rutas. La aplicación Android usa los archivos de app/src/main/assets/. Ejecuta GitHub Actions y espera el resultado exitoso antes de descargar el APK.
 
 Antes de actualizar: exporta un respaldo JSON desde Reportes. No borres los datos de la aplicación.
 
-Cambios principales: menú lateral, reorganización de Clientes y Proveedores, carrito de ventas multi-producto con lector de barras, calculadora de mano de obra y diálogos locales de Manolito sin IA. Consulta CAMBIOS_VERSION_3.7.3.txt.
+Cambios principales: edición de empleados, clientes y proveedores; frecuencias de gastos; ventas con varios productos y corrección del precio al cambiar de producto. Consulta CAMBIOS_VERSION_3.7.5.txt.
 
 Importante: el código está preparado para probarse, pero debe compilarse y validarse en el dispositivo Android antes de considerarse una versión estable.
