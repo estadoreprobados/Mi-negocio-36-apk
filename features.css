@@ -673,15 +673,16 @@ footer { color: var(--muted); }
 .developer-tools .button { justify-self:start; }
 
 /* Wallpaper de Halloween con calabazas ilustradas y telarañas visibles en toda la pantalla. */
+:root[data-app-theme="halloween2026"] body { position:relative; isolation:isolate; }
 :root[data-app-theme="halloween2026"] body::before {
   content:"🎃　　 🕸️　　 🎃　　 💀\A　🕸️　　 🎃　　 👻　　 🎃\A🎃　　 💀　　 🕸️　　 🎃";
   white-space:pre;
-  position:fixed; inset:0; z-index:0; pointer-events:none;
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
   font-size:clamp(28px,5vw,54px); line-height:2.8; letter-spacing:.05em;
   opacity:.23; overflow:hidden;
 }
 :root[data-app-theme="halloween2026"][data-mode="light"] body::before { opacity:.32; }
-:root[data-app-theme="halloween2026"] body > * { position:relative; z-index:1; }
+:root[data-app-theme="halloween2026"] body > * { z-index:auto; }
 
 
 /* Vista previa individual de cada tema: decoraciones y paletas independientes. */
@@ -878,3 +879,11 @@ footer { color: var(--muted); }
 :root[data-app-theme="bandera-bi"] .topbar { background:linear-gradient(100deg,#d64b8b,#9b59b6,#4d6bc9); color:#fff; }
 :root[data-app-theme="trans"] .topbar { background:linear-gradient(100deg,#8bcfff,#f4a8c8,#8bcfff); color:#20324e; }
 :root[data-app-theme="abrosexual"] .topbar { background:linear-gradient(100deg,#54a878,#fff,#e98db7); color:#294638; }
+
+
+/* v3.7.5 corrección: aislar el fondo decorativo de Halloween y las vistas previas. */
+:root[data-app-theme="halloween2026"] body { isolation:isolate; }
+:root[data-app-theme="halloween2026"] body::before { z-index:-1 !important; pointer-events:none !important; }
+.theme-shop .theme-card { isolation:isolate; position:relative; }
+.theme-shop .theme-preview { isolation:isolate; position:relative; background-color:transparent; background-size:cover; background-position:center; }
+.theme-shop .theme-preview::after { pointer-events:none; }
