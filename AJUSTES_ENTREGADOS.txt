@@ -1,0 +1,8 @@
+Mi Primer Negocio 36 — paquete de código fuente con ajustes visuales
+
+- Se agregaron paletas para Cyberpunk y Galaxia que afectan fondo, paneles, campos, pestañas y botones.
+- Se contemplan variantes claras y oscuras para ambos temas.
+- El CSS se actualizó tanto en la web publicada (raíz) como en los assets de Android.
+- Se conservan los datos locales y el resto de archivos del repositorio original.
+
+Importante: este ZIP contiene el código fuente; no es un APK compilado. Los cambios visuales requieren probarse en el navegador y generar una nueva compilación Android antes de publicar.
