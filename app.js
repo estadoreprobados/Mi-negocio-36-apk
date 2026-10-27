@@ -1671,32 +1671,107 @@ function downloadCsv() {
     if ($("dashboardCards")) $("dashboardCards").value=data.settings.dashboardCards || "all";
     if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard",data.settings.dashboardCards==="compact");
   }
-  // Manolito: diálogos predefinidos sin IA, sin conexión ni servicios externos.
+
+  // Manolito: mascota interactiva, sin IA y sin conexión.
   const manolitoDialogues = [
-    {text:"¡Hola! Vamos paso a paso. Registra tus productos con costos reales para conocer mejor tu ganancia.", image:"manolito.jpg"},
-    {text:"¡Ojo! Hay productos con pocas existencias. Revisa el stock mínimo antes de aceptar más pedidos.", image:"icon-192.png", condition:()=>data.products.some(p=>Number(p.stock)<=Number(p.minStock))},
-    {text:"¿Vendiste hoy? Registra cada venta para mantener las existencias y los reportes al día.", image:"manolito.jpg", condition:()=>(data.sales||[]).filter(s=>s.date===today()).length===0},
-    {text:"Los gastos pequeños también cuentan. Anota empaques, transporte e internet para estimar mejor la ganancia.", image:"icon-512.png", condition:()=>(data.expenses||[]).length===0},
-    {text:"Antes de poner un precio, suma materiales y mano de obra. Luego decide el margen que quieres ganar.", image:"manolito.jpg"},
-    {text:"¡Hora de revisar las cuentas! Si un cliente te debe, registra sus abonos para que el saldo sea correcto.", image:"icon-192.png", condition:()=>(data.creditMovements||[]).some(m=>m.type==="charge")},
-    {text:"Haz una copia de seguridad con frecuencia. Así tendrás una copia de tus datos si cambias de dispositivo.", image:"icon-512.png"},
-    {text:"¡Buen trabajo! Revisa el resumen y los reportes antes de decidir qué producto conviene reponer.", image:"manolito.jpg"},
-    {text:"No olvides comparar el costo de compra con el precio de venta. Vender mucho no siempre significa ganar mucho.", image:"icon-192.png"},
-    {text:"Puedes usar el lector de barras en Ventas. Si la cámara no funciona, escribe el código o el nombre del producto.", image:"manolito.jpg"}
+    {
+      text: "¡Hola! Soy Manolito. Vamos a organizar tu negocio paso a paso.",
+      image: "images/manolito_feliz.jpg"
+    },
+    {
+      text: "¡Vaya! Recuerda revisar tus productos con pocas existencias antes de quedarte sin mercancía.",
+      image: "images/manolito_sorprendido.jpg",
+      condition: () => (data.products || []).some(
+        p => Number(p.stock) <= Number(p.minStock)
+      )
+    },
+    {
+      text: "¡Muy bien! Registrar tus ventas te ayuda a conocer tus ingresos y ganancias.",
+      image: "images/manolito_guino.jpg"
+    },
+    {
+      text: "¡Cuidado! Si no registras tus gastos, podrías calcular mal tu ganancia.",
+      image: "images/manolito_enojado.jpg"
+    },
+    {
+      text: "¡Me encanta! Lleva un registro de tus clientes y agradece que confíen en tu negocio.",
+      image: "images/manolito_enamorado.jpg"
+    },
+    {
+      text: "Tómate un descanso cuando lo necesites. Después puedes volver a revisar las cuentas.",
+      image: "images/manolito_dormido.jpg"
+    },
+    {
+      text: "Antes de fijar un precio, suma materiales y mano de obra para conocer el costo real.",
+      image: "images/manolito_sorprendido.jpg"
+    },
+    {
+      text: "¡Excelente! Haz respaldos periódicos para proteger los datos de tu negocio.",
+      image: "images/manolito_feliz.jpg"
+    },
+    {
+      text: "Si un cliente te debe dinero, registra el abono para mantener actualizado su saldo.",
+      image: "images/manolito_guino.jpg",
+      condition: () => (data.creditMovements || []).some(
+        m => m.type === "charge"
+      )
+    },
+    {
+      text: "No olvides revisar tus compras y pagos pendientes a proveedores.",
+      image: "images/manolito_sorprendido.jpg"
+    },
+    {
+      text: "¡Ánimo! Cada venta registrada te ayuda a entender mejor tu negocio.",
+      image: "images/manolito_enamorado.jpg"
+    },
+    {
+      text: "Vamos con calma: revisa tus reportes antes de tomar decisiones importantes.",
+      image: "images/manolito_dormido.jpg"
+    }
   ];
+
   let manolitoLastDialogue = -1;
+
   function getManolitoDialogue() {
-    const eligible=manolitoDialogues.filter(d=>!d.condition||d.condition());
-    const pool=eligible.length>1?eligible.filter((d)=>manolitoDialogues.indexOf(d)!==manolitoLastDialogue):eligible;
-    const chosen=pool[Math.floor(Math.random()*pool.length)]||manolitoDialogues[0];
-    manolitoLastDialogue=manolitoDialogues.indexOf(chosen);
+    const eligible = manolitoDialogues.filter(
+      d => !d.condition || d.condition()
+    );
+
+    const pool = eligible.length > 1
+      ? eligible.filter(d => manolitoDialogues.indexOf(d) !== manolitoLastDialogue)
+      : eligible;
+
+    const chosen = pool[Math.floor(Math.random() * pool.length)]
+      || manolitoDialogues[0];
+
+    manolitoLastDialogue = manolitoDialogues.indexOf(chosen);
     return chosen;
   }
+
   function showManolitoDialogue() {
-    const d=getManolitoDialogue(); const message=$("mascotMessage"); const avatar=document.querySelector(".mascot-avatar");
-    if(message) { window.__mpnManolitoMessageChosen=true; message.textContent=d.text; }
-    if(avatar) { avatar.src=d.image; avatar.alt="Manolito: consejo de administración"; avatar.classList.remove("mascot-react"); void avatar.offsetWidth; avatar.classList.add("mascot-react"); }
+    const d = getManolitoDialogue();
+    const message = $("mascotMessage");
+    const avatar = document.querySelector(".mascot-avatar");
+
+    if (message) {
+      window.__mpnManolitoMessageChosen = true;
+      message.textContent = d.text;
+    }
+
+    if (avatar) {
+      avatar.onerror = function () {
+        avatar.onerror = null;
+        avatar.src = "manolito.jpg";
+      };
+
+      avatar.src = d.image;
+      avatar.alt = "Manolito: " + d.text;
+      avatar.classList.remove("mascot-react");
+      void avatar.offsetWidth;
+      avatar.classList.add("mascot-react");
+    }
   }
+
   $("mascotAdviceButton")?.addEventListener("click",showManolitoDialogue);
   document.querySelectorAll('[data-goto="products"], [data-goto="sales"]').forEach(button => button.addEventListener("click", () => { window.__mpnManolitoMessageChosen = false; }));
   $("mascotEnabled")?.addEventListener("change",e=>{data.settings.mascotEnabled=e.target.checked;save();toast(e.target.checked?"Manolito está activado.":"Manolito está oculto.");});

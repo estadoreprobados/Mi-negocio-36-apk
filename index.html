@@ -9,6 +9,7 @@
 
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="features.css">
+  <link rel="stylesheet" href="menu-tools.css">
   <meta name="application-name" content="Mi Primer Negocio 36">
 
   <script defer src="chart.umd.min.js"></script>
@@ -18,7 +19,10 @@
 <body>
 
 <header class="topbar">
-  <div class="left-menu-wrap"><button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Abrir menú principal" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">☰</span></button><div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Menú principal">
+  <div class="header-menus">
+    <div class="left-menu-wrap menu-wrap">
+      <button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Abrir menú principal" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+      <div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Menú principal">
         <button class="menu-item" data-view="dashboard" role="menuitem">🏠 Resumen</button>
         <button class="menu-item" data-view="products" role="menuitem">📦 Productos</button>
         <button class="menu-item" data-view="sales" role="menuitem">🛒 Ventas</button>
@@ -29,13 +33,20 @@
         <button class="menu-item" data-view="taxes" role="menuitem">🧮 Impuestos</button>
         <button class="menu-item" data-view="customers" role="menuitem">👥 Clientes</button>
         <button class="menu-item" data-view="suppliers" role="menuitem">🚚 Proveedores</button>
+      </div>
+    </div>
+    <div class="tools-menu-wrap menu-wrap">
+      <button id="toolsMenuButton" class="more-menu-button tools-menu-button" type="button" aria-label="Abrir menú de herramientas" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">⚙</span></button>
+      <div id="toolsMenu" class="more-menu tools-menu hidden" role="menu" aria-label="Menú de herramientas">
         <button class="menu-item" data-view="options" role="menuitem">⚙️ Ajustes</button>
         <button class="menu-item" data-view="help" role="menuitem">❔ Ayuda</button>
         <button class="menu-item" data-view="statistics" role="menuitem">📈 Estadísticas</button>
         <button class="menu-item" data-view="shop" role="menuitem">🎨 Tienda de temas</button>
-        <button class="menu-item" data-view="creators" role="menuitem">🧩 Desbloquear temas</button>
+        <button class="menu-item" data-view="creators" role="menuitem">🧩 Códigos de creador</button>
         <button class="menu-item" data-view="version" role="menuitem">📱 Versión del sistema</button>
-      </div></div>
+      </div>
+    </div>
+  </div>
   <div>
     <p class="eyebrow">ADMINISTRACIÓN DE NEGOCIOS</p>
     <h1>Mi Primer Negocio <span>36</span></h1>
