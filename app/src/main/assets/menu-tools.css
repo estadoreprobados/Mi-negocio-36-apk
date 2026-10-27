@@ -1,0 +1,24 @@
+/* Menús separados para Mi Primer Negocio 36 */
+.header-menus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 1000;
+}
+.menu-wrap { position: relative; }
+.tools-menu { min-width: 220px; }
+.tools-menu-button { font-weight: 700; }
+.header-menus .more-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 2000;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+}
+@media (max-width: 560px) {
+  .header-menus { gap: 5px; }
+  .header-menus .more-menu { max-width: min(88vw, 300px); }
+}
