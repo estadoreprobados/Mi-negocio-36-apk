@@ -378,7 +378,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.7.3", code: 20, buildDate: "26 de octubre de 2026" };
+  const APP_VERSION = { name: "3.7.4", code: 21, buildDate: "26 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -574,20 +574,30 @@
   function renderShop() {
     if (!$ ("themeShop")) return;
     $("fireCoins").textContent = String(data.gamification.coins);
-    $("themeShop").innerHTML = THEMES.filter(theme => seasonalThemeIsAvailable(theme)).map(theme => {
+    const available = THEMES.filter(theme => seasonalThemeIsAvailable(theme));
+    const groups = [
+      { title: "Temas base", ids: ["classic", "ocean", "forest", "violet", "sunset", "nature", "hacker", "tech-blue", "cyberpunk", "galaxy", "vaporwave"] },
+      { title: "Temas de evento", ids: ["halloween2026", "navidad2026", "retro"] },
+      { title: "Tema escolar", ids: ["cbtis36"] },
+      { title: "Temas con código de creador", ids: available.filter(t => t.creatorCode && !t.seasonal).map(t => t.id) },
+      { title: "Temas que se compran con monedas", ids: ["hearts", "sea-life", "accounting"] }
+    ];
+    const used = new Set();
+    const previewIcons = {
+      classic: "🏪", ocean: "🌊🐟", forest: "🌲🍃", violet: "💜✨", sunset: "🌅☀️",
+      hacker: "💻⌨️{ }", nature: "🌿🦋", cbtis36: "🏫📚✏️", "bandera-bi": "💗💜💙",
+      atardecer: "🌇🟠", eclipse: "🌑✨", "tech-blue": "🔷💠⚡", pride: "🏳️‍🌈",
+      trans: "🏳️‍⚧️", abrosexual: "💚🤍💗", paleontology: "🦴🦖🦴",
+      halloween2026: "🎃🕸️💀👻", navidad2026: "🎄❄️🎁", retro: "🖥️💿",
+      hearts: "💗💖💕", "sea-life": "🐠🐟🫧", accounting: "🧾📊🧮", cyberpunk: "🌃⚡", galaxy: "🌌✨", vaporwave: "🌅💿"
+    };
+    const card = theme => {
+      used.add(theme.id);
       const owned = data.gamification.purchasedThemes.includes(theme.id);
       const active = data.settings.theme === theme.id;
       const lockedCreatorTheme = Boolean(theme.creatorCode) && !owned;
       const action = lockedCreatorTheme ? "Desbloquear con código" : active ? "Tema activo" : owned ? "Aplicar tema" : theme.cost === 0 ? "Obtener gratis" : `Comprar · ${theme.cost} 🔥`;
       const price = lockedCreatorTheme ? "Bloqueado" : (theme.creatorCode && owned) ? "Desbloqueado gratis" : theme.cost === 0 ? "Gratis" : `${theme.cost} 🔥`;
-      const previewIcons = {
-        classic: "🏪", ocean: "🌊🐟", forest: "🌲🍃", violet: "💜✨", sunset: "🌅☀️",
-        hacker: "💻⌨️{ }", nature: "🌿🦋", cbtis36: "🏫📚✏️", "bandera-bi": "💗💜💙",
-        atardecer: "🌇🟠", eclipse: "🌑✨", "tech-blue": "🔷💠⚡", pride: "🏳️‍🌈",
-        trans: "🏳️‍⚧️", abrosexual: "💚🤍💗", paleontology: "🦴🦖🦴",
-        halloween2026: "🎃🕸️💀👻", navidad2026: "🎄❄️🎁", retro: "🖥️💿",
-        hearts: "💗💖💕", "sea-life": "🐠🐟🫧", accounting: "🧾📊🧮", cyberpunk: "🌃⚡", galaxy: "🌌✨", vaporwave: "🌅💿"
-      };
       return `<article class="theme-card ${active ? "theme-active" : ""} ${lockedCreatorTheme ? "theme-locked" : ""}">
         <div class="theme-preview theme-preview-${theme.id}" style="background:${theme.preview}" role="img" aria-label="Vista previa de ${escapeHtml(theme.name)}">
           <span class="preview-art" aria-hidden="true">${previewIcons[theme.id] || "🎨"}</span>
@@ -597,7 +607,15 @@
         <div class="theme-card-footer"><strong>${price}</strong>
         <button class="button ${active || lockedCreatorTheme ? "secondary" : ""}" data-theme-action="${theme.id}" ${active || lockedCreatorTheme ? "disabled" : ""}>${action}</button></div></div>
       </article>`;
-    }).join("");
+    };
+    let html = "";
+    groups.forEach(group => {
+      const items = group.ids.map(id => available.find(theme => theme.id === id)).filter(theme => theme && !used.has(theme.id));
+      if (items.length) html += `<section class="theme-shop-group"><h3 class="theme-shop-heading">${escapeHtml(group.title)}</h3><div class="theme-shop-grid">${items.map(card).join("")}</div></section>`;
+    });
+    const remaining = available.filter(theme => !used.has(theme.id));
+    if (remaining.length) html += `<section class="theme-shop-group"><h3 class="theme-shop-heading">Otros temas</h3><div class="theme-shop-grid">${remaining.map(card).join("")}</div></section>`;
+    $("themeShop").innerHTML = html;
   }
 
   function handleThemeAction(id) {
