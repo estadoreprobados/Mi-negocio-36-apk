@@ -1772,19 +1772,6 @@ function downloadCsv() {
     }
   }
 
-  let manolitoLastDialogue = -1;
-  function getManolitoDialogue() {
-    const eligible=manolitoDialogues.filter(d=>!d.condition||d.condition());
-    const pool=eligible.length>1?eligible.filter((d)=>manolitoDialogues.indexOf(d)!==manolitoLastDialogue):eligible;
-    const chosen=pool[Math.floor(Math.random()*pool.length)]||manolitoDialogues[0];
-    manolitoLastDialogue=manolitoDialogues.indexOf(chosen);
-    return chosen;
-  }
-  function showManolitoDialogue() {
-    const d=getManolitoDialogue(); const message=$("mascotMessage"); const avatar=document.querySelector(".mascot-avatar");
-    if(message) { window.__mpnManolitoMessageChosen=true; message.textContent=d.text; }
-    if(avatar) { avatar.src=d.image; avatar.alt="Manolito: consejo de administración"; avatar.classList.remove("mascot-react"); void avatar.offsetWidth; avatar.classList.add("mascot-react"); }
-  }
   $("mascotAdviceButton")?.addEventListener("click",showManolitoDialogue);
   document.querySelectorAll('[data-goto="products"], [data-goto="sales"]').forEach(button => button.addEventListener("click", () => { window.__mpnManolitoMessageChosen = false; }));
   $("mascotEnabled")?.addEventListener("change",e=>{data.settings.mascotEnabled=e.target.checked;save();toast(e.target.checked?"Manolito está activado.":"Manolito está oculto.");});
