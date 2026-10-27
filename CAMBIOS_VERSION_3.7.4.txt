@@ -1,0 +1,8 @@
+Mi Primer Negocio 36 — versión 3.7.4
+
+- Tienda de temas organizada por categorías: temas base, eventos, Escolar, códigos de creadores y temas de monedas.
+- Paletas aplicadas de forma consistente a fondos, paneles, campos y botones.
+- Ajustes visuales para temas especiales, manteniendo el modo claro/oscuro compatible donde está definido.
+- Archivos web y copias de Android sincronizados.
+
+Importante: compilar y probar en Android antes de publicar. Haz una copia de seguridad de los datos antes de actualizar.
