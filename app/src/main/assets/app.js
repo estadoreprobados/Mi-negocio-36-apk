@@ -770,8 +770,12 @@
     );
     const menu = $("moreMenu");
     const menuButton = $("moreMenuButton");
+    const toolsMenu = $("toolsMenu");
+    const toolsMenuButton = $("toolsMenuButton");
     if (menu) menu.classList.add("hidden");
     if (menuButton) menuButton.setAttribute("aria-expanded", "false");
+    if (toolsMenu) toolsMenu.classList.add("hidden");
+    if (toolsMenuButton) toolsMenuButton.setAttribute("aria-expanded", "false");
     if (view === "notes") renderNotes();
     if (view === "dashboard") { renderDashboard(); renderStreak(); }
     if (view === "reports") renderReport();
@@ -805,8 +809,33 @@
     b.addEventListener("click", () => go(b.dataset.goto))
   );
 
+  const toolsMenuButton = $("toolsMenuButton");
+  const toolsMenu = $("toolsMenu");
   const moreMenuButton = $("moreMenuButton");
   const moreMenu = $("moreMenu");
+
+  if (toolsMenuButton && toolsMenu) {
+    toolsMenuButton.addEventListener("click", () => {
+      const open = toolsMenu.classList.contains("hidden");
+      toolsMenu.classList.toggle("hidden", !open);
+      toolsMenuButton.setAttribute("aria-expanded", String(open));
+      if (moreMenu) moreMenu.classList.add("hidden");
+      if (moreMenuButton) moreMenuButton.setAttribute("aria-expanded", "false");
+    });
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".tools-menu-wrap")) {
+        toolsMenu.classList.add("hidden");
+        toolsMenuButton.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        toolsMenu.classList.add("hidden");
+        toolsMenuButton.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
   if (moreMenuButton && moreMenu) {
     moreMenuButton.addEventListener("click", () => {
       const open = moreMenu.classList.contains("hidden");
@@ -1638,6 +1667,33 @@ function downloadCsv() {
     try { pendingProductImage = await new Promise((resolve,reject) => { const reader=new FileReader(); reader.onload=()=>resolve(String(reader.result)); reader.onerror=reject; reader.readAsDataURL(file); }); toast("Imagen lista para guardar con el producto."); }
     catch { toast("No se pudo leer la imagen."); }
   });
+  // La vista con imágenes genera tarjetas fuera de #productRows; sus botones Editar necesitan su propio listener.
+  $("productCards")?.addEventListener("click", e => {
+    const edit = e.target.closest("[data-edit-product]");
+    const favorite = e.target.closest("[data-favorite-product]");
+    if (favorite) {
+      const p = product(favorite.dataset.favoriteProduct);
+      if (p) { p.favorite = !p.favorite; save(); toast(p.favorite ? "Producto añadido a favoritos." : "Producto quitado de favoritos."); }
+      return;
+    }
+    if (!edit) return;
+    const p = product(edit.dataset.editProduct);
+    if (!p) return;
+    $("productId").value = p.id;
+    $("productName").value = p.name || "";
+    if ($("productFavorite")) $("productFavorite").checked = Boolean(p.favorite);
+    pendingProductImage = p.image || "";
+    if ($("productBarcode")) $("productBarcode").value = p.barcode || "";
+    $("productMaterials").value = p.materials ?? 0;
+    $("productLabor").value = p.labor ?? 0;
+    $("productPrice").value = p.price ?? 0;
+    $("productStock").value = p.stock ?? 0;
+    $("productMinStock").value = p.minStock ?? 3;
+    $("productSubmit").textContent = "Guardar cambios";
+    $("cancelProductEdit").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   function updatePriceCalculator() {
     const cost = Math.max(0, Number($("priceCalcCost")?.value) || 0);
     const margin = Math.min(99.99, Math.max(0, Number($("priceCalcMargin")?.value) || 0));
