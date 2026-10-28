@@ -368,8 +368,6 @@
     { id: "trans", name: "Trans", cost: 0, creatorCode: "trans", description: "Azul claro, rosa y blanco inspirados en la bandera trans.", colors: ["#8bcfff", "#f4a8c8"], preview: "linear-gradient(135deg,#8bcfff 0%,#f4a8c8 35%,#ffffff 50%,#f4a8c8 65%,#8bcfff 100%)" },
     { id: "abrosexual", name: "Abrosexual", cost: 0, creatorCode: "abrosexual", description: "Verde, blanco y rosa inspirados en la bandera abrosexual.", colors: ["#54a878", "#e98db7"], preview: "linear-gradient(135deg,#54a878 0%,#dff3e5 35%,#ffffff 50%,#f6c8dc 65%,#e98db7 100%)" },
     { id: "paleontology", name: "Paleontología", cost: 0, creatorCode: "dinosauriogrr", description: "Verde helecho, arena y tonos de fósil para amantes de los dinosaurios.", colors: ["#345b3b", "#d8c49a"], preview: "linear-gradient(135deg,#203d2b 0%,#54784a 45%,#d8c49a 100%)" },
-    { id: "halloween2026", name: "Halloween 2026", cost: 0, creatorCode: "halloween2026", seasonal: "halloween", description: "Noche embrujada: carbón, calabaza, violeta y detalles fantasmales. Disponible del 25 al 31 de octubre de 2026.", colors: ["#ff7518", "#32104a"], preview: "linear-gradient(135deg,#12091f 0%,#5b217d 45%,#ff7518 46%,#ffb347 100%)" },
-    { id: "navidad2026", name: "Navidad 2026", cost: 0, creatorCode: "Navidad2026", seasonal: "christmas", description: "Verde pino, rojo cereza, nieve y detalles dorados. Disponible del 1 al 31 de diciembre de 2026.", colors: ["#0f5132", "#c62828"], preview: "linear-gradient(135deg,#073b2a 0%,#0f7a4a 48%,#b51f32 49%,#f2c14e 100%)" },
     { id: "retro", name: "Retro", cost: 0, creatorCode: "v3.6", seasonal: "retro", description: "Interfaz clásica inspirada en Windows 7: cristal azul Aero, bordes brillantes, botones degradados y tipografía Segoe UI. Disponible hasta el 1 de enero de 2027.", colors: ["#d97736", "#f2dfb3"], preview: "linear-gradient(135deg,#d9f1ff 0%,#4c9bd5 28%,#1b5b96 58%,#dcefff 100%)" },
     { id: "hearts", name: "Corazones", cost: 15, description: "Rosas, corazones y detalles románticos.", colors: ["#c02669", "#ffe4ef"], preview: "linear-gradient(135deg,#6d123f,#e84383 55%,#ffe4ef)" },
     { id: "sea-life", name: "Vida marina", cost: 18, description: "Un océano decorado con peces, burbujas y olas.", colors: ["#075985", "#67e8f9"], preview: "linear-gradient(135deg,#082f49,#0284c7 55%,#67e8f9)" },
@@ -379,13 +377,11 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.7.5", code: 22, buildDate: "26 de octubre de 2026" };
+  const APP_VERSION = { name: "3.8.0", code: 23, buildDate: "27 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
-    if (theme.seasonal === "halloween") return date >= "2026-10-25" && date <= "2026-10-31";
-    if (theme.seasonal === "christmas") return date >= "2026-12-01" && date <= "2026-12-31";
-    if (theme.seasonal === "retro") return date >= "2026-10-25" && date <= "2027-01-01";
+            if (theme.seasonal === "retro") return date >= "2026-10-25" && date <= "2027-01-01";
     return false;
   }
 
@@ -565,6 +561,8 @@
     expireSeasonalThemes();
     renderShop();
     const theme = THEMES.find(t => t.id === data.settings.theme && seasonalThemeIsAvailable(t)) || THEMES[0];
+    if (data.settings.theme !== theme.id) data.settings.theme = theme.id;
+    
     document.documentElement.dataset.appTheme = theme.id;
     // Aplica primero el modo elegido para que cada tema use su paleta clara u oscura.
     document.documentElement.dataset.mode = data.settings.mode === "dark" ? "dark" : "light";
@@ -578,7 +576,7 @@
     const available = THEMES.filter(theme => seasonalThemeIsAvailable(theme));
     const groups = [
       { title: "Temas base", ids: ["classic", "ocean", "forest", "violet", "sunset", "nature", "hacker", "tech-blue", "cyberpunk", "galaxy", "vaporwave"] },
-      { title: "Temas de evento", ids: ["halloween2026", "navidad2026", "retro"] },
+      { title: "Temas de evento", ids: ["retro"] },
       { title: "Tema escolar", ids: ["cbtis36"] },
       { title: "Temas con código de creador", ids: available.filter(t => t.creatorCode && !t.seasonal).map(t => t.id) },
       { title: "Temas que se compran con monedas", ids: ["hearts", "sea-life", "accounting"] }
@@ -589,7 +587,7 @@
       hacker: "💻⌨️{ }", nature: "🌿🦋", cbtis36: "🏫📚✏️", "bandera-bi": "💗💜💙",
       atardecer: "🌇🟠", eclipse: "🌑✨", "tech-blue": "🔷💠⚡", pride: "🏳️‍🌈",
       trans: "🏳️‍⚧️", abrosexual: "💚🤍💗", paleontology: "🦴🦖🦴",
-      halloween2026: "🎃🕸️💀👻", navidad2026: "🎄❄️🎁", retro: "🖥️💿",
+      retro: "🖥️💿",
       hearts: "💗💖💕", "sea-life": "🐠🐟🫧", accounting: "🧾📊🧮", cyberpunk: "🌃⚡", galaxy: "🌌✨", vaporwave: "🌅💿"
     };
     const card = theme => {
@@ -1777,10 +1775,24 @@ function downloadCsv() {
   function renderRestockList() {
     const panel=$("restockPanel"), list=$("restockList"); if (!panel || !list) return;
     const low=data.products.filter(p=>Number(p.stock)<=Number(p.minStock));
-    list.innerHTML=low.length?low.map(p=>`<div class="restock-row"><div><strong>${escapeHtml(p.name)}</strong><small>Stock ${p.stock} · mínimo ${p.minStock}</small></div><label>Cantidad a comprar<input type="number" min="1" step="1" value="${Math.max(1,Number(p.minStock)-Number(p.stock))}" data-restock-qty="${escapeHtml(p.id)}"></label><strong>${money(productCost(p)*Math.max(1,Number(p.minStock)-Number(p.stock)))}</strong></div>`).join(""):'<p class="muted">No hay productos por reabastecer.</p>';
+    list.innerHTML=low.length?low.map(p=>`<div class="restock-row"><div><strong>${escapeHtml(p.name)}</strong><small>Stock ${p.stock} · mínimo ${p.minStock}</small></div><label>Cantidad a comprar<input type="number" min="1" step="1" value="${Math.max(1,Number(p.minStock)-Number(p.stock))}" data-restock-qty="${escapeHtml(p.id)}"></label><strong>${money(productCost(p)*Math.max(1,Number(p.minStock)-Number(p.stock)))}</strong><button type="button" class="button" data-restock-add="${escapeHtml(p.id)}">Añadir a inventario</button></div>`).join(""):'<p class="muted">No hay productos por reabastecer.</p>';
     panel.classList.remove("hidden");
   }
   $("showRestockList")?.addEventListener("click",renderRestockList);
+  $("restockList")?.addEventListener("click", e => {
+    const button = e.target.closest("[data-restock-add]");
+    if (!button) return;
+    const id = button.dataset.restockAdd;
+    const p = product(id);
+    const input = document.querySelector(`[data-restock-qty="${CSS.escape(id)}"]`);
+    const qty = Number(input?.value);
+    if (!p || !Number.isInteger(qty) || qty < 1) { toast("Escribe una cantidad válida para reabastecer."); return; }
+    p.stock = Math.max(0, Number(p.stock) || 0) + qty;
+    data.stockMoves.push({ id: uid(), date: today(), productId: p.id, name: p.name, typeLabel: "Entrada por reabastecimiento", qty, reason: "Lista de reabastecimiento" });
+    save();
+    renderRestockList();
+    toast(`Inventario actualizado: +${qty} de ${p.name}.`);
+  });
   $("closeRestockList")?.addEventListener("click",()=>$ ("restockPanel").classList.add("hidden"));
   function applyV37Preferences() {
     const root=document.documentElement;
