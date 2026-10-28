@@ -888,52 +888,63 @@ footer { color: var(--muted); }
 .theme-shop .theme-preview { isolation:isolate; position:relative; background-color:transparent; background-size:cover; background-position:center; }
 .theme-shop .theme-preview::after { pointer-events:none; }
 
-/* v3.8: corrección de legibilidad de menús Halloween y nombre del negocio. */
-:root[data-app-theme="halloween2026"] .more-menu,
-:root[data-app-theme="halloween2026"] .tools-menu {
-  background:#21102f !important;
-  color:#fff0ff !important;
-  border:1px solid #ff7518 !important;
-  box-shadow:0 12px 32px #0008, 0 0 0 1px #60327a !important;
+
+/* v3.8 hotfix: legibilidad de la tienda de temas con Halloween activo.
+   Fuerza colores por estado para evitar textos lavados por reglas .muted globales. */
+:root[data-app-theme="halloween2026"] .theme-shop,
+:root[data-app-theme="halloween2026"] .theme-shop-group {
+  min-width: 0;
+  max-width: 100%;
 }
-:root[data-app-theme="halloween2026"] .more-menu .menu-item,
-:root[data-app-theme="halloween2026"] .tools-menu .menu-item {
-  display:block;
-  width:100%;
-  min-height:44px;
-  padding:12px 14px;
-  background:transparent !important;
-  color:#fff0ff !important;
-  border:1px solid transparent;
-  border-radius:9px;
-  text-align:left;
-  white-space:normal;
-  overflow-wrap:normal;
-  word-break:normal;
+:root[data-app-theme="halloween2026"] .theme-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
 }
-:root[data-app-theme="halloween2026"] .more-menu .menu-item:hover,
-:root[data-app-theme="halloween2026"] .more-menu .menu-item:focus-visible,
-:root[data-app-theme="halloween2026"] .tools-menu .menu-item:hover,
-:root[data-app-theme="halloween2026"] .tools-menu .menu-item:focus-visible {
-  background:#48205c !important;
-  border-color:#ff7518 !important;
-  color:#fff7e8 !important;
-  outline:none;
+:root[data-app-theme="halloween2026"] .theme-card {
+  min-width: 0;
+  overflow: hidden;
 }
-.business-name-display {
-  display:block;
-  max-width:100%;
-  min-width:0;
-  width:max-content;
-  margin:6px 0 0;
-  white-space:normal;
-  overflow-wrap:break-word;
-  word-break:normal;
-  hyphens:none;
-  line-height:1.35;
+:root[data-app-theme="halloween2026"] .theme-card-body,
+:root[data-app-theme="halloween2026"] .theme-card-body h3,
+:root[data-app-theme="halloween2026"] .theme-card-footer {
+  min-width: 0;
+  color: var(--mpn-text) !important;
 }
-.business-name-display.hidden { display:none !important; }
-@media (max-width:600px) {
-  .topbar > div:nth-child(2) { min-width:0; flex:1 1 0; }
-  .business-name-display { max-width:100%; font-size:.95rem; }
+:root[data-app-theme="halloween2026"] .theme-card-body p,
+:root[data-app-theme="halloween2026"] .theme-card-body .muted {
+  color: #d8c3e4 !important;
+  opacity: 1 !important;
+}
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card {
+  background: #fffaf2 !important;
+  color: #32113f !important;
+  border-color: #8b4ca0 !important;
+}
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body,
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body h3,
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-footer {
+  color: #32113f !important;
+}
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body p,
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body .muted {
+  color: #67466f !important;
+  opacity: 1 !important;
+}
+:root[data-app-theme="halloween2026"] .theme-shop-heading {
+  color: #fff0ff !important;
+  border-color: #ff7518 !important;
+}
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-shop-heading {
+  color: #32113f !important;
+}
+@media (max-width: 600px) {
+  :root[data-app-theme="halloween2026"] .theme-shop-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  :root[data-app-theme="halloween2026"] .theme-card-body p {
+    overflow-wrap: anywhere;
+  }
 }
