@@ -562,7 +562,7 @@
     renderShop();
     const theme = THEMES.find(t => t.id === data.settings.theme && seasonalThemeIsAvailable(t)) || THEMES[0];
     if (data.settings.theme !== theme.id) data.settings.theme = theme.id;
-    data.gamification.purchasedThemes = data.gamification.purchasedThemes.filter(id => id !== "halloween2026" && id !== "navidad2026");
+    
     document.documentElement.dataset.appTheme = theme.id;
     // Aplica primero el modo elegido para que cada tema use su paleta clara u oscura.
     document.documentElement.dataset.mode = data.settings.mode === "dark" ? "dark" : "light";

@@ -812,7 +812,7 @@ footer { color: var(--muted); }
 :root[data-app-theme="abrosexual"] .topbar { background:linear-gradient(100deg,#54a878,#fff,#e98db7); color:#294638; }
 
 
-/* v3.7.5 corrección: aislar el fondo decorativo de Halloween y las vistas previas. */
+
 .theme-shop .theme-card { isolation:isolate; position:relative; }
 .theme-shop .theme-preview { isolation:isolate; position:relative; background-color:transparent; background-size:cover; background-position:center; }
 .theme-shop .theme-preview::after { pointer-events:none; }
