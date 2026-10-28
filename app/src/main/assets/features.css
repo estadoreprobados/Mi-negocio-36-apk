@@ -889,62 +889,102 @@ footer { color: var(--muted); }
 .theme-shop .theme-preview::after { pointer-events:none; }
 
 
-/* v3.8 hotfix: legibilidad de la tienda de temas con Halloween activo.
-   Fuerza colores por estado para evitar textos lavados por reglas .muted globales. */
-:root[data-app-theme="halloween2026"] .theme-shop,
-:root[data-app-theme="halloween2026"] .theme-shop-group {
-  min-width: 0;
-  max-width: 100%;
+/* v3.8: Halloween - botones y gráficas opacos, aislados del fondo decorativo. */
+:root[data-app-theme="halloween2026"] button,
+:root[data-app-theme="halloween2026"] .button,
+:root[data-app-theme="halloween2026"] .row-button,
+:root[data-app-theme="halloween2026"] .tab,
+:root[data-app-theme="halloween2026"] .more-menu-button,
+:root[data-app-theme="halloween2026"] .tools-menu-button,
+:root[data-app-theme="halloween2026"] .theme-card .button,
+:root[data-app-theme="halloween2026"] .modal button,
+:root[data-app-theme="halloween2026"] .modal .button {
+  opacity: 1 !important;
+  background-color: #321044 !important;
+  background-image: linear-gradient(135deg, #321044 0%, #54206b 100%) !important;
+  color: #fff4ff !important;
+  border: 1px solid #ff9b3d !important;
+  text-shadow: none !important;
+  box-shadow: 0 2px 0 #7b3107 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
-:root[data-app-theme="halloween2026"] .theme-shop-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-  gap: 16px;
-  min-width: 0;
-  width: 100%;
+:root[data-app-theme="halloween2026"] button:not(:disabled):hover,
+:root[data-app-theme="halloween2026"] .button:not(:disabled):hover,
+:root[data-app-theme="halloween2026"] .row-button:not(:disabled):hover,
+:root[data-app-theme="halloween2026"] .tab:not(:disabled):hover {
+  background-color: #ff7518 !important;
+  background-image: linear-gradient(135deg, #ff7518 0%, #ffb347 100%) !important;
+  color: #24102d !important;
 }
+:root[data-app-theme="halloween2026"] .button:not(.secondary),
+:root[data-app-theme="halloween2026"] .tab.active,
+:root[data-app-theme="halloween2026"] .theme-card .button:not(.secondary) {
+  background-color: #ff7518 !important;
+  background-image: linear-gradient(135deg, #ff7518 0%, #ffb347 100%) !important;
+  color: #24102d !important;
+  border-color: #ffd08a !important;
+}
+:root[data-app-theme="halloween2026"] button:disabled,
+:root[data-app-theme="halloween2026"] .button:disabled,
+:root[data-app-theme="halloween2026"] .row-button:disabled {
+  opacity: 1 !important;
+  background: #49364f !important;
+  color: #e5d8ea !important;
+  border-color: #8a7194 !important;
+  box-shadow: none !important;
+}
+:root[data-app-theme="halloween2026"] .panel,
+:root[data-app-theme="halloween2026"] .metric,
+:root[data-app-theme="halloween2026"] .chart-wrap,
+:root[data-app-theme="halloween2026"] .stats-chart-wrap,
+:root[data-app-theme="halloween2026"] .chart-grid .panel,
+:root[data-app-theme="halloween2026"] .stats-panel,
+:root[data-app-theme="halloween2026"] .modal,
+:root[data-app-theme="halloween2026"] .modal-content,
+:root[data-app-theme="halloween2026"] .dialog,
 :root[data-app-theme="halloween2026"] .theme-card {
-  min-width: 0;
-  overflow: hidden;
-}
-:root[data-app-theme="halloween2026"] .theme-card-body,
-:root[data-app-theme="halloween2026"] .theme-card-body h3,
-:root[data-app-theme="halloween2026"] .theme-card-footer {
-  min-width: 0;
-  color: var(--mpn-text) !important;
-}
-:root[data-app-theme="halloween2026"] .theme-card-body p,
-:root[data-app-theme="halloween2026"] .theme-card-body .muted {
-  color: #d8c3e4 !important;
+  background-color: #21102f !important;
+  background-image: none !important;
   opacity: 1 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
-:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card {
-  background: #fffaf2 !important;
-  color: #32113f !important;
-  border-color: #8b4ca0 !important;
+:root[data-app-theme="halloween2026"] .chart-wrap,
+:root[data-app-theme="halloween2026"] .stats-chart-wrap {
+  border: 1px solid #60327a !important;
+  border-radius: 12px !important;
+  padding: 8px !important;
+  overflow: hidden !important;
 }
-:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body,
-:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body h3,
-:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-footer {
-  color: #32113f !important;
-}
-:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body p,
-:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card-body .muted {
-  color: #67466f !important;
+:root[data-app-theme="halloween2026"] canvas,
+:root[data-app-theme="halloween2026"] .chart-wrap canvas,
+:root[data-app-theme="halloween2026"] .stats-chart-wrap canvas {
+  background-color: #21102f !important;
   opacity: 1 !important;
+  filter: none !important;
 }
-:root[data-app-theme="halloween2026"] .theme-shop-heading {
+:root[data-app-theme="halloween2026"] .chart-wrap text,
+:root[data-app-theme="halloween2026"] .stats-chart-wrap text,
+:root[data-app-theme="halloween2026"] .chart-legend,
+:root[data-app-theme="halloween2026"] .chart-label {
   color: #fff0ff !important;
-  border-color: #ff7518 !important;
 }
-:root[data-app-theme="halloween2026"][data-mode="light"] .theme-shop-heading {
+:root[data-app-theme="halloween2026"][data-mode="light"] .panel,
+:root[data-app-theme="halloween2026"][data-mode="light"] .metric,
+:root[data-app-theme="halloween2026"][data-mode="light"] .chart-wrap,
+:root[data-app-theme="halloween2026"][data-mode="light"] .stats-chart-wrap,
+:root[data-app-theme="halloween2026"][data-mode="light"] .chart-grid .panel,
+:root[data-app-theme="halloween2026"][data-mode="light"] .stats-panel,
+:root[data-app-theme="halloween2026"][data-mode="light"] .modal,
+:root[data-app-theme="halloween2026"][data-mode="light"] .modal-content,
+:root[data-app-theme="halloween2026"][data-mode="light"] .dialog,
+:root[data-app-theme="halloween2026"][data-mode="light"] .theme-card,
+:root[data-app-theme="halloween2026"][data-mode="light"] canvas {
+  background-color: #fffaf2 !important;
   color: #32113f !important;
 }
-@media (max-width: 600px) {
-  :root[data-app-theme="halloween2026"] .theme-shop-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  :root[data-app-theme="halloween2026"] .theme-card-body p {
-    overflow-wrap: anywhere;
-  }
+:root[data-app-theme="halloween2026"][data-mode="light"] .chart-wrap,
+:root[data-app-theme="halloween2026"][data-mode="light"] .stats-chart-wrap {
+  border-color: #8b4ca0 !important;
 }
