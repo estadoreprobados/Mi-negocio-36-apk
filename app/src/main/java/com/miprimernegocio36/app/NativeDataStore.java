@@ -4,6 +4,7 @@ import android.content.Context;
 import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -28,6 +29,32 @@ public final class NativeDataStore {
         } catch (Exception e) {
             android.util.Log.w("MPN36Migration", "No se pudo leer la copia de datos anterior", e);
             return null;
+        }
+    }
+
+
+    /** Guarda una copia validada de los datos migrados mediante escritura atómica. */
+    public static boolean writeLegacyData(Context context, JSONObject data) {
+        if (data == null || !data.has("products") || !data.has("sales") || !data.has("settings")) return false;
+        File target = new File(context.getFilesDir(), FILE_NAME);
+        File temp = new File(context.getFilesDir(), FILE_NAME + ".tmp");
+        byte[] bytes = data.toString().getBytes(StandardCharsets.UTF_8);
+        if (bytes.length == 0 || bytes.length > 20 * 1024 * 1024) return false;
+        try (FileOutputStream out = new FileOutputStream(temp)) {
+            out.write(bytes);
+            out.getFD().sync();
+        } catch (Exception e) {
+            android.util.Log.w("MPN36Migration", "No se pudo escribir el respaldo nativo", e);
+            temp.delete();
+            return false;
+        }
+        if (target.exists() && !target.delete()) { temp.delete(); return false; }
+        if (temp.renameTo(target)) return true;
+        try (FileOutputStream out = new FileOutputStream(target)) {
+            out.write(bytes); out.getFD().sync(); temp.delete(); return true;
+        } catch (Exception e) {
+            android.util.Log.w("MPN36Migration", "No se pudo finalizar el respaldo nativo", e);
+            temp.delete(); return false;
         }
     }
 

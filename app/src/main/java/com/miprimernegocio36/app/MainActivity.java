@@ -35,6 +35,7 @@ import com.journeyapps.barcodescanner.CaptureActivity;
 
 public class MainActivity extends Activity {
     private WebView webView;
+    private static MainActivity activeInstance;
     private ValueCallback<Uri[]> filePathCallback;
     private static final int FILE_CHOOSER_REQUEST = 2048;
     private PermissionRequest pendingWebPermission;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activeInstance = this;
 
         webView = new WebView(this);
         WebSettings settings = webView.getSettings();
@@ -101,6 +103,24 @@ public class MainActivity extends Activity {
         });
         setContentView(webView);
         webView.loadUrl("file:///android_asset/index.html");
+    }
+
+    /** Aplica los cambios guardados desde la pantalla nativa al almacenamiento real de la app. */
+    public static boolean applyNativeData(String json) {
+        MainActivity activity = activeInstance;
+        if (activity == null || activity.webView == null || json == null) return false;
+        try {
+            JSONObject parsed = new JSONObject(json);
+            if (!parsed.has("products") || !parsed.has("sales") || !parsed.has("settings")) return false;
+            if (!NativeDataStore.writeLegacyData(activity, parsed)) return false;
+            String quoted = JSONObject.quote(parsed.toString());
+            activity.runOnUiThread(() -> activity.webView.evaluateJavascript(
+                "try{localStorage.setItem('mpn36_v2_data', JSON.parse(" + quoted + "));location.reload();true}catch(e){false}", null));
+            return true;
+        } catch (Exception e) {
+            android.util.Log.e("MPN36Migration", "No se pudieron aplicar los cambios nativos", e);
+            return false;
+        }
     }
 
     @Override
@@ -312,6 +332,12 @@ public class MainActivity extends Activity {
             }
             return;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (activeInstance == this) activeInstance = null;
+        super.onDestroy();
     }
 
     @Override
