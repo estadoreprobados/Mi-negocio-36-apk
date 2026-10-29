@@ -1,9 +1,13 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -11,10 +15,11 @@
         android:label="Mi Primer Negocio 36"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
+        <!-- Pantalla principal actual -->
         <activity
             android:name="com.miprimernegocio36.app.MainActivity"
-            android:exported="false"
-            android:label="mi primer negocio 36 nativo">
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,5 +28,12 @@
 
         </activity>
 
+        <!-- Pantalla nativa preparada para la migración -->
+        <activity
+            android:name=".NativeHomeActivity"
+            android:exported="false"
+            android:label="Mi Primer Negocio 36 - Nativo" />
+
     </application>
+
 </manifest>
