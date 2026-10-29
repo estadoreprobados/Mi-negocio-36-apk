@@ -822,3 +822,18 @@ footer { color: var(--muted); }
 
 /* v3.8: controles de tipo de producto e inventario */
 #productKindField select,#inventoryKindField select{width:100%;margin-top:6px}#productRows td small{color:var(--mpn-muted);font-size:.82em}.hidden{display:none!important}
+
+
+/* v3.8.1: vista compacta real del inicio */
+#view-dashboard.dashboard-compact > .panel,
+#view-dashboard.dashboard-compact .metric { padding:10px; margin-bottom:9px; }
+#view-dashboard.dashboard-compact .streak-panel { gap:8px; }
+#view-dashboard.dashboard-compact .streak-calendar-wrap { display:none; }
+#view-dashboard.dashboard-compact .mascot-panel { display:none; }
+#view-dashboard.dashboard-compact .quick-actions-panel h3 { margin:0 0 7px; font-size:1rem; }
+#view-dashboard.dashboard-compact .quick-actions { gap:6px; }
+#view-dashboard.dashboard-compact .quick-actions button { padding:6px 9px; min-height:34px; font-size:.86rem; }
+#view-dashboard.dashboard-compact .metrics { grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); gap:8px; }
+#view-dashboard.dashboard-compact .metric strong { font-size:1.05rem; }
+#view-dashboard.dashboard-compact .metric small { font-size:.75rem; }
+#view-dashboard.dashboard-compact .section-heading { margin-bottom:8px; }

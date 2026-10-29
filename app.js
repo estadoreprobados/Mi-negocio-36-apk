@@ -474,7 +474,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.8.0", code: 23, buildDate: "27 de octubre de 2026" };
+  const APP_VERSION = { name: "3.8.1", code: 24, buildDate: "28 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -879,6 +879,8 @@
   }
 
   function go(view) {
+    if (!view || !document.getElementById("view-" + view)) view = "dashboard";
+    try { sessionStorage.setItem("mpn36_active_view", view); } catch (_) {}
     document.querySelectorAll(".view").forEach(v =>
       v.classList.toggle("hidden", v.id !== "view-" + view)
     );
@@ -1263,7 +1265,7 @@
     const lines = items.map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join("");
     const win = window.open("", "_blank", "width=420,height=650");
     if (!win) { toast("Permite abrir ventanas para imprimir el ticket."); return; }
-    win.document.write(`<!doctype html><html lang="es"><meta charset="utf-8"><title>Ticket de venta</title><style>body{font:14px system-ui;max-width:360px;margin:20px auto;color:#222}h2,p{text-align:center}table{width:100%;border-collapse:collapse}td,th{padding:6px 2px;border-bottom:1px dashed #aaa;text-align:left}.total{text-align:right;font-size:18px;font-weight:bold}</style><h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p>Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}<br>IVA: ${money(tax)}</p><p class="total">Total: ${money(total)}</p><p>¡Gracias por tu compra!</p><script>window.onload=()=>window.print()<\/script></html>`); win.document.close();
+    win.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ticket de venta</title><style>body{font:14px system-ui;max-width:360px;margin:20px auto;padding:0 12px;color:#222}h2,p{text-align:center}.ticket-actions{display:flex;gap:8px;position:sticky;top:0;background:#fff;padding:10px 0}button{flex:1;border:0;border-radius:8px;padding:12px;background:#315f82;color:#fff;font-weight:700}button.close{background:#555}table{width:100%;border-collapse:collapse}td,th{padding:6px 2px;border-bottom:1px dashed #aaa;text-align:left}.total{text-align:right;font-size:18px;font-weight:bold}@media print{.ticket-actions{display:none}body{margin:0 auto;padding:0}}</style></head><body><div class="ticket-actions"><button type="button" onclick="window.print()">Imprimir ticket</button><button type="button" class="close" onclick="window.close();if(!window.closed)document.body.innerHTML='<p>Ya puedes volver a la aplicación.</p>'">Cerrar ticket</button></div><h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p>Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}<br>IVA: ${money(tax)}</p><p class="total">Total: ${money(total)}</p><p>¡Gracias por tu compra!</p></body></html>`); win.document.close();
   });
 
   $("saleRows").addEventListener("click", e => {
@@ -1959,7 +1961,9 @@ function downloadCsv() {
     if ($("accentColor")) $("accentColor").value=data.settings.accentColor || "#315f82";
     if ($("fontScale")) $("fontScale").value=data.settings.fontScale || "normal";
     if ($("dashboardCards")) $("dashboardCards").value=data.settings.dashboardCards || "all";
-    if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard",data.settings.dashboardCards==="compact");
+    const compact = data.settings.dashboardCards === "compact";
+    if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard", compact);
+    if ($("view-dashboard")) $("view-dashboard").classList.toggle("dashboard-compact", compact);
   }
 
   // Manolito: mascota interactiva, sin IA y sin conexión.
@@ -2181,6 +2185,10 @@ function downloadCsv() {
   if (!data.settings.businessType) showBusinessTypeSetup();
   processRecurringExpenses();
   renderAll();
+  try {
+    const savedView = sessionStorage.getItem("mpn36_active_view");
+    if (savedView && document.getElementById("view-" + savedView)) go(savedView);
+  } catch (_) {}
   renderOperations();
   syncLaborEmployeeOptions();
 })();
