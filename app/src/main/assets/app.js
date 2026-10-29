@@ -474,7 +474,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.8.0", code: 23, buildDate: "27 de octubre de 2026" };
+  const APP_VERSION = { name: "3.8.2", code: 25, buildDate: "28 de octubre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -879,6 +879,8 @@
   }
 
   function go(view) {
+    if (!view || !document.getElementById("view-" + view)) view = "dashboard";
+    try { localStorage.setItem("mpn36_active_view", view); } catch (_) {}
     document.querySelectorAll(".view").forEach(v =>
       v.classList.toggle("hidden", v.id !== "view-" + view)
     );
@@ -1256,14 +1258,34 @@
   });
   $("saleRows")?.addEventListener("click", event => {
     const button = event.target.closest("[data-print-ticket]"); if (!button) return;
-    const key = button.dataset.printTicket; const items = data.sales.filter(x => (x.saleId || x.id) === key); if (!items.length) return;
-    const first = items[0]; const subtotal = items.reduce((n,x)=>n+(Number(x.qty)||0)*(Number(x.price)||0),0);
+    const key = button.dataset.printTicket;
+    const items = data.sales.filter(x => (x.saleId || x.id) === key);
+    if (!items.length) { toast("No se encontró la venta para generar el ticket."); return; }
+    const first = items[0];
+    const subtotal = items.reduce((n,x)=>n+(Number(x.qty)||0)*(Number(x.price)||0),0);
     const total = Number(first.saleTotal ?? items.reduce((n,x)=>n+Number(x.lineTotal ?? x.qty*x.price),0));
     const tax = Number(first.saleTax ?? items.reduce((n,x)=>n+(Number(x.taxAmount)||0),0));
     const lines = items.map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join("");
-    const win = window.open("", "_blank", "width=420,height=650");
-    if (!win) { toast("Permite abrir ventanas para imprimir el ticket."); return; }
-    win.document.write(`<!doctype html><html lang="es"><meta charset="utf-8"><title>Ticket de venta</title><style>body{font:14px system-ui;max-width:360px;margin:20px auto;color:#222}h2,p{text-align:center}table{width:100%;border-collapse:collapse}td,th{padding:6px 2px;border-bottom:1px dashed #aaa;text-align:left}.total{text-align:right;font-size:18px;font-weight:bold}</style><h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p>Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}<br>IVA: ${money(tax)}</p><p class="total">Total: ${money(total)}</p><p>¡Gracias por tu compra!</p><script>window.onload=()=>window.print()<\/script></html>`); win.document.close();
+    const ticketBody = `<h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p class="ticket-center">Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}<br>IVA: ${money(tax)}</p><p class="ticket-total">Total: ${money(total)}</p><p class="ticket-center">¡Gracias por tu compra!</p>`;
+    const printableHtml = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ticket de venta</title><style>body{font:14px system-ui;max-width:360px;margin:20px auto;padding:0 12px;color:#222}h2,.ticket-center{text-align:center}table{width:100%;border-collapse:collapse}td,th{padding:6px 2px;border-bottom:1px dashed #aaa;text-align:left}.ticket-total{text-align:right;font-size:18px;font-weight:bold}@media print{body{margin:0 auto;padding:0}}</style></head><body>${ticketBody}</body></html>`;
+    document.getElementById("mpnTicketOverlay")?.remove();
+    const overlay = document.createElement("div");
+    overlay.id = "mpnTicketOverlay";
+    overlay.className = "mpn-ticket-overlay";
+    overlay.setAttribute("role", "dialog"); overlay.setAttribute("aria-modal", "true"); overlay.setAttribute("aria-label", "Ticket de venta");
+    overlay.innerHTML = `<section class="mpn-ticket-dialog"><header class="mpn-ticket-actions"><strong>Ticket de venta</strong><button type="button" class="button secondary" data-ticket-print>Imprimir</button><button type="button" class="button danger" data-ticket-close aria-label="Cerrar ticket">Cerrar ✕</button></header><article id="mpnTicketPrintArea" class="mpn-ticket-paper">${ticketBody}</article></section>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector("[data-ticket-close]").addEventListener("click",()=>overlay.remove());
+    overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
+    overlay.querySelector("[data-ticket-print]").addEventListener("click",()=>{
+      if (window.AndroidFiles && typeof window.AndroidFiles.printHtml === "function") {
+        window.AndroidFiles.printHtml(printableHtml);
+      } else {
+        document.documentElement.classList.add("mpn-printing-ticket");
+        window.print();
+        setTimeout(()=>document.documentElement.classList.remove("mpn-printing-ticket"),1000);
+      }
+    });
   });
 
   $("saleRows").addEventListener("click", e => {
@@ -1959,7 +1981,10 @@ function downloadCsv() {
     if ($("accentColor")) $("accentColor").value=data.settings.accentColor || "#315f82";
     if ($("fontScale")) $("fontScale").value=data.settings.fontScale || "normal";
     if ($("dashboardCards")) $("dashboardCards").value=data.settings.dashboardCards || "all";
-    if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard",data.settings.dashboardCards==="compact");
+    const compact = data.settings.dashboardCards === "compact";
+    document.documentElement.classList.toggle("mpn-compact-mode", compact);
+    if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard", compact);
+    if ($("view-dashboard")) $("view-dashboard").classList.toggle("dashboard-compact", compact);
   }
 
   // Manolito: mascota interactiva, sin IA y sin conexión.
@@ -2181,6 +2206,10 @@ function downloadCsv() {
   if (!data.settings.businessType) showBusinessTypeSetup();
   processRecurringExpenses();
   renderAll();
+  try {
+    const savedView = localStorage.getItem("mpn36_active_view") || sessionStorage.getItem("mpn36_active_view");
+    if (savedView && document.getElementById("view-" + savedView)) go(savedView);
+  } catch (_) {}
   renderOperations();
   syncLaborEmployeeOptions();
 })();
