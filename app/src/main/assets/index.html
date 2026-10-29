@@ -17,7 +17,21 @@
   <script defer src="app.js"></script>
 </head>
 <body>
+<div id="businessTypeSetup" class="business-type-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="businessTypeTitle">
+  <section class="business-type-dialog">
+    <p class="eyebrow">CONFIGUREMOS TU NEGOCIO</p>
+    <h2 id="businessTypeTitle">¿Qué tipo de negocio tienes?</h2>
+    <p class="muted">Puedes cambiar esta opción después desde Ajustes. Tus datos se guardan en este dispositivo.</p>
+    <div class="business-type-options">
+      <button type="button" class="business-type-option" data-business-type="own"><span>🧵</span><strong>Venta de productos propios</strong><small>Fabricas, preparas o elaboras lo que vendes.</small></button>
+      <button type="button" class="business-type-option" data-business-type="resale"><span>🛍️</span><strong>Reventa</strong><small>Compras productos terminados para venderlos.</small></button>
+      <button type="button" class="business-type-option" data-business-type="both"><span>📦</span><strong>Ambas</strong><small>Fabricas algunos productos y revendes otros.</small></button>
+    </div>
+  </section>
+</div>
 
+
+<div id="businessNotice" class="panel hidden" role="status" aria-live="polite" style="margin:8px 12px"></div>
 <header class="topbar">
   <div class="header-menus">
     <div class="left-menu-wrap menu-wrap">
@@ -246,6 +260,18 @@
       <label>Código de barras (opcional)
         <input id="productBarcode" maxlength="80" placeholder="Escanea o escribe el código">
       </label>
+      <label id="productKindField">Tipo de producto
+        <select id="productKind"><option value="own">Producto propio / fabricado</option><option value="resale">Producto para reventa</option></select>
+        <small class="muted">En el modo «Ambas» puedes elegir el tipo para cada producto.</small>
+      </label>
+      <label id="inventoryKindField">Tipo de inventario
+        <select id="inventoryKind"><option value="finished">Inventario de productos terminados</option><option value="raw">Inventario de materia prima</option><option value="wip">Inventario de producción en proceso</option></select>
+        <small class="muted">Clasifica el producto según la etapa en la que se encuentra.</small>
+      </label>
+      <label id="productRecipeField">Componentes / receta (opcional)
+        <textarea id="productRecipe" rows="3" placeholder="Ejemplo: Cinta x 2\nBroche x 1"></textarea>
+        <small class="muted">Cada línea: nombre exacto de un producto del inventario, seguido de x y la cantidad usada por unidad. Al vender, esos componentes se descuentan automáticamente.</small>
+      </label>
       <label>Fotografía del producto (opcional)
         <input id="productImageFile" type="file" accept="image/*" capture="environment">
       </label>
@@ -256,7 +282,7 @@
         <input id="productMaterials" type="number" min="0" step="0.01" required placeholder="0.00">
       </label>
 
-      <label>Mano de obra por unidad
+      <label id="productLaborField">Mano de obra por unidad
         <input id="productLabor" type="number" min="0" step="0.01" required value="0">
       </label>
 
@@ -391,7 +417,9 @@
     <article class="panel" id="saleCartPanel">
       <div class="panel-title"><h3>Productos de esta venta</h3></div>
       <div id="saleCartList" class="pos-cart-list"><p class="muted">Todavía no agregas productos.</p></div>
-      <div class="pos-total"><span>Total de la venta</span><strong id="saleCartTotal">$0.00</strong></div>
+      <div class="pos-total"><span>Subtotal</span><strong id="saleCartSubtotal">$0.00</strong></div>
+      <div class="pos-total"><span id="saleTaxLabel">IVA (16 %)</span><strong id="saleCartTax">$0.00</strong></div>
+      <div class="pos-total"><span>Total a cobrar</span><strong id="saleCartTotal">$0.00</strong></div>
       <div class="form-actions">
         <button class="button" id="saleConfirmButton" type="button">Confirmar venta</button>
         <button class="button secondary" id="saleCancelButton" type="button">Cancelar operación</button>
@@ -405,9 +433,9 @@
           <thead>
             <tr>
               <th>Fecha</th>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Precio unitario</th>
+              <th>Productos / ticket</th>
+              <th>Artículos</th>
+              <th>Subtotal</th>
               <th>Total</th>
               <th>Acción</th>
             </tr>
@@ -454,6 +482,18 @@
         <button class="button secondary hidden" id="cancelExpenseEdit" type="button">Cancelar edición</button>
       </div>
     </form>
+
+    <article class="panel">
+      <div class="panel-title"><h3>Programar gasto recurrente automático</h3></div>
+      <p class="muted">El gasto se registrará al llegar a cada fecha programada. Cada periodo genera un único movimiento.</p>
+      <form id="recurringExpenseForm" class="form-grid compact">
+        <label>Concepto<input id="recurringName" required maxlength="100" placeholder="Ej. Internet"></label>
+        <label>Monto por periodo<input id="recurringAmount" type="number" min="0.01" step="0.01" required placeholder="0.00"></label>
+        <label>Primera fecha<input id="recurringStartDate" type="date" required></label>
+        <label>Frecuencia<select id="recurringFrequency"><option value="weekly">Semanal</option><option value="biweekly">Quincenal</option><option value="monthly" selected>Mensual</option><option value="bimonthly">Bimestral</option><option value="quarterly">Trimestral</option><option value="semiannual">Semestral</option><option value="annual">Anual</option></select></label>
+        <div class="form-actions"><button class="button" type="submit">Programar gasto</button></div>
+      </form>
+    </article>
 
     <article class="panel">
       <div class="panel-title">
@@ -740,6 +780,19 @@
         <input id="businessName" type="text" maxlength="70" placeholder="Ej. Mi tiendita" autocomplete="organization">
       </label>
       <button class="button" id="saveBusinessName" type="button">Guardar nombre</button>
+    </article>
+    <article class="panel options-panel">
+      <h3>Tipo de negocio</h3>
+      <p class="muted">Configura las herramientas que se adaptan a tu forma de vender.</p>
+      <label for="businessTypeSetting">Mi negocio<select id="businessTypeSetting"><option value="own">Venta de productos propios</option><option value="resale">Reventa</option><option value="both">Ambas</option></select></label>
+      <button class="button secondary" type="button" id="changeBusinessType">Cambiar tipo de negocio</button>
+    </article>
+    <article class="panel options-panel">
+      <h3>IVA en las ventas</h3>
+      <p class="muted">Configuración inicial para México: 16 %. Verifica que corresponda a tus productos y obligaciones fiscales.</p>
+      <label for="businessTaxRate">Tasa de IVA (%)<input id="businessTaxRate" type="number" min="0" max="100" step="0.01" value="16"></label>
+      <label for="businessTaxMode">Cómo aplicar el IVA<select id="businessTaxMode"><option value="add">Añadir al precio al cobrar</option><option value="included">El precio ya incluye IVA</option><option value="off">No calcular IVA en ventas</option></select></label>
+      <button class="button" type="button" id="saveBusinessTax">Guardar configuración de IVA</button>
     </article>
     <article class="panel options-panel">
       <h3>Apariencia</h3>

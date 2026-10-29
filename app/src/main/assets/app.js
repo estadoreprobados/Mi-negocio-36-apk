@@ -63,6 +63,7 @@
           cashCuts: Array.isArray(d.cashCuts) ? d.cashCuts : [],
           suppliers: Array.isArray(d.suppliers) ? d.suppliers : [],
           purchases: Array.isArray(d.purchases) ? d.purchases : [],
+          recurringExpenses: Array.isArray(d.recurringExpenses) ? d.recurringExpenses : [],
           employees: Array.isArray(d.employees) ? d.employees : [],
           laborRecords: Array.isArray(d.laborRecords) ? d.laborRecords : [],
           settings: {
@@ -80,7 +81,7 @@
       sales: [],
       expenses: [],
       stockMoves: [],
-      notes: [], customers: [], creditMovements: [], cashCuts: [], suppliers: [], purchases: [], employees: [], laborRecords: [],
+      notes: [], customers: [], creditMovements: [], cashCuts: [], suppliers: [], purchases: [], recurringExpenses: [], employees: [], laborRecords: [],
       settings: { currency: "MXN", theme: "classic" },
       gamification: { coins: 0, rewardedMilestones: [], purchasedThemes: ["classic"] }
     };
@@ -93,9 +94,15 @@
   data.cashCuts = Array.isArray(data.cashCuts) ? data.cashCuts : [];
   data.suppliers = Array.isArray(data.suppliers) ? data.suppliers : [];
   data.purchases = Array.isArray(data.purchases) ? data.purchases : [];
+  data.recurringExpenses = Array.isArray(data.recurringExpenses) ? data.recurringExpenses : [];
   data.employees = Array.isArray(data.employees) ? data.employees : [];
   data.laborRecords = Array.isArray(data.laborRecords) ? data.laborRecords : [];
-  data.settings = { currency: "MXN", theme: "classic", businessName: "", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", ...(data.settings || {}) };
+  data.settings = { currency: "MXN", theme: "classic", businessName: "", businessType: "", taxRate: 16, taxMode: "add", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", ...(data.settings || {}) };
+  data.products.forEach(p => {
+    if (!p.productKind) p.productKind = data.settings.businessType === "resale" ? "resale" : "own";
+    if (!p.inventoryKind) p.inventoryKind = "finished";
+    if (!Array.isArray(p.recipe)) p.recipe = [];
+  });
   data.gamification = {
     coins: Math.max(0, Number(data.gamification?.coins) || 0),
     rewardedMilestones: Array.isArray(data.gamification?.rewardedMilestones) ? data.gamification.rewardedMilestones : [],
@@ -143,8 +150,98 @@
   }
 
   function productCost(p) {
-    return Number(p.materials || 0) + Number(p.labor || 0);
+    const recipeCost = Array.isArray(p.recipe) ? p.recipe.reduce((sum, part) => {
+      const component = product(part.productId);
+      return sum + (component ? productCost(component) * (Number(part.qty) || 0) : 0);
+    }, 0) : 0;
+    return recipeCost + Number(p.materials || 0) + Number(p.labor || 0);
   }
+
+  function parseRecipe(text, currentId = "") {
+    const recipe = [];
+    for (const raw of String(text || "").split(/\n/)) {
+      const line = raw.trim(); if (!line) continue;
+      const match = line.match(/^(.+?)\s*[x×:]\s*(\d+(?:\.\d+)?)$/i);
+      if (!match) throw new Error(`Formato de componente inválido: ${line}. Usa Nombre x cantidad.`);
+      const name = match[1].trim().toLowerCase(), qty = Number(match[2]);
+      const component = data.products.find(p => p.name.trim().toLowerCase() === name);
+      if (!component || component.id === currentId) throw new Error(`No encuentro el componente “${match[1].trim()}” o es el mismo producto.`);
+      if (!(qty > 0)) throw new Error("La cantidad de cada componente debe ser mayor que cero.");
+      recipe.push({ productId: component.id, qty });
+    }
+    return recipe;
+  }
+
+  function recipeRequirements(productId, quantity, totals = new Map(), stack = new Set()) {
+    const p = product(productId); if (!p || stack.has(productId)) return totals;
+    if (!Array.isArray(p.recipe) || !p.recipe.length) return totals;
+    stack.add(productId);
+    for (const part of p.recipe) {
+      const needed = (Number(part.qty) || 0) * quantity;
+      const component = product(part.productId); if (!component) continue;
+      if (component.recipe?.length) recipeRequirements(component.id, needed, totals, stack);
+      else totals.set(component.id, (totals.get(component.id) || 0) + needed);
+    }
+    stack.delete(productId); return totals;
+  }
+
+  function recipeAvailable(lines) {
+    const needed = new Map();
+    for (const line of lines) for (const [id, qty] of recipeRequirements(line.productId, line.qty)) needed.set(id, (needed.get(id) || 0) + qty);
+    for (const [id, qty] of needed) { const p = product(id); if (!p || p.stock < qty) { toast(`No hay componentes suficientes de ${p?.name || "un producto"}. Necesitas ${qty} unidades.`); return false; } }
+    return true;
+  }
+
+  function consumeRecipe(line, date, saleId, sourceLabel = "Venta") {
+    const needed = recipeRequirements(line.productId, line.qty);
+    for (const [id, qty] of needed) {
+      const component = product(id); if (!component) continue;
+      component.stock -= qty;
+      data.stockMoves.push({ id: uid(), date, productId: component.id, name: component.name, typeLabel: "Consumo de componentes", qty, reason: `${sourceLabel} ${String(saleId).slice(0,8)} · fabricación de ${line.name}` });
+    }
+  }
+
+  function notifyBusiness(message) {
+    const host = $("businessNotice");
+    if (host) { host.textContent = message; host.classList.remove("hidden"); }
+    if (data.settings.notificationsEnabled && "Notification" in window && Notification.permission === "granted") {
+      try { new Notification("Mi Primer Negocio 36", { body: message }); } catch (_) {}
+    }
+  }
+
+  function checkLowStockNotice() {
+    const low = data.products.filter(p => Number(p.stock) <= Number(p.minStock));
+    if (low.length) notifyBusiness(`Aviso de inventario: ${low.length} producto(s) con existencias bajas.`);
+  }
+
+  function processRecurringExpenses() {
+    const now = today();
+    data.expenses = Array.isArray(data.expenses) ? data.expenses : [];
+    data.recurringExpenses = Array.isArray(data.recurringExpenses) ? data.recurringExpenses : [];
+    let changed = false;
+    for (const r of data.recurringExpenses) {
+      if (!r.active) continue;
+      let next = r.nextDate || r.startDate || now;
+      let guard = 0;
+      while (next <= now && guard++ < 24) {
+        const exists = data.expenses.some(e => e.recurringId === r.id && e.date === next);
+        if (!exists) { data.expenses.push({ id: uid(), name: r.name, amount: Number(r.amount)||0, date: next, type: r.type||"fixed", frequency: "once", recurringId: r.id, autoGenerated: true }); changed = true; }
+        const d = new Date(next + "T12:00:00");
+        const freq = r.frequency || "monthly";
+        if (freq === "weekly") d.setDate(d.getDate()+7);
+        else if (freq === "biweekly") d.setDate(d.getDate()+15);
+        else if (freq === "bimonthly") d.setMonth(d.getMonth()+2);
+        else if (freq === "quarterly") d.setMonth(d.getMonth()+3);
+        else if (freq === "semiannual") d.setMonth(d.getMonth()+6);
+        else if (freq === "annual") d.setFullYear(d.getFullYear()+1);
+        else d.setMonth(d.getMonth()+1);
+        next = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+        r.nextDate = next; changed = true;
+      }
+    }
+    if (changed) { try { localStorage.setItem(businessDataKey(activeBusinessId), JSON.stringify(data)); if (activeBusinessId === "default") localStorage.setItem(KEY, JSON.stringify(data)); } catch (_) {} }
+  }
+
 
   function addDays(date, n) {
     const d = new Date(date + "T12:00:00");
@@ -194,7 +291,7 @@
     const q = $("productSearch").value.trim().toLowerCase();
     const list = data.products.filter(p => p.name.toLowerCase().includes(q));
     const cards = $("productCards");
-    if (cards) cards.innerHTML = list.map(p => `<article class="product-card"><div class="product-card-image">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">` : `<span aria-hidden="true">📦</span>`}</div><div class="product-card-body"><strong>${escapeHtml(p.name)}</strong><p>${money(p.price)} · Stock: ${p.stock}</p><p class="muted">Costo ${money(productCost(p))} · Ganancia ${money(p.price-productCost(p))}</p><div class="product-card-actions"><button type="button" class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ Favorito" : "☆ Favorito"}</button><button type="button" class="row-button" data-edit-product="${escapeHtml(p.id)}">Editar</button></div></div></article>`).join("") || `<p class="muted">No hay productos que coincidan.</p>`;
+    if (cards) cards.innerHTML = list.map(p => `<article class="product-card"><div class="product-card-image">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">` : `<span aria-hidden="true">📦</span>`}</div><div class="product-card-body"><strong>${escapeHtml(p.name)}</strong><p>${money(p.price)} · Stock: ${p.stock}</p><p class="muted">${p.productKind === "resale" ? "Reventa" : "Producto propio"} · ${({finished:"Terminados",raw:"Materia prima",wip:"En proceso"})[p.inventoryKind||"finished"] || "Terminados"}</p><p class="muted">Costo ${money(productCost(p))} · Ganancia ${money(p.price-productCost(p))}</p><div class="product-card-actions"><button type="button" class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ Favorito" : "☆ Favorito"}</button><button type="button" class="row-button" data-edit-product="${escapeHtml(p.id)}">Editar</button></div></div></article>`).join("") || `<p class="muted">No hay productos que coincidan.</p>`;
     if (cards) cards.classList.toggle("hidden", data.settings.productView !== "grid");
     const tableWrap = $("productTableWrap"); if (tableWrap) tableWrap.classList.toggle("hidden", data.settings.productView === "grid");
     $("productRows").innerHTML = list.map(p => `
@@ -225,16 +322,16 @@
   }
 
   function renderSales() {
-    $("saleRows").innerHTML = data.sales.slice().reverse().map(s => `
-      <tr>
-        <td>${escapeHtml(s.date)}</td>
-        <td>${escapeHtml(s.name)}</td>
-        <td>${s.qty}</td>
-        <td>${money(s.price)}</td>
-        <td>${money(s.qty * s.price)}</td>
-        <td><button class="row-button danger" data-delete-sale="${escapeHtml(s.id)}">Eliminar</button></td>
-      </tr>
-    `).join("") || emptyRow(6);
+    const groups = new Map();
+    data.sales.forEach(s => { const key = s.saleId || s.id; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(s); });
+    const rows = [...groups.values()].reverse().map(items => {
+      const first = items[0], subtotal = items.reduce((n,s)=>n+(Number(s.qty)||0)*(Number(s.price)||0),0);
+      const total = items.reduce((n,s)=>n+(Number(s.lineTotal)||((Number(s.qty)||0)*(Number(s.price)||0))),0);
+      const qty = items.reduce((n,s)=>n+(Number(s.qty)||0),0);
+      const names = items.map(s=>`${escapeHtml(s.name)} × ${s.qty}`).join(", ");
+      return `<tr><td>${escapeHtml(first.date)}</td><td>${names}<br><button class="row-button" data-print-ticket="${escapeHtml(first.saleId||first.id)}">Ver / imprimir ticket</button></td><td>${qty}</td><td>${money(subtotal)}</td><td>${money(total)}</td><td>${items.map(s=>`<button class="row-button danger" data-delete-sale="${escapeHtml(s.id)}">Eliminar</button>`).join(" ")}</td></tr>`;
+    });
+    $("saleRows").innerHTML = rows.join("") || emptyRow(6);
   }
 
   function expenseMonthlyEquivalent(e) { const amount = Number(e.amount)||0; if ((e.frequency||"once") === "once") return null; return ({weekly:amount*52/12,biweekly:amount*26/12,monthly:amount,bimonthly:amount/2,quarterly:amount/3,semiannual:amount/6,annual:amount/12})[e.frequency] ?? amount; }
@@ -910,6 +1007,12 @@
     const stock = num("productStock");
     const minStock = num("productMinStock");
     const barcode = ($("productBarcode")?.value || "").trim().slice(0, 80);
+    const businessType = data.settings.businessType || "both";
+    const productKind = businessType === "own" ? "own" : businessType === "resale" ? "resale" : ($("productKind")?.value || "own");
+    const inventoryKind = $("inventoryKind")?.value || "finished";
+    let recipe = [];
+    try { recipe = productKind === "own" ? parseRecipe($("productRecipe")?.value || "", id) : []; } catch (err) { toast(err.message); return; }
+    if (businessType === "resale" && (recipe.length || Number($("productLabor")?.value || 0) > 0)) { toast("En el modo Reventa no se permiten recetas ni costos de producción. Cambia el tipo de negocio a Ambas si también fabricas productos."); return; }
 
     if (!name || [materials, labor, price, stock, minStock].some(v => v < 0) ||
         !Number.isInteger(stock) || !Number.isInteger(minStock)) {
@@ -928,6 +1031,9 @@
       p.minStock = minStock;
       p.barcode = barcode;
       p.favorite = Boolean($("productFavorite")?.checked);
+      p.recipe = recipe;
+      p.productKind = productKind;
+      p.inventoryKind = inventoryKind;
       if (pendingProductImage) p.image = pendingProductImage;
 
       const diff = stock - p.stock;
@@ -942,7 +1048,7 @@
       toast("Producto actualizado.");
     } else {
       data.products.push({
-        id: uid(), name, materials, labor, price, stock, minStock, barcode,
+        id: uid(), name, materials, labor: productKind === "resale" ? 0 : labor, price, stock, minStock, barcode, recipe, productKind, inventoryKind,
         image: pendingProductImage || "", favorite: Boolean($("productFavorite")?.checked), createdAt: today()
       });
       toast("Producto agregado.");
@@ -953,6 +1059,7 @@
     if ($("productImageFile")) $("productImageFile").value = "";
     $("productId").value = "";
     if ($("productBarcode")) $("productBarcode").value = "";
+    if ($("productRecipe")) $("productRecipe").value = "";
     $("productLabor").value = "0";
     $("productStock").value = "0";
     $("productMinStock").value = "3";
@@ -967,6 +1074,7 @@
     $("productForm").reset();
     $("productId").value = "";
     if ($("productBarcode")) $("productBarcode").value = "";
+    if ($("productRecipe")) $("productRecipe").value = "";
     $("productLabor").value = "0";
     $("productStock").value = "0";
     $("productMinStock").value = "3";
@@ -989,6 +1097,9 @@
       if ($("productFavorite")) $("productFavorite").checked = Boolean(p.favorite);
       pendingProductImage = p.image || "";
       if ($("productBarcode")) $("productBarcode").value = p.barcode || "";
+      if ($("productKind")) $("productKind").value = p.productKind || "own";
+      if ($("inventoryKind")) $("inventoryKind").value = p.inventoryKind || "finished";
+      if ($("productRecipe")) $("productRecipe").value = Array.isArray(p.recipe) ? p.recipe.map(part => { const c=product(part.productId); return c ? `${c.name} x ${part.qty}` : ""; }).filter(Boolean).join("\n") : "";
       $("productMaterials").value = p.materials;
       $("productLabor").value = p.labor;
       $("productPrice").value = p.price;
@@ -1056,11 +1167,24 @@
   $("salePrice").addEventListener("input", updateSalePreview);
 
   let saleCart = [];
+  function calculateSaleAmounts(subtotal) {
+    const rate = Math.min(100, Math.max(0, Number(data.settings.taxRate ?? 16) || 0));
+    const mode = data.settings.taxMode || "add";
+    if (mode === "off") return { subtotal, tax: 0, total: subtotal, rate, mode };
+    if (mode === "included") { const tax = subtotal - subtotal / (1 + rate / 100); return { subtotal: subtotal - tax, tax, total: subtotal, rate, mode }; }
+    const tax = subtotal * rate / 100; return { subtotal, tax, total: subtotal + tax, rate, mode };
+  }
   function renderSaleCart() {
     const list = $("saleCartList");
     if (!list) return;
     list.innerHTML = saleCart.length ? saleCart.map((line, index) => `<div class="pos-cart-row"><div><strong>${escapeHtml(line.name)}</strong><small>${money(line.price)} c/u · stock disponible ${product(line.productId)?.stock ?? 0}</small></div><div class="qty-controls"><button type="button" data-sale-cart-minus="${index}" aria-label="Restar">−</button><strong>${line.qty}</strong><button type="button" data-sale-cart-plus="${index}" aria-label="Sumar">+</button><button type="button" data-sale-cart-remove="${index}" aria-label="Quitar">×</button></div><strong>${money(line.qty * line.price)}</strong></div>`).join("") : '<p class="muted">Todavía no agregas productos.</p>';
-    $("saleCartTotal").textContent = money(saleCart.reduce((sum, line) => sum + line.qty * line.price, 0));
+    if (!recipeAvailable(saleCart)) return;
+    const subtotal = saleCart.reduce((sum, line) => sum + line.qty * line.price, 0);
+    const amounts = calculateSaleAmounts(subtotal);
+    if ($("saleCartSubtotal")) $("saleCartSubtotal").textContent = money(amounts.subtotal);
+    if ($("saleCartTax")) $("saleCartTax").textContent = money(amounts.tax);
+    if ($("saleTaxLabel")) $("saleTaxLabel").textContent = amounts.mode === "off" ? "IVA desactivado" : `IVA (${amounts.rate}%${amounts.mode === "included" ? ", incluido" : ""})`;
+    $("saleCartTotal").textContent = money(amounts.total);
   }
 
   $("saleForm").addEventListener("submit", e => {
@@ -1107,19 +1231,39 @@
       const totalForProduct = saleCart.filter(x => x.productId === line.productId).reduce((sum, x) => sum + x.qty, 0);
       if (!p || p.stock < totalForProduct) { toast("El inventario cambió. Revisa los productos de la venta."); return; }
     }
-    const total = saleCart.reduce((sum, line) => sum + line.qty * line.price, 0);
-    if (!confirm(`¿Confirmar una venta de ${saleCart.length} línea(s) por ${money(total)}?`)) return;
+    const subtotal = saleCart.reduce((sum, line) => sum + line.qty * line.price, 0);
+    const amounts = calculateSaleAmounts(subtotal);
+    const total = amounts.total;
+    if (!confirm(`¿Confirmar una venta con ${saleCart.length} línea(s) por ${money(total)}?`)) return;
+    const saleId = uid();
     const date = saleCart[0].date || $("saleDate").value;
     const registeredToday = saleCart.some(line => line.date === today());
-    for (const line of saleCart) {
+    let taxAssigned = 0;
+    saleCart.forEach((line, index) => {
       const p = product(line.productId);
       p.stock -= line.qty;
-      data.sales.push({ id: uid(), productId: p.id, name: p.name, qty: line.qty, price: line.price, cost: line.cost, date: line.date || date });
-      data.stockMoves.push({ id: uid(), date: line.date || date, productId: p.id, name: p.name, typeLabel: "Venta", qty: line.qty, reason: "Descuento automático" });
-    }
+      consumeRecipe(line, line.date || date, saleId, "Venta");
+      const lineSubtotal = line.qty * line.price;
+      const lineTax = index === saleCart.length - 1 ? amounts.tax - taxAssigned : (subtotal ? amounts.tax * lineSubtotal / subtotal : 0);
+      taxAssigned += lineTax;
+      const lineTotal = amounts.mode === "included" ? lineSubtotal : lineSubtotal + lineTax;
+      data.sales.push({ id: uid(), saleId, productId: p.id, name: p.name, qty: line.qty, price: line.price, cost: line.cost, date: line.date || date, taxRate: amounts.rate, taxMode: amounts.mode, taxAmount: lineTax, lineTotal, saleSubtotal: amounts.subtotal, saleTax: amounts.tax, saleTotal: total });
+      data.stockMoves.push({ id: uid(), date: line.date || date, productId: p.id, name: p.name, typeLabel: "Venta", qty: line.qty, reason: `Venta ${saleId.slice(0,8)} · descuento automático` });
+    });
     saleCart = []; renderSaleCart();
     save({ saleRegisteredToday: registeredToday });
     toast("Venta completa registrada una sola vez. Inventario actualizado.");
+  });
+  $("saleRows")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-print-ticket]"); if (!button) return;
+    const key = button.dataset.printTicket; const items = data.sales.filter(x => (x.saleId || x.id) === key); if (!items.length) return;
+    const first = items[0]; const subtotal = items.reduce((n,x)=>n+(Number(x.qty)||0)*(Number(x.price)||0),0);
+    const total = Number(first.saleTotal ?? items.reduce((n,x)=>n+Number(x.lineTotal ?? x.qty*x.price),0));
+    const tax = Number(first.saleTax ?? items.reduce((n,x)=>n+(Number(x.taxAmount)||0),0));
+    const lines = items.map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join("");
+    const win = window.open("", "_blank", "width=420,height=650");
+    if (!win) { toast("Permite abrir ventanas para imprimir el ticket."); return; }
+    win.document.write(`<!doctype html><html lang="es"><meta charset="utf-8"><title>Ticket de venta</title><style>body{font:14px system-ui;max-width:360px;margin:20px auto;color:#222}h2,p{text-align:center}table{width:100%;border-collapse:collapse}td,th{padding:6px 2px;border-bottom:1px dashed #aaa;text-align:left}.total{text-align:right;font-size:18px;font-weight:bold}</style><h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p>Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}<br>IVA: ${money(tax)}</p><p class="total">Total: ${money(total)}</p><p>¡Gracias por tu compra!</p><script>window.onload=()=>window.print()<\/script></html>`); win.document.close();
   });
 
   $("saleRows").addEventListener("click", e => {
@@ -1179,6 +1323,15 @@
     resetExpenseForm();
     save();
     toast("Gasto agregado.");
+  });
+
+  $("recurringExpenseForm")?.addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("recurringName").value.trim(), amount = Number($("recurringAmount").value), startDate = $("recurringStartDate").value;
+    const frequency = $("recurringFrequency").value;
+    if (!name || !(amount > 0) || !startDate) { toast("Revisa el nombre, monto y fecha del gasto recurrente."); return; }
+    data.recurringExpenses.push({ id: uid(), name, amount, startDate, nextDate: startDate, frequency, type: "fixed", active: true });
+    processRecurringExpenses(); $("recurringExpenseForm").reset(); $("recurringStartDate").value = today(); save(); toast("Gasto recurrente programado. Se registrará una sola vez en cada periodo.");
   });
 
   $("expenseRows").addEventListener("click", e => {
@@ -1669,10 +1822,10 @@ function downloadCsv() {
   $("posSearch")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addPosProduct();}});
   $("posCartList")?.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const id=b.dataset.posPlus||b.dataset.posMinus||b.dataset.posRemove;const line=posCart.find(x=>x.productId===id);if(!line)return;if(b.dataset.posRemove){posCart=posCart.filter(x=>x.productId!==id);}else if(b.dataset.posPlus){const p=product(id);if(p&&line.qty<p.stock)line.qty++;else toast("No hay existencias suficientes.");}else{line.qty--;if(line.qty<=0)posCart=posCart.filter(x=>x.productId!==id);}renderPosCart();});
   $("posCheckout")?.addEventListener("click",()=>{
-    if(!posCart.length){toast("Añade productos antes de cobrar.");return;}for(const line of posCart){const p=product(line.productId);if(!p||p.stock<line.qty){toast("El stock cambió. Revisa el carrito.");return;}}
+    if(!posCart.length){toast("Añade productos antes de cobrar.");return;}for(const line of posCart){const p=product(line.productId);if(!p||p.stock<line.qty){toast("El stock cambió. Revisa el carrito.");return;}}if(!recipeAvailable(posCart))return;
     const payment=$("posPayment").value, customerId=$("posCustomer").value, date=today();if(payment==="fiado"&&!customerId){toast("Para una venta fiada selecciona un cliente.");return;}
     const customer=data.customers.find(c=>c.id===customerId);const total=posCart.reduce((s,l)=>s+l.qty*l.price,0);
-    posCart.forEach(line=>{const p=product(line.productId);p.stock-=line.qty;data.sales.push({id:uid(),productId:p.id,name:p.name,qty:line.qty,price:line.price,cost:line.cost,date,payment,customerId:customerId||"",source:"pos"});data.stockMoves.push({id:uid(),date,productId:p.id,name:p.name,typeLabel:"Venta punto de venta",qty:line.qty,reason:payment==="fiado"?`Fiado a ${customer?.name||"cliente"}`:"Punto de venta"});});
+    const posSaleId=uid();posCart.forEach(line=>{const p=product(line.productId);p.stock-=line.qty;consumeRecipe(line,date,posSaleId,"Punto de venta");data.sales.push({id:uid(),saleId:posSaleId,productId:p.id,name:p.name,qty:line.qty,price:line.price,cost:line.cost,date,payment,customerId:customerId||"",source:"pos"});data.stockMoves.push({id:uid(),date,productId:p.id,name:p.name,typeLabel:"Venta punto de venta",qty:line.qty,reason:payment==="fiado"?`Fiado a ${customer?.name||"cliente"}`:"Punto de venta"});});
     if(payment==="fiado")data.creditMovements.push({id:uid(),customerId,type:"charge",amount:total,date,description:`Venta fiada · ${posCart.map(l=>l.name).join(", ")}`});
     posCart=[];renderPosCart();save({saleRegisteredToday:true});syncOperationSelects();renderOperations();toast(payment==="fiado"?"Venta registrada como fiado.":"Venta cobrada y registrada.");
   });
@@ -1971,7 +2124,64 @@ function downloadCsv() {
   document.addEventListener("keydown",e=>{if(e.key==="Escape" && window.__mpnCurrentView!=="dashboard")go("dashboard");});
   // La calculadora se actualiza también al entrar en la pantalla de empleados.
 
+  function applyBusinessTypeRestrictions() {
+    const type = data.settings.businessType || "both";
+    const ownOnly = type === "own";
+    const resaleOnly = type === "resale";
+    const kindField = $("productKindField");
+    if (kindField) kindField.classList.toggle("hidden", type !== "both");
+    const recipeField = $("productRecipeField");
+    if (recipeField) recipeField.classList.toggle("hidden", resaleOnly);
+    const laborField = $("productLaborField");
+    if (laborField) laborField.classList.toggle("hidden", resaleOnly);
+    const kindSelect = $("productKind");
+    if (kindSelect) {
+      if (ownOnly) kindSelect.value = "own";
+      if (resaleOnly) kindSelect.value = "resale";
+    }
+    // En modo reventa, las opciones de producción no se ofrecen en el selector.
+    const inv = $("inventoryKind");
+    if (inv) {
+      [...inv.options].forEach(o => { o.hidden = resaleOnly && o.value !== "finished"; });
+      if (resaleOnly) inv.value = "finished";
+    }
+    if (resaleOnly) {
+      const recipe = $("productRecipe"); if (recipe) recipe.value = "";
+      const labor = $("productLabor"); if (labor) labor.value = "0";
+    }
+    document.querySelectorAll("[data-production-feature]").forEach(el => el.classList.toggle("hidden", resaleOnly));
+    if (kindField) kindField.setAttribute("aria-hidden", String(type !== "both"));
+  }
+
+  function syncBusinessSettings() {
+    if ($("businessTypeSetting")) $("businessTypeSetting").value = data.settings.businessType || "both";
+    if ($("businessTaxRate")) $("businessTaxRate").value = String(data.settings.taxRate ?? 16);
+    if ($("businessTaxMode")) $("businessTaxMode").value = data.settings.taxMode || "add";
+  }
+  function showBusinessTypeSetup() { $("businessTypeSetup")?.classList.remove("hidden"); }
+  function chooseBusinessType(type) {
+    if (!["own", "resale", "both"].includes(type)) return;
+    data.settings.businessType = type;
+    if ($("businessTypeSetting")) $("businessTypeSetting").value = type;
+    applyBusinessTypeRestrictions();
+    $("businessTypeSetup")?.classList.add("hidden");
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { console.error(e); toast("No se pudo guardar la configuración."); }
+    toast(type === "own" ? "Modo productos propios: se habilitan recetas, mano de obra e inventarios de producción." : type === "resale" ? "Modo reventa: se ocultan recetas y mano de obra; el inventario se limita a productos terminados." : "Modo Ambas: puedes combinar fabricación y reventa.");
+  }
+  document.querySelectorAll("[data-business-type]").forEach(btn => btn.addEventListener("click", () => chooseBusinessType(btn.dataset.businessType)));
+  $("changeBusinessType")?.addEventListener("click", showBusinessTypeSetup);
+  $("businessTypeSetting")?.addEventListener("change", e => chooseBusinessType(e.target.value));
+  $("saveBusinessTax")?.addEventListener("click", () => {
+    const rate = Number($("businessTaxRate")?.value); const mode = $("businessTaxMode")?.value || "add";
+    if (!Number.isFinite(rate) || rate < 0 || rate > 100) { toast("La tasa debe estar entre 0 y 100 %."); return; }
+    data.settings.taxRate = rate; data.settings.taxMode = mode; save(); renderSaleCart(); toast("Configuración de IVA guardada.");
+  });
+  syncBusinessSettings();
+  applyBusinessTypeRestrictions();
+  if (!data.settings.businessType) showBusinessTypeSetup();
+  processRecurringExpenses();
   renderAll();
   renderOperations();
   syncLaborEmployeeOptions();
 })();
+
