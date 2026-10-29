@@ -24,6 +24,6 @@
         <activity
             android:name=".NativeHomeActivity"
             android:exported="false"
-            android:label="Mi Primer Negocio 36 - Nativo" />
+            android:label="Mi Primer Negocio 36" />
     </application>
 </manifest>
