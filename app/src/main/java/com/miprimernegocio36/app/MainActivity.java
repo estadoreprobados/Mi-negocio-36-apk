@@ -2,6 +2,10 @@
 package com.miprimernegocio36.app;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.webkit.WebViewClient;
+import android.print.PrintAttributes;
+import android.print.PrintManager;
 import android.os.Bundle;
 import android.os.Build;
 import android.os.Environment;
@@ -90,6 +94,12 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (webView != null) webView.requestLayout();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
@@ -144,6 +154,35 @@ public class MainActivity extends Activity {
                     return;
                 }
                 launchNativeBarcodeScanner();
+            });
+        }
+
+        @JavascriptInterface
+        public void printHtml(String html) {
+            runOnUiThread(() -> {
+                try {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                        Toast.makeText(MainActivity.this, "La impresión requiere Android 4.4 o posterior.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    WebView printView = new WebView(MainActivity.this);
+                    printView.setWebViewClient(new WebViewClient() {
+                        @Override public void onPageFinished(WebView view, String url) {
+                            try {
+                                PrintManager printManager = (PrintManager) getSystemService(PRINT_SERVICE);
+                                if (printManager == null) throw new IllegalStateException("Servicio de impresión no disponible");
+                                printManager.print("Ticket Mi Primer Negocio 36", view.createPrintDocumentAdapter("Ticket Mi Primer Negocio 36"), new PrintAttributes.Builder().build());
+                            } catch (Exception e) {
+                                Toast.makeText(MainActivity.this, "No se pudo abrir la impresión del ticket.", Toast.LENGTH_LONG).show();
+                                android.util.Log.e("MPN36Print", "Error al imprimir ticket", e);
+                            }
+                        }
+                    });
+                    printView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "No se pudo preparar el ticket para imprimir.", Toast.LENGTH_LONG).show();
+                    android.util.Log.e("MPN36Print", "Error al preparar ticket", e);
+                }
             });
         }
 
