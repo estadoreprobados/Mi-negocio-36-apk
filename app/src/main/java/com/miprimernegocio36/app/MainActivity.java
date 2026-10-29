@@ -89,6 +89,16 @@ public class MainActivity extends Activity {
             }
         });
 
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // Guarda una copia privada de los datos actuales para preparar la migración nativa.
+                // No reemplaza localStorage ni cambia la interfaz web existente.
+                String migrationBackupScript = "(function(){try{var k='mpn36_v2_data';var send=function(){try{var v=localStorage.getItem(k);if(v&&window.AndroidFiles&&typeof window.AndroidFiles.saveLegacyData==='function'){window.AndroidFiles.saveLegacyData(v);}}catch(e){}};var p=Storage.prototype;if(!p.__mpn36NativeBackupWrapped){var original=p.setItem;p.setItem=function(key,value){original.call(this,key,value);if(key===k){send();}};Object.defineProperty(p,'__mpn36NativeBackupWrapped',{value:true,configurable:false});}send();}catch(e){}})();";
+                view.evaluateJavascript(migrationBackupScript, null);
+            }
+        });
         setContentView(webView);
         webView.loadUrl("file:///android_asset/index.html");
     }
@@ -184,6 +194,33 @@ public class MainActivity extends Activity {
                     android.util.Log.e("MPN36Print", "Error al preparar ticket", e);
                 }
             });
+        }
+
+        @JavascriptInterface
+        public void saveLegacyData(String json) {
+            // JavaScript interface callbacks run off the UI thread. Save atomically in app-private storage.
+            try {
+                if (json == null || json.length() > 20 * 1024 * 1024) return;
+                JSONObject parsed = new JSONObject(json);
+                if (!parsed.has("products") || !parsed.has("sales") || !parsed.has("settings")) return;
+                File target = new File(getFilesDir(), NativeDataStore.FILE_NAME);
+                File temp = new File(getFilesDir(), NativeDataStore.FILE_NAME + ".tmp");
+                byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                try (FileOutputStream stream = new FileOutputStream(temp)) {
+                    stream.write(bytes);
+                    stream.getFD().sync();
+                }
+                if (target.exists() && !target.delete()) {
+                    temp.delete();
+                    return;
+                }
+                if (!temp.renameTo(target)) {
+                    try (FileOutputStream stream = new FileOutputStream(target)) { stream.write(bytes); stream.getFD().sync(); }
+                    temp.delete();
+                }
+            } catch (Exception e) {
+                android.util.Log.w("MPN36Migration", "No se pudo actualizar la copia privada de migración", e);
+            }
         }
 
         @JavascriptInterface
