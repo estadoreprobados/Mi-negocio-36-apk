@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
                 super.onPageFinished(view, url);
                 // Guarda una copia privada de los datos actuales para preparar la migración nativa.
                 // No reemplaza localStorage ni cambia la interfaz web existente.
-                String migrationBackupScript = "(function(){try{var k='mpn36_v2_data';var send=function(){try{var v=localStorage.getItem(k);if(v&&window.AndroidFiles&&typeof window.AndroidFiles.saveLegacyData==='function'){window.AndroidFiles.saveLegacyData(v);}}catch(e){}};var p=Storage.prototype;if(!p.__mpn36NativeBackupWrapped){var original=p.setItem;p.setItem=function(key,value){original.call(this,key,value);if(key===k){send();}};Object.defineProperty(p,'__mpn36NativeBackupWrapped',{value:true,configurable:false});}send();}catch(e){}})();";
+                String migrationBackupScript = "(function(){try{var k='mpn36_v2_data';var send=function(){try{var v=localStorage.getItem(k);if(v&&window.AndroidFiles&&typeof window.AndroidFiles.saveLegacyData==='function'){window.AndroidFiles.saveLegacyData(v);}}catch(e){}};var p=Storage.prototype;if(!p.__mpn36NativeBackupWrapped){var original=p.setItem;p.setItem=function(key,value){original.call(this,key,value);if(key===k){send();}};Object.defineProperty(p,'__mpn36NativeBackupWrapped',{value:true,configurable:false});}send();var add=function(){if(document.getElementById('mpn36-native-preview'))return;var b=document.createElement('button');b.id='mpn36-native-preview';b.type='button';b.textContent='Probar interfaz nativa';b.setAttribute('aria-label','Abrir vista nativa de prueba');b.style.cssText='position:fixed;right:12px;bottom:12px;z-index:2147483647;border:0;border-radius:24px;padding:12px 16px;background:#23425b;color:#fff;font:600 13px sans-serif;box-shadow:0 3px 12px #0003;';b.onclick=function(){try{window.AndroidFiles.openNativePreview();}catch(e){alert('No se pudo abrir la vista nativa.');}};document.body.appendChild(b);};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add();}catch(e){}})();";
                 view.evaluateJavascript(migrationBackupScript, null);
             }
         });
@@ -155,6 +155,14 @@ public class MainActivity extends Activity {
     }
 
     private class DownloadBridge {
+        @JavascriptInterface
+        public void openNativePreview() {
+            runOnUiThread(() -> {
+                try { startActivity(new Intent(MainActivity.this, NativeHomeActivity.class)); }
+                catch (Exception e) { Toast.makeText(MainActivity.this, "No se pudo abrir la vista nativa de prueba.", Toast.LENGTH_LONG).show(); }
+            });
+        }
+
         @JavascriptInterface
         public void startBarcodeScan() {
             runOnUiThread(() -> {
