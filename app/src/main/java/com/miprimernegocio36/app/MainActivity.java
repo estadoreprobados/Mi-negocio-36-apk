@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
             if (!NativeDataStore.writeLegacyData(activity, parsed)) return false;
             String quoted = JSONObject.quote(parsed.toString());
             activity.runOnUiThread(() -> activity.webView.evaluateJavascript(
-                "try{localStorage.setItem('mpn36_v2_data', JSON.parse(" + quoted + "));location.reload();true}catch(e){false}", null));
+                "try{localStorage.setItem('mpn36_v2_data', " + quoted + ");location.reload();true}catch(e){false}", null));
             return true;
         } catch (Exception e) {
             android.util.Log.e("MPN36Migration", "No se pudieron aplicar los cambios nativos", e);
