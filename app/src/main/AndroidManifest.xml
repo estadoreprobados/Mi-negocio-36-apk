@@ -15,7 +15,6 @@
         android:label="Mi Primer Negocio 36"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
-        <!-- Pantalla principal actual -->
         <activity
             android:name="com.miprimernegocio36.app.MainActivity"
             android:exported="true"
@@ -28,9 +27,8 @@
 
         </activity>
 
-        <!-- Pantalla nativa preparada para la migración -->
         <activity
-            android:name=".NativeHomeActivity"
+            android:name="com.miprimernegocio36.app.NativeHomeActivity"
             android:exported="false"
             android:label="Mi Primer Negocio 36 - Nativo" />
 
