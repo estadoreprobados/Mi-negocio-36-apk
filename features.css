@@ -837,3 +837,39 @@ footer { color: var(--muted); }
 #view-dashboard.dashboard-compact .metric strong { font-size:1.05rem; }
 #view-dashboard.dashboard-compact .metric small { font-size:.75rem; }
 #view-dashboard.dashboard-compact .section-heading { margin-bottom:8px; }
+
+
+/* v3.8.2: compactación global y ticket accesible dentro de la aplicación */
+:root.mpn-compact-mode .view .panel,
+:root.mpn-compact-mode .view article.panel,
+:root.mpn-compact-mode .view .options-panel,
+:root.mpn-compact-mode .view .section-heading { padding: 10px; margin-bottom: 9px; }
+:root.mpn-compact-mode .view h2 { font-size: 1.15rem; margin-block: .45em; }
+:root.mpn-compact-mode .view h3 { font-size: 1rem; margin-block: .4em; }
+:root.mpn-compact-mode .view label { gap: 4px; }
+:root.mpn-compact-mode .view input,
+:root.mpn-compact-mode .view select,
+:root.mpn-compact-mode .view textarea { min-height: 36px; padding: 7px 9px; }
+:root.mpn-compact-mode .view .button,
+:root.mpn-compact-mode .view .row-button,
+:root.mpn-compact-mode .view .tab { min-height: 34px; padding: 6px 9px; font-size: .88rem; }
+:root.mpn-compact-mode .view .form-grid,
+:root.mpn-compact-mode .view .stack-form { gap: 7px; }
+:root.mpn-compact-mode .view .compact-row,
+:root.mpn-compact-mode .view .pos-cart-row { padding: 6px 0; gap: 7px; }
+.mpn-ticket-overlay { position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; padding:12px; background:rgba(0,0,0,.62); overflow:auto; }
+.mpn-ticket-dialog { width:min(100%,520px); max-height:95dvh; overflow:auto; background:var(--panel,#fff); color:var(--text,#222); border:1px solid var(--border,#ddd); border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+.mpn-ticket-actions { position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:8px; padding:10px; background:var(--panel,#fff); border-bottom:1px solid var(--border,#ddd); }
+.mpn-ticket-actions strong { flex:1; }
+.mpn-ticket-paper { background:#fff; color:#222; max-width:400px; margin:0 auto; padding:18px; font:14px system-ui,sans-serif; }
+.mpn-ticket-paper h2,.mpn-ticket-paper .ticket-center { text-align:center; }
+.mpn-ticket-paper table { width:100%; border-collapse:collapse; }
+.mpn-ticket-paper td,.mpn-ticket-paper th { padding:6px 2px; border-bottom:1px dashed #aaa; text-align:left; }
+.mpn-ticket-paper .ticket-total { text-align:right; font-size:18px; font-weight:bold; }
+@media print {
+  body:has(#mpnTicketOverlay) > * { display:none !important; }
+  body:has(#mpnTicketOverlay) #mpnTicketOverlay { display:block !important; position:static !important; inset:auto !important; padding:0 !important; background:#fff !important; overflow:visible !important; }
+  body:has(#mpnTicketOverlay) .mpn-ticket-dialog { display:block !important; width:100% !important; max-height:none !important; overflow:visible !important; border:0 !important; box-shadow:none !important; }
+  body:has(#mpnTicketOverlay) .mpn-ticket-actions { display:none !important; }
+  body:has(#mpnTicketOverlay) .mpn-ticket-paper { display:block !important; margin:0 auto !important; padding:0 !important; }
+}
