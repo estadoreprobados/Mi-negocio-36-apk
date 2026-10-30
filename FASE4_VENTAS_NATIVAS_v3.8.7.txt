@@ -1,0 +1,5 @@
+Mi Primer Negocio 36 - Fase 4 - v3.8.7
+
+Se agrega una pantalla nativa de punto de venta: seleccionar productos, aumentar/reducir cantidades, validar existencias, calcular subtotal/impuesto/total, capturar pago, calcular cambio, registrar una venta con folio compartido y descontar inventario.
+
+IMPORTANTE: esta es una implementación inicial y debe probarse con datos de prueba antes de usarla para ventas reales. Conserva la interfaz anterior; no desinstales la app ni borres sus datos. Exporta un respaldo JSON antes de instalar.
