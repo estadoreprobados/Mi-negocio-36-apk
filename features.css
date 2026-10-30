@@ -944,3 +944,76 @@ footer { color: var(--muted); }
 @media (prefers-reduced-motion: reduce) {
   #view-products .product-card { transition: none; }
 }
+
+/* FASE 9.5 — Renovación visual de gastos, clientes y operaciones.
+   Solo presentación: no modifica datos, eventos ni cálculos. */
+#view-expenses > .section-heading,
+#view-customers > .section-heading,
+#view-operations > .section-heading { margin-bottom: 18px; }
+#view-expenses > .panel,
+#view-expenses > form.panel,
+#view-expenses > article.panel { border-radius: 18px; box-shadow: 0 5px 18px rgba(20,35,50,.045); }
+#view-expenses #expenseForm,
+#view-expenses #recurringExpenseForm { gap: 15px; padding: clamp(14px,2.5vw,22px); }
+#view-expenses #expenseForm label,
+#view-expenses #recurringExpenseForm label,
+#view-operations .ops-card > label,
+#view-operations .stack-form label { display: grid; gap: 7px; font-weight: 650; }
+#view-expenses input,
+#view-expenses select,
+#view-operations input,
+#view-operations select,
+#view-customers input,
+#view-customers select { min-height: 44px; border-radius: 11px; }
+#view-expenses .form-actions,
+#view-operations .inline-actions { align-items: center; gap: 9px; flex-wrap: wrap; }
+#view-expenses .form-actions .button,
+#view-operations .button,
+#view-customers .button { min-height: 42px; border-radius: 11px; }
+#view-expenses .panel-title { gap: 12px; align-items: center; flex-wrap: wrap; }
+#view-expenses #expenseTotal { font-size: clamp(1.2rem,3.5vw,1.65rem); font-weight: 800; color: var(--mpn-accent); }
+#view-expenses .table-wrap,
+#view-customers .table-wrap { border: 1px solid var(--mpn-border); border-radius: 13px; overflow: auto; }
+#view-expenses table,
+#view-customers table { min-width: 570px; }
+#view-expenses th,
+#view-customers th { position: sticky; top: 0; z-index: 1; }
+#view-expenses td, #view-expenses th,
+#view-customers td, #view-customers th { padding: 12px 13px; }
+#view-operations .ops-grid { gap: 16px; align-items: start; }
+#view-operations .ops-card { border-radius: 18px; padding: clamp(15px,2.4vw,22px); box-shadow: 0 5px 18px rgba(20,35,50,.045); display: flex; flex-direction: column; gap: 13px; min-width: 0; }
+#view-operations .ops-card > .eyebrow { margin: 0; letter-spacing: .09em; font-size: .72rem; font-weight: 800; color: var(--mpn-accent); }
+#view-operations .ops-card > h3 { margin: -5px 0 2px; font-size: 1.12rem; }
+#view-operations .stack-form { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--mpn-border); border-radius: 14px; background: var(--mpn-bg); }
+#view-operations .stack-form h4 { margin: 0; }
+#view-operations .mini-summary { display: grid; grid-template-columns: repeat(auto-fit,minmax(110px,1fr)); gap: 9px; }
+#view-operations .mini-summary > * { min-width: 0; padding: 11px; border: 1px solid var(--mpn-border); border-radius: 12px; background: var(--mpn-bg); }
+#view-operations .compact-list { display: grid; gap: 8px; }
+#view-operations .compact-list > * { padding: 12px; border: 1px solid var(--mpn-border); border-radius: 12px; background: var(--mpn-card); }
+#view-operations .pos-total { padding: 13px 14px; border-radius: 13px; background: var(--mpn-bg); border: 1px solid var(--mpn-border); }
+#view-operations #posTotal { font-size: clamp(1.35rem,4vw,1.8rem); }
+#view-operations #posCheckout { min-height: 50px; font-weight: 750; }
+#view-customers #customersContent { display: grid; gap: 14px; }
+#view-customers .panel,
+#view-customers .ops-card { border-radius: 17px; }
+#view-customers .customer-row { padding: 12px; border: 1px solid var(--mpn-border); border-radius: 13px; background: var(--mpn-card); gap: 10px; }
+#view-customers .customer-row-main { gap: 5px; }
+#view-customers .customer-row strong { overflow-wrap: anywhere; }
+#view-customers .customer-edit-button { border-radius: 10px; }
+#view-customers .footnote,
+#view-operations .footnote { line-height: 1.5; }
+@media (max-width: 600px) {
+  #view-expenses #expenseForm,
+  #view-expenses #recurringExpenseForm { grid-template-columns: minmax(0,1fr); }
+  #view-expenses .form-actions { display: grid; grid-template-columns: 1fr; }
+  #view-expenses .form-actions .button { width: 100%; }
+  #view-operations .ops-grid { grid-template-columns: minmax(0,1fr); }
+  #view-operations .ops-card { padding: 14px; }
+  #view-operations .inline-actions > .button { flex: 1 1 130px; }
+  #view-customers .customer-row { align-items: flex-start; }
+  #view-customers .customer-edit-button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #view-operations *, #view-expenses *, #view-customers * { scroll-behavior: auto !important; }
+}
+
