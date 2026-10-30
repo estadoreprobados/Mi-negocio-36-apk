@@ -22,3 +22,115 @@
   .header-menus { gap: 5px; }
   .header-menus .more-menu { max-width: min(88vw, 300px); }
 }
+
+/* FASE 9.2 · Sistema visual híbrido moderno (sin modificar datos ni lógica) */
+:root {
+  --ui-radius-card: 18px;
+  --ui-radius-control: 12px;
+  --ui-shadow-card: 0 8px 24px rgba(16, 24, 40, .055);
+  --ui-shadow-hover: 0 12px 28px rgba(16, 24, 40, .10);
+}
+body {
+  letter-spacing: -.01em;
+  -webkit-font-smoothing: antialiased;
+}
+.topbar {
+  background: linear-gradient(118deg, #101b2d 0%, #183653 58%, #245477 100%);
+  padding-top: 18px;
+  padding-bottom: 18px;
+  box-shadow: 0 5px 22px rgba(15, 35, 58, .16);
+}
+.topbar h1 { letter-spacing: -.045em; }
+.topbar h1 span { color: #9bc9f5; }
+.container { padding-top: 22px; padding-bottom: 30px; }
+.panel, .metric {
+  border-radius: var(--ui-radius-card);
+  box-shadow: var(--ui-shadow-card);
+  transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+}
+.panel { padding: 19px; }
+.metric { padding: 18px; position: relative; overflow: hidden; }
+.metric::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--accent);
+  opacity: .72;
+}
+.metric span { font-weight: 650; }
+.metric strong { letter-spacing: -.045em; }
+.section-heading { margin-top: 12px; margin-bottom: 16px; }
+.section-heading h2, .panel-title h2 { letter-spacing: -.04em; }
+.button, .row-button, .text-button, .more-menu-button {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .14s ease, filter .14s ease, box-shadow .14s ease;
+}
+.button {
+  min-height: 42px;
+  border-radius: var(--ui-radius-control);
+  box-shadow: 0 2px 5px rgba(16, 24, 40, .08);
+}
+.button:active, .row-button:active, .more-menu-button:active { transform: scale(.97); }
+.button.secondary { box-shadow: none; }
+input, select, textarea {
+  min-height: 43px;
+  border-radius: var(--ui-radius-control);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 17%, transparent);
+}
+.tabs {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 5px;
+}
+.tab { border-radius: 10px; }
+.tab.active { box-shadow: 0 2px 7px rgba(16, 24, 40, .10); }
+.header-menus .more-menu {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 7px;
+  background: var(--card);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .20);
+}
+.header-menus .menu-item {
+  border-radius: 9px;
+  padding: 10px 12px;
+  transition: background .14s ease;
+}
+.header-menus .menu-item:hover { background: var(--inventory-bg); }
+.quick-actions { gap: 9px; }
+.quick-actions .button { flex: 1 1 145px; }
+.streak-panel { border-color: color-mix(in srgb, var(--accent) 25%, var(--line)); }
+.mascot-panel { align-items: center; }
+.chart-wrap { min-height: 220px; }
+.table-wrap { border: 1px solid var(--line); border-radius: 13px; }
+table { border-collapse: separate; border-spacing: 0; }
+thead th { background: var(--inventory-bg); }
+thead th:first-child { border-top-left-radius: 12px; }
+thead th:last-child { border-top-right-radius: 12px; }
+tbody tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.notice { border-radius: 13px; }
+.toast { border-radius: 13px; }
+@media (hover: hover) {
+  .panel:hover, .metric:hover { box-shadow: var(--ui-shadow-hover); }
+  .button:hover { filter: brightness(1.04); transform: translateY(-1px); }
+}
+@media (max-width: 700px) {
+  .topbar { gap: 10px; padding: 14px 12px; }
+  .topbar .eyebrow { font-size: .59rem; }
+  .topbar h1 { font-size: 1.22rem; }
+  .container { padding: 12px 10px 24px; }
+  .panel { padding: 15px; border-radius: 16px; }
+  .metric { padding: 14px 12px 13px 15px; border-radius: 15px; }
+  .section-heading h2 { font-size: 1.35rem; }
+  .top-actions { gap: 6px; }
+  .top-actions .button { min-height: 38px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
