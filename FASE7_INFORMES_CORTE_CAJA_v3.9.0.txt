@@ -1,0 +1,7 @@
+Mi Primer Negocio 36 - Fase 7 - v3.9.0
+
+Se agrega una pantalla nativa de informes y estadísticas del mes: ventas agrupadas por folio, transacciones, gastos, costo estimado de productos vendidos y utilidad estimada. Se agrega corte de caja diario con efectivo esperado, efectivo contado y diferencia, guardado en cashClosings.
+
+El corte usa ventas de contado, ingresos manuales, retiros y gastos del día. No cuenta ventas fiadas ni abonos como efectivo de ventas. La utilidad es una estimación y depende de que cada venta tenga el costo del producto guardado.
+
+IMPORTANTE: implementación inicial no compilada ni probada en dispositivo. Probar con datos ficticios y respaldo JSON antes de uso real. No desinstalar ni borrar datos.

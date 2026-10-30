@@ -1,0 +1,25 @@
+MI PRIMER NEGOCIO 36 — FASE 9.3
+Renovación de pantalla principal y navegación
+
+CAMBIOS
+- Se agregó una barra de navegación principal para Resumen, Productos, Ventas, Gastos y Clientes.
+- En pantallas pequeñas aparece fija en la parte inferior para facilitar el uso con una mano.
+- En pantallas amplias aparece debajo del encabezado.
+- El botón seleccionado se sincroniza con la navegación existente mediante la clase tab.
+- Se conservan los menús completos y las rutas de navegación anteriores.
+
+ARCHIVOS MODIFICADOS
+- index.html
+- menu-tools.css
+- app/src/main/assets/index.html (copia para Android)
+- app/src/main/assets/menu-tools.css (copia para Android)
+
+NO MODIFICADO
+- app.js y almacenamiento mpn36_v2_data
+- Inventario, ventas, clientes, gastos, reportes y configuración
+- Código Java y permisos Android
+
+PRUEBAS DE PAQUETE
+- Se verificará la presencia de la barra y los cinco destinos.
+- Se verificará que las copias web y Android coincidan.
+- No se declara compilación ni prueba visual en dispositivo.

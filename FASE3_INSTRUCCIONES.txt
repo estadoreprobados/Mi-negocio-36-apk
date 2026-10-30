@@ -1,0 +1,15 @@
+MI PRIMER NEGOCIO 36 - FASE 3 (v3.8.5)
+
+Objetivo: primera edición nativa de productos con validación y sincronización hacia localStorage de la app WebView. La pantalla principal anterior sigue siendo la pantalla de inicio.
+
+ARCHIVOS MODIFICADOS/REEMPLAZADOS:
+1. app/src/main/java/com/miprimernegocio36/app/MainActivity.java
+2. app/src/main/java/com/miprimernegocio36/app/NativeHomeActivity.java
+3. app/src/main/java/com/miprimernegocio36/app/NativeDataStore.java
+4. app/build.gradle
+
+AndroidManifest.xml debe conservar NativeHomeActivity declarada y MainActivity como LAUNCHER.
+
+PRUEBAS: compilar con GitHub Actions; instalar actualización sin desinstalar; abrir app principal y esperar que cargue; tocar Probar interfaz nativa; inventario > agregar producto de prueba; editar el producto; volver a la pantalla principal y verificar el producto. Luego borrar el producto de prueba desde la interfaz web si existe esa opción. No usar todavía para editar inventario real sin hacer primero exportación de respaldo JSON.
+
+ALCANCE: edición básica de nombre, precio, existencias y stock mínimo. No migra aún ventas, gastos, clientes, POS, escáner, temas ni demás pantallas. El cambio de datos se envía a localStorage mpn36_v2_data y recarga la página principal. Verifica cuidadosamente en pruebas que el esquema real del producto use name/price/stock/minStock; se conservan otros campos del producto editado.

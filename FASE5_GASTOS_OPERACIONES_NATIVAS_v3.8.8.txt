@@ -1,0 +1,7 @@
+Mi Primer Negocio 36 - Fase 5 - v3.8.8
+
+Se agrega la sección nativa Operaciones con registro, edición y eliminación de gastos; registro de ingresos y retiros manuales de caja; historial de movimientos; y resumen de gastos, ingresos manuales, retiros y efectivo estimado.
+
+Los gastos conservan el esquema compatible con la interfaz anterior (id, name, amount, date, type y frequency). Los movimientos manuales se guardan en cashMovements dentro del mismo archivo de datos y se conservan al sincronizar la aplicación.
+
+IMPORTANTE: implementación inicial pendiente de pruebas en dispositivo. Antes de instalar, exporta un respaldo JSON. No desinstales la app ni borres sus datos. Instala la nueva versión encima de la anterior para conservar la información.

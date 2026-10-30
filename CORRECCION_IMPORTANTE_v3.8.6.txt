@@ -1,0 +1,10 @@
+Mi Primer Negocio 36 v3.8.6 - corrección de sincronización
+
+Se corrigió MainActivity.applyNativeData(): ahora guarda en localStorage el JSON como texto, en lugar de convertirlo accidentalmente en [object Object]. Esa conversión hacía que la app anterior no pudiera leer el registro y pareciera que los datos habían desaparecido.
+
+Antes de probar:
+1. NO desinstales la app ni borres sus datos.
+2. Instala el APK actualizado encima de la app actual.
+3. La copia privada mpn36_legacy_data.json se conserva al actualizar normalmente.
+4. Si la app ya muestra datos vacíos, no agregues ni edites más cosas todavía. Instala la corrección y comprueba si se recuperan los datos; si no, restaura el respaldo JSON exportado o necesitaremos un procedimiento de recuperación desde la copia privada.
+5. Compilación aún debe comprobarse en GitHub Actions.

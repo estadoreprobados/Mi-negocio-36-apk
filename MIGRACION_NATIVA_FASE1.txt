@@ -1,0 +1,21 @@
+MIGRACIÓN NATIVA — FASE 1: RESPALDO PRIVADO
+
+Qué incluye
+- La aplicación sigue abriendo la pantalla actual (MainActivity/WebView).
+- Al cargar la pantalla, copia el JSON de localStorage con clave mpn36_v2_data a almacenamiento privado de la app.
+- Cada actualización posterior de esa clave actualiza la copia.
+- NativeDataStore.java permite leer y validar esa copia desde el código nativo.
+- No se activa NativeHomeActivity y no se sustituye la base de datos activa.
+
+Archivo de datos privado: files/mpn36_legacy_data.json dentro del almacenamiento interno de la aplicación.
+No se crea un archivo público y no se envían datos por internet.
+
+Rutas añadidas/modificadas
+1. app/src/main/java/com/miprimernegocio36/app/MainActivity.java (modificado)
+2. app/src/main/java/com/miprimernegocio36/app/NativeDataStore.java (nuevo)
+
+IMPORTANTE
+- Esta es una primera etapa de preparación, no la migración completa a una base de datos nativa.
+- La copia privada no es un respaldo exportable; desinstalar la app puede borrarla. Mantén también un respaldo JSON exportado desde la app antes de probar nuevas versiones.
+- El WebView y la interfaz existente se mantienen para evitar perder funciones.
+- Después de instalar esta compilación, abre la app y deja que cargue por completo para crear la primera copia privada.

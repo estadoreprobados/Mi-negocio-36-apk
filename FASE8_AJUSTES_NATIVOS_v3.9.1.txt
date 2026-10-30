@@ -1,0 +1,28 @@
+MI PRIMER NEGOCIO 36 — FASE 8A
+Versión: 3.9.1
+
+OBJETIVO
+Inicio de la migración de Ajustes a la interfaz nativa.
+
+CAMBIOS
+- Nueva pestaña nativa Ajustes en la navegación inferior (desplazable horizontalmente).
+- Configuración de nombre y tipo de negocio.
+- Selección de moneda (MXN, USD, EUR, COP, ARS, CLP y PEN).
+- Configuración de tasa y modo de IVA.
+- Modo claro/oscuro, color de acento, tamaño de letra y tarjetas del inicio.
+- Opción para mostrar u ocultar a Manolito.
+- Conserva el tema activo y los temas desbloqueados; la tienda/selección de temas sigue en la interfaz anterior por ahora.
+- Guarda en el mismo objeto settings y sincroniza con la interfaz anterior.
+
+ARCHIVOS MODIFICADOS
+- app/build.gradle
+- app/src/main/java/com/miprimernegocio36/app/NativeHomeActivity.java
+
+NO REEMPLAZAR
+- NativeDataStore.java
+- MainActivity.java
+- AndroidManifest.xml
+- app/src/main/assets/*
+
+IMPORTANTE
+Este paquete es una entrega de código fuente para probar. No se ha podido ejecutar una compilación Android en este entorno. Genera el APK desde GitHub Actions y prueba primero con una copia de seguridad JSON exportada. Instala la actualización sobre la app existente; no desinstales ni borres sus datos.

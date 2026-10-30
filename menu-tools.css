@@ -134,3 +134,82 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* FASE 9.3 · Navegación principal y acceso rápido */
+.primary-nav {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  width: min(100% - 28px, 1120px);
+  margin: 12px auto 4px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--card);
+  box-shadow: 0 7px 22px rgba(16, 24, 40, .09);
+}
+.primary-nav-item {
+  display: flex;
+  min-width: 0;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 3px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 650;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+.primary-nav-item .primary-nav-icon {
+  display: grid;
+  width: 27px;
+  height: 25px;
+  place-items: center;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+.primary-nav-item.active {
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--accent) 27%, transparent);
+}
+.primary-nav-item:active { transform: scale(.96); }
+.primary-nav-item:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 38%, transparent); outline-offset: 2px; }
+.primary-nav-sale:not(.active) .primary-nav-icon {
+  color: var(--accent);
+  font-size: 1.55rem;
+}
+@media (max-width: 560px) {
+  .primary-nav {
+    position: fixed;
+    top: auto;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 10px;
+    right: 10px;
+    width: auto;
+    margin: 0;
+    padding: 6px;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--card) 94%, transparent);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .18);
+  }
+  .primary-nav-item { min-height: 50px; font-size: .68rem; }
+  .primary-nav-item .primary-nav-icon { font-size: 1.2rem; }
+  body { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+}
+@media (min-width: 561px) {
+  .primary-nav { margin-top: 14px; }
+}

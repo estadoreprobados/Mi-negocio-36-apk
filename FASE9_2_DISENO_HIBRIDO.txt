@@ -1,0 +1,22 @@
+MI PRIMER NEGOCIO 36 — FASE 9.2
+Sistema visual híbrido moderno
+
+CAMBIOS
+- Renovación visual de tarjetas, métricas, paneles y navegación.
+- Botones y campos con tamaños, bordes y estados de interacción consistentes.
+- Mejoras de lectura y espaciado para pantallas Android.
+- Tablas con encabezados diferenciados y desplazamiento conservado.
+- Respeta las variables de color de los temas existentes y el modo oscuro.
+- Se aplica tanto al sitio publicado como a los recursos locales del APK.
+
+COMPATIBILIDAD Y SEGURIDAD
+- No modifica app.js ni la estructura de datos.
+- No borra ni migra datos.
+- No modifica ventas, inventario, clientes, gastos, reportes ni respaldos.
+- No modifica la interfaz nativa Java en esta etapa.
+
+PRUEBAS REALIZADAS
+- Comparación de los archivos CSS raíz y assets para mantenerlos sincronizados.
+- Verificación de balance de llaves CSS.
+- Verificación de que los archivos HTML/JS funcionales no fueron modificados.
+- No se ejecutó compilación Android ni prueba visual en dispositivo.

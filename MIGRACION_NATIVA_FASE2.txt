@@ -1,0 +1,25 @@
+MIGRACIÓN NATIVA — FASE 2: VISTA NATIVA DE INVENTARIO (SOLO LECTURA)
+
+Versión: 3.8.4 (versionCode 27)
+
+Qué cambia
+- La pantalla actual sigue siendo la pantalla de inicio normal.
+- Aparece un botón flotante “Probar interfaz nativa” para abrir la vista nueva.
+- La vista nativa lee la copia privada mpn36_legacy_data.json y muestra resumen e inventario reales.
+- El inventario nativo es SOLO LECTURA; no agrega, edita ni elimina productos, ni registra ventas.
+- La aplicación web existente sigue siendo el único lugar donde se hacen cambios reales.
+- La vista nativa incluye “Volver” para regresar a la aplicación actual.
+
+Pruebas
+1. Antes de instalar, exporta respaldo JSON desde la app y guárdalo fuera de ella.
+2. Actualiza la app (no la desinstales, para conservar localStorage).
+3. Abre la app y espera a que cargue completamente.
+4. Pulsa “Probar interfaz nativa”.
+5. Comprueba que el número de productos y las existencias coincidan con la pantalla actual.
+6. Pulsa “Volver” y comprueba que las funciones anteriores siguen disponibles.
+
+Limitaciones conocidas
+- Esta no es todavía una migración completa. El inventario nativo es de solo lectura y utiliza una copia privada de los datos que se actualiza al guardar en la pantalla web.
+- No activar NativeHomeActivity como pantalla inicial aún.
+- No desinstalar la app para actualizar, porque Android puede borrar sus datos privados.
+- La compilación debe confirmarse en GitHub Actions; esta carpeta no incluye un APK compilado y verificado.

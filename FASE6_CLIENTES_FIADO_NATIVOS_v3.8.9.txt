@@ -1,0 +1,5 @@
+Mi Primer Negocio 36 - Fase 6 - v3.8.9
+
+Se incorpora administración nativa de clientes y cartera: alta/edición de clientes, deuda inicial, deudas manuales, ventas fiadas desde el punto de venta, abonos parciales y consulta de movimientos. Las ventas fiadas descuentan inventario y generan un movimiento charge en creditMovements; los abonos generan payment y no se registran como ventas ni como ingresos de caja.
+
+IMPORTANTE: implementación inicial no compilada ni ejecutada en dispositivo. Probar con datos ficticios y exportar respaldo JSON antes de instalar. No desinstalar ni borrar datos.
