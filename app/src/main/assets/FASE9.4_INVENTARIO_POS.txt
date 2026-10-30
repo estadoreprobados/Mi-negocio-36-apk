@@ -1,0 +1,27 @@
+MI PRIMER NEGOCIO 36 — FASE 9.4
+Renovación visual de inventario y punto de venta
+
+CAMBIOS
+- Mejor presentación del formulario de productos.
+- Tarjetas de inventario más claras y adaptables.
+- Búsqueda y controles de vista mejor distribuidos.
+- Tablas de inventario con mejor lectura en móvil.
+- Resumen de venta y carrito con jerarquía visual mejorada.
+- Controles de cantidad más cómodos en pantallas pequeñas.
+- Estilos limitados a las secciones Productos y Ventas.
+
+ARCHIVOS MODIFICADOS
+- features.css (raíz del proyecto)
+- app/src/main/assets/features.css
+
+NO SE MODIFICÓ
+- app.js ni lógica de ventas/inventario.
+- Esquema ni almacenamiento de datos.
+- Java, AndroidManifest.xml ni Gradle.
+- Historial, clientes, gastos, reportes ni ajustes.
+
+PRUEBAS
+- Verificación de sintaxis básica CSS y llaves.
+- Comparación de hashes para confirmar que app.js y archivos HTML
+  permanecen idénticos a la fase 9.3.
+- No se ha compilado APK ni probado visualmente en dispositivo.
