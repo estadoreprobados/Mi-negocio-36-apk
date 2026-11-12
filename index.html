@@ -621,6 +621,27 @@
         </select>
       </label>
     </div>
+    <article class="panel advanced-chart-panel">
+      <div class="panel-title"><h3>Explorador de gráficas</h3><span class="muted">Vista configurable</span></div>
+      <div class="form-grid">
+        <label>Tipo de gráfica
+          <select id="advancedChartType">
+            <option value="bar">Barras</option><option value="histogram">Histograma</option>
+            <option value="scatter">Dispersión</option><option value="line">Líneas</option>
+            <option value="box">Caja y bigotes (resumen)</option><option value="pie">Circular</option>
+            <option value="area">Área</option>
+          </select>
+        </label>
+        <label>Datos
+          <select id="advancedChartMetric">
+            <option value="revenue">Ventas</option><option value="profit">Utilidad bruta</option>
+            <option value="expenses">Gastos</option><option value="quantity">Unidades vendidas</option>
+          </select>
+        </label>
+      </div>
+      <div class="chart-wrap stats-chart-wrap"><canvas id="advancedChart"></canvas></div>
+      <p class="muted footnote" id="advancedChartNote">La gráfica utiliza únicamente registros existentes dentro del periodo seleccionado.</p>
+    </article>
     <div class="metrics stats-metrics">
       <article class="metric"><span>Productos vendidos</span><strong id="statUnits">0</strong><small>Unidades</small></article>
       <article class="metric"><span>Ventas registradas</span><strong id="statTransactions">0</strong><small id="statTransactionsLabel">En el periodo</small></article>
@@ -739,8 +760,8 @@
       <p class="version-mark" aria-hidden="true">MPN36</p>
       <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.10.0</strong><p>Mi Primer Negocio</p>
       <div class="version-facts">
-        <p><span>Número de compilación</span><strong id="appBuildNumber">25</strong></p>
-        <p><span>Actualización preparada</span><strong id="appBuildDate">28 de octubre de 2026</strong></p>
+        <p><span>Número de compilación</span><strong id="appBuildNumber">35</strong></p>
+        <p><span>Actualización preparada</span><strong id="appBuildDate">12 de noviembre de 2026</strong></p>
       </div>
     </article>
     <article class="panel version-panel">
@@ -763,6 +784,8 @@
         <li><strong>Vista compacta corregida:</strong> al activarla, reduce espacios, controles y tarjetas en todas las secciones; al desactivarla, restaura el tamaño normal.</li>
         <li><strong>Versión sincronizada:</strong> aplicación actualizada a 3.10.0, compilación 34. Se sincronizaron los datos de versión entre Android, JavaScript y esta pantalla.</li>
         <li><strong>Versión 3.10.0 · compilación 34:</strong> generador local de códigos de barras Code 39, vista previa e integración del código en el catálogo de productos. Se mantiene la compatibilidad con los códigos ya guardados.</li>
+        <li><strong>Versión 3.11.0 · compilación 35:</strong> siete visualizaciones configurables: barras, histograma, dispersión, líneas, resumen de caja y bigotes, circular y área. La preferencia de gráfica y métrica se guarda en el dispositivo.</li>
+        <li><strong>Gráficas basadas en registros:</strong> las visualizaciones usan ventas, gastos y cantidades existentes; no crean ni modifican movimientos del negocio. El resumen de caja y bigotes muestra mínimo, cuartiles, mediana y máximo en una vista resumida.</li>
       </ul>
     </article>
     <article class="panel version-panel">
