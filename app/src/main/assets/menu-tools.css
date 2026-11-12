@@ -271,3 +271,24 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent
 }
 .mascot-panel:not(.hidden) { display: flex !important; visibility: visible !important; opacity: 1 !important; }
 .mascot-avatar { flex: 0 0 auto; display: block; visibility: visible; opacity: 1; }
+
+
+/* FASE 10.2.1 · El menú de herramientas debe quedar por encima de la barra rápida */
+.topbar { position: relative; z-index: 2001; }
+.topbar .header-menus { position: relative; z-index: 2002; }
+.topbar .tools-menu-wrap { position: relative; z-index: 2003; }
+#toolsMenu {
+  position: absolute !important;
+  z-index: 2004 !important;
+  max-height: min(68dvh, 520px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.primary-nav { z-index: 1200; }
+@media (max-width: 760px) and (orientation: portrait) {
+  #toolsMenu { max-height: min(62dvh, 440px) !important; }
+}
+@media (orientation: landscape) {
+  #toolsMenu { max-height: min(72dvh, 420px) !important; }
+}
