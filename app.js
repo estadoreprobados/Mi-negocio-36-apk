@@ -896,6 +896,7 @@
     if (menuButton) menuButton.setAttribute("aria-expanded", "false");
     if (toolsMenu) toolsMenu.classList.add("hidden");
     if (toolsMenuButton) toolsMenuButton.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("mpn-menu-open");
     if (view === "notes") renderNotes();
     if (view === "dashboard") { renderDashboard(); renderStreak(); }
     if (view === "reports") renderReport();
@@ -961,17 +962,20 @@
       const open = moreMenu.classList.contains("hidden");
       moreMenu.classList.toggle("hidden", !open);
       moreMenuButton.setAttribute("aria-expanded", String(open));
+      document.body.classList.toggle("mpn-menu-open", open);
     });
     document.addEventListener("click", e => {
       if (!e.target.closest(".left-menu-wrap")) {
         moreMenu.classList.add("hidden");
         moreMenuButton.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("mpn-menu-open");
       }
     });
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") {
         moreMenu.classList.add("hidden");
         moreMenuButton.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("mpn-menu-open");
       }
     });
   }
@@ -2079,7 +2083,7 @@ function downloadCsv() {
         avatar.src = "manolito.jpg";
       };
 
-      avatar.src = d.image;
+      avatar.src = d.image || "manolito.jpg";
       avatar.alt = "Manolito: " + d.text;
       avatar.classList.remove("mascot-react");
       void avatar.offsetWidth;
@@ -2087,7 +2091,19 @@ function downloadCsv() {
     }
   }
 
-  $("mascotAdviceButton")?.addEventListener("click",showManolitoDialogue);
+  document.addEventListener("click", event => {
+    const adviceButton = event.target.closest("#mascotAdviceButton");
+    if (!adviceButton) return;
+    event.preventDefault();
+    try {
+      showManolitoDialogue();
+    } catch (error) {
+      console.error("MPN36 Manolito:", error);
+      const message = $("mascotMessage");
+      if (message) message.textContent = "Estoy aquí. Intenta de nuevo en un momento.";
+      toast("Manolito tuvo un problema al mostrar el consejo.");
+    }
+  });
   document.querySelectorAll('[data-goto="products"], [data-goto="sales"]').forEach(button => button.addEventListener("click", () => { window.__mpnManolitoMessageChosen = false; }));
   $("mascotEnabled")?.addEventListener("change",e=>{data.settings.mascotEnabled=e.target.checked;save();toast(e.target.checked?"Manolito está activado.":"Manolito está oculto.");});
   $("accentColor")?.addEventListener("input",e=>{data.settings.accentColor=e.target.value;applyV37Preferences();localStorage.setItem(KEY,JSON.stringify(data));});
