@@ -1979,7 +1979,11 @@ function downloadCsv() {
     root.dataset.fontScale=data.settings.fontScale || "normal";
     const mascotOn=data.settings.mascotEnabled !== false;
     if ($("mascotEnabled")) $("mascotEnabled").checked=mascotOn;
-    if ($("mascotPanel")) $("mascotPanel").classList.toggle("hidden",!mascotOn);
+    if ($("mascotPanel")) {
+      $("mascotPanel").classList.toggle("hidden", !mascotOn);
+      if (mascotOn) { $("mascotPanel").style.display = "flex"; }
+      else { $("mascotPanel").style.removeProperty("display"); }
+    }
     if ($("mascotPanel") && mascotOn && !window.__mpnManolitoMessageChosen) { $("mascotMessage").textContent="¡Hola! Tengo varios consejos y diálogos. Pulsa «Dame un consejo» para escuchar otro."; }
 
     if ($("accentColor")) $("accentColor").value=data.settings.accentColor || "#315f82";
@@ -2084,11 +2088,21 @@ function downloadCsv() {
       };
 
       avatar.src = d.image || "manolito.jpg";
+      avatar.hidden = false;
+      avatar.style.display = "block";
       avatar.alt = "Manolito: " + d.text;
       avatar.classList.remove("mascot-react");
       void avatar.offsetWidth;
       avatar.classList.add("mascot-react");
     }
+  }
+
+  const initialManolitoAvatar = document.querySelector(".mascot-avatar");
+  if (initialManolitoAvatar) {
+    initialManolitoAvatar.onerror = () => {
+      initialManolitoAvatar.onerror = null;
+      initialManolitoAvatar.src = "manolito.jpg";
+    };
   }
 
   document.addEventListener("click", event => {
