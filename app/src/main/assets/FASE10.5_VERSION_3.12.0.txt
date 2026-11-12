@@ -1,0 +1,10 @@
+FASE 10.5 — MI PRIMER NEGOCIO 3.12.0 (COMPILACIÓN 36)
+
+- Administración de hasta cinco negocios locales en un mismo dispositivo.
+- Selector para cambiar entre negocios y opción para crear/renombrar negocios.
+- Cada negocio conserva su propio inventario, ventas, gastos, clientes, proveedores, empleados, ajustes y estadísticas.
+- El negocio existente se registra como negocio principal durante la migración; no se borra la clave mpn36_v2_data.
+- Centro sencillo de notificaciones internas con avisos de inventario bajo y saldos pendientes.
+- Solicitud opcional de permiso para notificaciones del sistema; la app sigue funcionando si se deniega.
+
+IMPORTANTE: los datos permanecen en el dispositivo. Exporta un respaldo JSON antes de actualizar. No se ha compilado ni probado en dispositivo; realizar pruebas de creación/cambio de negocio, límite de cinco y persistencia antes de publicar.
