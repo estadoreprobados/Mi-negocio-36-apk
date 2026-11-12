@@ -213,3 +213,25 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent
 @media (min-width: 561px) {
   .primary-nav { margin-top: 14px; }
 }
+
+
+/* FASE 10.2 · Barra rápida adaptable y menús sin superposición */
+.primary-nav { z-index: 700; }
+.more-menu, #toolsMenu { z-index: 1600 !important; }
+@media (max-width: 560px) and (orientation: portrait) {
+  .primary-nav { position:fixed; top:auto; bottom:max(8px, env(safe-area-inset-bottom)); left:10px; right:10px; width:auto; }
+  .primary-nav-item { min-height:48px; gap:0; }
+  .primary-nav-item > span:not(.primary-nav-icon) { display:none !important; }
+  .primary-nav-item .primary-nav-icon { font-size:1.45rem; width:34px; height:32px; }
+  body { padding-bottom:calc(76px + env(safe-area-inset-bottom)) !important; }
+  .more-menu { top:66px !important; bottom:calc(78px + env(safe-area-inset-bottom)) !important; max-height:none !important; overflow-y:auto !important; overscroll-behavior:contain; }
+}
+@media (orientation: landscape) and (max-height: 560px) {
+  .primary-nav { position:sticky; top:0; bottom:auto; width:calc(100% - 20px); margin:6px auto 10px; }
+  .primary-nav-item { min-height:42px; flex-direction:row; gap:7px; }
+  .primary-nav-item > span:not(.primary-nav-icon) { display:none !important; }
+  .primary-nav-item .primary-nav-icon { font-size:1.35rem; }
+  body { padding-bottom:12px !important; }
+  .more-menu { max-height:calc(100dvh - 82px) !important; overflow-y:auto !important; }
+}
+body.mpn-menu-open .primary-nav { visibility:hidden; pointer-events:none; }
