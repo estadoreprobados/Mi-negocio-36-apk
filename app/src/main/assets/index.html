@@ -34,21 +34,6 @@
 <div id="businessNotice" class="panel hidden" role="status" aria-live="polite" style="margin:8px 12px"></div>
 <header class="topbar">
   <div class="header-menus">
-    <div class="left-menu-wrap menu-wrap">
-      <button id="moreMenuButton" class="more-menu-button" type="button" aria-label="Abrir menú principal" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">☰</span></button>
-      <div id="moreMenu" class="more-menu hidden" role="menu" aria-label="Menú principal">
-        <button class="menu-item" data-view="dashboard" role="menuitem">🏠 Resumen</button>
-        <button class="menu-item" data-view="products" role="menuitem">📦 Productos</button>
-        <button class="menu-item" data-view="sales" role="menuitem">🛒 Ventas</button>
-        <button class="menu-item" data-view="expenses" role="menuitem">💸 Gastos</button>
-        <button class="menu-item" data-view="employees" role="menuitem">👷 Empleados</button>
-        <button class="menu-item" data-view="reports" role="menuitem">📊 Reportes</button>
-        <button class="menu-item" data-view="notes" role="menuitem">📝 Notas</button>
-        <button class="menu-item" data-view="taxes" role="menuitem">🧮 Impuestos</button>
-        <button class="menu-item" data-view="customers" role="menuitem">👥 Clientes</button>
-        <button class="menu-item" data-view="suppliers" role="menuitem">🚚 Proveedores</button>
-      </div>
-    </div>
     <div class="tools-menu-wrap menu-wrap">
       <button id="toolsMenuButton" class="more-menu-button tools-menu-button" type="button" aria-label="Abrir menú de herramientas" aria-haspopup="true" aria-expanded="false"><span aria-hidden="true">⚙</span></button>
       <div id="toolsMenu" class="more-menu tools-menu hidden" role="menu" aria-label="Menú de herramientas">
@@ -74,22 +59,17 @@
   </div>
 </header>
 
-<nav class="primary-nav" aria-label="Navegación principal">
-  <button class="primary-nav-item tab active" type="button" data-view="dashboard" aria-label="Resumen">
-    <span class="primary-nav-icon" aria-hidden="true">⌂</span><span>Resumen</span>
-  </button>
-  <button class="primary-nav-item tab" type="button" data-view="products" aria-label="Productos">
-    <span class="primary-nav-icon" aria-hidden="true">▦</span><span>Productos</span>
-  </button>
-  <button class="primary-nav-item primary-nav-sale tab" type="button" data-view="sales" aria-label="Ventas">
-    <span class="primary-nav-icon" aria-hidden="true">＋</span><span>Ventas</span>
-  </button>
-  <button class="primary-nav-item tab" type="button" data-view="expenses" aria-label="Gastos">
-    <span class="primary-nav-icon" aria-hidden="true">↗</span><span>Gastos</span>
-  </button>
-  <button class="primary-nav-item tab" type="button" data-view="customers" aria-label="Clientes">
-    <span class="primary-nav-icon" aria-hidden="true">♧</span><span>Clientes</span>
-  </button>
+<nav class="primary-nav" aria-label="Barra de acciones">
+  <button class="primary-nav-item tab active" type="button" data-view="dashboard" aria-label="Resumen" title="Resumen"><span class="primary-nav-icon" aria-hidden="true">⌂</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="products" aria-label="Productos" title="Productos"><span class="primary-nav-icon" aria-hidden="true">▦</span></button>
+  <button class="primary-nav-item primary-nav-sale tab" type="button" data-view="sales" aria-label="Ventas" title="Ventas"><span class="primary-nav-icon" aria-hidden="true">＋</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="expenses" aria-label="Gastos" title="Gastos"><span class="primary-nav-icon" aria-hidden="true">↗</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="employees" aria-label="Empleados" title="Empleados"><span class="primary-nav-icon" aria-hidden="true">♙</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="reports" aria-label="Reportes" title="Reportes"><span class="primary-nav-icon" aria-hidden="true">▤</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="notes" aria-label="Notas" title="Notas"><span class="primary-nav-icon" aria-hidden="true">▧</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="taxes" aria-label="Impuestos" title="Impuestos"><span class="primary-nav-icon" aria-hidden="true">％</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="customers" aria-label="Clientes" title="Clientes"><span class="primary-nav-icon" aria-hidden="true">♧</span></button>
+  <button class="primary-nav-item tab" type="button" data-view="suppliers" aria-label="Proveedores" title="Proveedores"><span class="primary-nav-icon" aria-hidden="true">⇄</span></button>
 </nav>
 
 <main class="container">

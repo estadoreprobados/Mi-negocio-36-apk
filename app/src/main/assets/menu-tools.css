@@ -234,4 +234,40 @@ tbody tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent
   body { padding-bottom:12px !important; }
   .more-menu { max-height:calc(100dvh - 82px) !important; overflow-y:auto !important; }
 }
-body.mpn-menu-open .primary-nav { visibility:hidden; pointer-events:none; }
+
+/* FASE 10.2 CORREGIDA · Barra de acciones sustituye al menú ☰ */
+.primary-nav {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(42px, 1fr));
+  gap: 4px;
+  align-items: center;
+}
+.primary-nav-item { min-width: 0; min-height: 46px; padding: 4px; }
+.primary-nav-item > span:not(.primary-nav-icon) { display: none !important; }
+.primary-nav-item .primary-nav-icon { width: 34px; height: 34px; font-size: 1.4rem; }
+@media (max-width: 760px) and (orientation: portrait) {
+  .primary-nav {
+    position: fixed; z-index: 1200; top: auto;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 8px; right: 8px; width: auto; margin: 0;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 42px); gap: 2px; padding: 5px;
+  }
+  .primary-nav-item { min-height: 40px; }
+  .primary-nav-item .primary-nav-icon { font-size: 1.25rem; }
+  body { padding-bottom: calc(104px + env(safe-area-inset-bottom)) !important; }
+}
+@media (orientation: landscape) {
+  .primary-nav {
+    position: sticky; top: 0; z-index: 1200;
+    width: calc(100% - 20px); margin: 6px auto 10px;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  body { padding-bottom: 12px !important; }
+}
+@media (max-width: 760px) and (orientation: landscape) {
+  .primary-nav { gap: 2px; padding: 4px; }
+  .primary-nav-item { min-height: 38px; }
+}
+.mascot-panel:not(.hidden) { display: flex !important; visibility: visible !important; opacity: 1 !important; }
+.mascot-avatar { flex: 0 0 auto; display: block; visibility: visible; opacity: 1; }
