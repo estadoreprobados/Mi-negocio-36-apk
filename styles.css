@@ -42,3 +42,11 @@ th,td{border-bottom-color:var(--table-line)}.inventory-box,.sale-preview{backgro
 .product-barcode small,.table-barcode small{display:block;text-align:center;font-size:11px;color:#111;letter-spacing:1px}
 .table-barcode{max-width:150px;padding:3px;margin-top:4px}
 .table-barcode .barcode-svg{max-height:48px}
+
+/* Fase 10.5: selector de negocios y centro de notificaciones */
+.business-top-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.business-top-actions select{max-width:170px;min-width:120px;padding:9px;border:1px solid var(--border,#ccd5df);border-radius:10px;background:var(--panel,#fff);color:var(--text,inherit)}
+.business-top-actions #businessCount{font-size:12px;white-space:nowrap}
+.notification-button{position:relative}
+#notificationCount:not(:empty){display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:99px;background:#c43d3d;color:#fff;font-size:11px;padding:0 4px}
+@media(max-width:720px){.business-top-actions{width:100%;justify-content:flex-start}.business-top-actions select{flex:1;min-width:110px}.business-top-actions .button{font-size:12px;padding:7px 9px}}

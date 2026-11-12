@@ -113,7 +113,75 @@
   ["hacker", "nature", "cbtis36", "tech-blue", "cyberpunk", "galaxy", "vaporwave"].forEach(id => {
     if (!data.gamification.purchasedThemes.includes(id)) data.gamification.purchasedThemes.push(id);
   });
-  let salesChart = null;
+  const BUSINESS_KEY = "mpn36_business_registry_v1";
+  const ACTIVE_BUSINESS_KEY = "mpn36_active_business_v1";
+  const NOTIFICATION_KEY = "mpn36_notification_center_v1";
+  const cloneData = value => JSON.parse(JSON.stringify(value));
+  function readBusinessRegistry() {
+    try { const value = JSON.parse(localStorage.getItem(BUSINESS_KEY) || "null"); if (value && Array.isArray(value.businesses)) return value; } catch (_) {}
+    const initial = { id: "business-main", name: data.settings.businessName || "Mi primer negocio", snapshot: cloneData(data), createdAt: new Date().toISOString() };
+    const registry = { activeId: initial.id, businesses: [initial] };
+    try { localStorage.setItem(BUSINESS_KEY, JSON.stringify(registry)); localStorage.setItem(ACTIVE_BUSINESS_KEY, initial.id); } catch (_) {}
+    return registry;
+  }
+  let businessRegistry = readBusinessRegistry();
+  function persistBusinessRegistry() {
+    const active = businessRegistry.businesses.find(b => b.id === businessRegistry.activeId);
+    if (active) { active.snapshot = cloneData(data); active.name = data.settings.businessName || active.name; }
+    try { localStorage.setItem(BUSINESS_KEY, JSON.stringify(businessRegistry)); localStorage.setItem(ACTIVE_BUSINESS_KEY, businessRegistry.activeId); } catch (e) { console.error("No se pudo guardar la cartera de negocios", e); }
+  }
+  function makeEmptyBusiness(name) {
+    const fresh = { products:[], sales:[], expenses:[], stockMoves:[], notes:[], customers:[], creditMovements:[], cashCuts:[], suppliers:[], purchases:[], recurringExpenses:[], employees:[], laborRecords:[], settings:{...cloneData(data.settings),businessName:name}, gamification:{coins:0,rewardedMilestones:[],purchasedThemes:["classic"]}, notifications:[] };
+    return fresh;
+  }
+  function renderBusinessControls() {
+    const select = $("businessSwitcher");
+    if (select) { select.innerHTML = businessRegistry.businesses.map(b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.name || "Negocio")}</option>`).join(""); select.value = businessRegistry.activeId; }
+    const count = $("businessCount"); if (count) count.textContent = `${businessRegistry.businesses.length}/5 negocios`;
+    const badge = $("notificationCount"); const notices = readNotifications(); if (badge) badge.textContent = notices.filter(n => !n.read).length ? String(notices.filter(n => !n.read).length) : "";
+  }
+  function switchBusiness(id) {
+    if (id === businessRegistry.activeId) return;
+    persistBusinessRegistry();
+    const target = businessRegistry.businesses.find(b => b.id === id); if (!target) return;
+    businessRegistry.activeId = id; localStorage.setItem(BUSINESS_KEY, JSON.stringify(businessRegistry));
+    localStorage.setItem(ACTIVE_BUSINESS_KEY, id); localStorage.setItem(KEY, JSON.stringify(target.snapshot));
+    location.reload();
+  }
+  function readNotifications() { try { const n=JSON.parse(localStorage.getItem(NOTIFICATION_KEY)||"[]"); return Array.isArray(n)?n:[]; } catch (_) { return []; } }
+  function addNotification(title, message, kind="info", dedupe="") {
+    const list=readNotifications(); const key=dedupe || `${kind}:${title}:${message}:${today()}`;
+    if (list.some(n=>n.key===key)) return;
+    list.unshift({id:uid(),key,title,message,kind,date:new Date().toISOString(),read:false});
+    try { localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(list.slice(0,100))); } catch (_) {}
+    renderBusinessControls();
+    if (data.settings.notificationsEnabled && "Notification" in window && Notification.permission === "granted") { try { new Notification(title,{body:message}); } catch (_) {} }
+  }
+  function showNotificationCenter() {
+    const list=readNotifications();
+    if (!list.length) { alert("No tienes notificaciones nuevas."); return; }
+    const lines=list.slice(0,15).map((n,i)=>`${i+1}. ${n.title}\n${n.message}\n${new Date(n.date).toLocaleString()}`).join("\n\n");
+    alert(lines);
+    list.forEach(n=>n.read=true); localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(list)); renderBusinessControls();
+  }
+  function createBusiness() {
+    if (businessRegistry.businesses.length >= 5) { toast("Has alcanzado el límite de 5 negocios."); return; }
+    const name=prompt("Nombre del nuevo negocio:"); if (!name || !name.trim()) return;
+    persistBusinessRegistry(); const id=uid();
+    businessRegistry.businesses.push({id,name:name.trim(),snapshot:makeEmptyBusiness(name.trim()),createdAt:new Date().toISOString()});
+    businessRegistry.activeId=id; localStorage.setItem(BUSINESS_KEY,JSON.stringify(businessRegistry)); localStorage.setItem(ACTIVE_BUSINESS_KEY,id); localStorage.setItem(KEY,JSON.stringify(businessRegistry.businesses.at(-1).snapshot)); location.reload();
+  }
+  function renameBusiness() {
+    const active=businessRegistry.businesses.find(b=>b.id===businessRegistry.activeId); if(!active)return;
+    const name=prompt("Nuevo nombre del negocio:",active.name); if(!name||!name.trim())return;
+    active.name=name.trim(); data.settings.businessName=name.trim(); persistBusinessRegistry(); save(); renderBusinessControls(); toast("Nombre del negocio actualizado.");
+  }
+  function checkBusinessLimitAndNotifications() {
+    const low=data.products.filter(p=>Number(p.stock)<=Number(p.minStock));
+    low.forEach(p=>addNotification("Inventario bajo",`${p.name}: quedan ${p.stock} unidades.`,`stock`,`${businessRegistry.activeId}:stock:${p.id}:${today()}`));
+    data.customers.forEach(c=>{const balance=Number(c.balance||c.debt||0);if(balance>0)addNotification("Saldo pendiente",`${c.name}: saldo pendiente de ${money(balance)}.`,`payment`,`${businessRegistry.activeId}:debt:${c.id}:${today()}`);});
+  }
+    let salesChart = null;
   let editingExpenseId = null;
   let comparisonChart = null;
   let statsMoneyChart = null;
@@ -124,6 +192,7 @@
     try {
       updateStreakRewards(Boolean(options.saleRegisteredToday));
       localStorage.setItem(KEY, JSON.stringify(data));
+      persistBusinessRegistry();
       renderAll();
     } catch (e) {
       console.error("Error guardando datos:", e);
@@ -203,6 +272,7 @@
   }
 
   function notifyBusiness(message) {
+    addNotification("Aviso del negocio", message, "business");
     const host = $("businessNotice");
     if (host) { host.textContent = message; host.classList.remove("hidden"); }
     if (data.settings.notificationsEnabled && "Notification" in window && Notification.permission === "granted") {
@@ -517,7 +587,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.11.0", code: 35, buildDate: "12 de noviembre de 2026" };
+  const APP_VERSION = { name: "3.12.0", code: 36, buildDate: "12 de noviembre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -963,6 +1033,7 @@
     renderEmployees();
     applyTheme();
     renderSystemVersion();
+    renderBusinessControls();
   }
 
   function updateSalePreview() {
@@ -2337,10 +2408,21 @@ function downloadCsv() {
     if (!Number.isFinite(rate) || rate < 0 || rate > 100) { toast("La tasa debe estar entre 0 y 100 %."); return; }
     data.settings.taxRate = rate; data.settings.taxMode = mode; save(); renderSaleCart(); toast("Configuración de IVA guardada.");
   });
-  syncBusinessSettings();
+  $("businessSwitcher")?.addEventListener("change", e => switchBusiness(e.target.value));
+  $("addBusinessButton")?.addEventListener("click", createBusiness);
+  $("renameBusinessButton")?.addEventListener("click", renameBusiness);
+  $("notificationButton")?.addEventListener("click", showNotificationCenter);
+  $("enableNotificationsButton")?.addEventListener("click", async () => {
+    if (!("Notification" in window)) { toast("Este dispositivo no admite notificaciones del navegador."); return; }
+    try { const permission=await Notification.requestPermission(); data.settings.notificationsEnabled=permission==="granted"; save(); toast(permission==="granted"?"Notificaciones activadas.":"No se concedió permiso para notificaciones."); }
+    catch (_) { toast("No se pudo solicitar permiso de notificaciones."); }
+  });
+    syncBusinessSettings();
   applyBusinessTypeRestrictions();
   if (!data.settings.businessType) showBusinessTypeSetup();
   processRecurringExpenses();
+  persistBusinessRegistry();
+  checkBusinessLimitAndNotifications();
   renderAll();
   try {
     const savedView = localStorage.getItem("mpn36_active_view") || sessionStorage.getItem("mpn36_active_view");

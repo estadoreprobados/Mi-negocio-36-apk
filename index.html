@@ -5,12 +5,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#315f82">
-  <title>Mi Primer Negocio 36</title>
+  <title>Mi Primer Negocio</title>
 
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="features.css">
   <link rel="stylesheet" href="menu-tools.css">
-  <meta name="application-name" content="Mi Primer Negocio 36">
+  <meta name="application-name" content="Mi Primer Negocio">
 
   <script defer src="chart.umd.min.js"></script>
   <script defer src="jspdf.umd.min.js"></script>
@@ -48,10 +48,16 @@
   </div>
   <div>
     <p class="eyebrow">ADMINISTRACIÓN DE NEGOCIOS</p>
-    <h1>Mi Primer Negocio <span>36</span></h1>
+    <h1>Mi Primer Negocio</h1>
     <p id="businessNameDisplay" class="business-name-display hidden" aria-live="polite"></p>
   </div>
-  <div class="top-actions">
+  <div class="top-actions business-top-actions">
+    <select id="businessSwitcher" aria-label="Seleccionar negocio" title="Cambiar de negocio"></select>
+    <button id="addBusinessButton" class="button secondary" type="button" title="Agregar negocio">＋ Negocio</button>
+    <button id="renameBusinessButton" class="button secondary" type="button" title="Renombrar negocio">Renombrar</button>
+    <span id="businessCount" class="muted" aria-live="polite">1/5 negocios</span>
+    <button id="notificationButton" class="button secondary notification-button" type="button" aria-label="Ver notificaciones" title="Notificaciones">🔔 <span id="notificationCount"></span></button>
+    <button id="enableNotificationsButton" class="button secondary" type="button" title="Permitir notificaciones">Activar avisos</button>
     <button id="importCsvTop" class="button secondary" type="button">Importar CSV</button>
     <input id="importCsvFile" type="file" accept=".csv,text/csv" class="hidden">
     <button id="exportCsvTop" class="button secondary" type="button">Exportar CSV</button>
@@ -758,9 +764,9 @@
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.10.0</strong><p>Mi Primer Negocio</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.12.0</strong><p>Mi Primer Negocio</p>
       <div class="version-facts">
-        <p><span>Número de compilación</span><strong id="appBuildNumber">35</strong></p>
+        <p><span>Número de compilación</span><strong id="appBuildNumber">36</strong></p>
         <p><span>Actualización preparada</span><strong id="appBuildDate">12 de noviembre de 2026</strong></p>
       </div>
     </article>
@@ -785,6 +791,7 @@
         <li><strong>Versión sincronizada:</strong> aplicación actualizada a 3.10.0, compilación 34. Se sincronizaron los datos de versión entre Android, JavaScript y esta pantalla.</li>
         <li><strong>Versión 3.10.0 · compilación 34:</strong> generador local de códigos de barras Code 39, vista previa e integración del código en el catálogo de productos. Se mantiene la compatibilidad con los códigos ya guardados.</li>
         <li><strong>Versión 3.11.0 · compilación 35:</strong> siete visualizaciones configurables: barras, histograma, dispersión, líneas, resumen de caja y bigotes, circular y área. La preferencia de gráfica y métrica se guarda en el dispositivo.</li>
+        <li><strong>Versión 3.12.0 · compilación 36:</strong> administración local de hasta cinco negocios independientes, selector de negocio y notificaciones internas de inventario bajo, saldos pendientes y avisos del negocio. Cada negocio mantiene sus propios registros y ajustes.</li>
         <li><strong>Gráficas basadas en registros:</strong> las visualizaciones usan ventas, gastos y cantidades existentes; no crean ni modifican movimientos del negocio. El resumen de caja y bigotes muestra mínimo, cuartiles, mediana y máximo en una vista resumida.</li>
       </ul>
     </article>
