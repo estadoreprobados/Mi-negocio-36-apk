@@ -287,16 +287,58 @@
     updateSalePreview();
   }
 
+  const CODE39 = {
+    "0":"nnnwwnwnn","1":"wnnwnnnnw","2":"nnwwnnnnw","3":"wnwwnnnnn","4":"nnnwwnnnw",
+    "5":"wnnwwnnnn","6":"nnwwwnnnn","7":"nnnwnnwnw","8":"wnnwnnwnn","9":"nnwwnnwnn",
+    "A":"wnnnnwnnw","B":"nnwnnwnnw","C":"wnwnnwnnn","D":"nnnnwwnnw","E":"wnnnwwnnn",
+    "F":"nnwnwwnnn","G":"nnnnnwwnw","H":"wnnnnwwnn","I":"nnwnnwwnn","J":"nnnnwwwnn",
+    "K":"wnnnnnnww","L":"nnwnnnnww","M":"wnwnnnnwn","N":"nnnnwnnww","O":"wnnnwnnwn",
+    "P":"nnwnwnnwn","Q":"nnnnnnwww","R":"wnnnnnwwn","S":"nnwnnnwwn","T":"nnnnwnwwn",
+    "U":"wwnnnnnnw","V":"nwwnnnnnw","W":"wwwnnnnnn","X":"nwnnwnnnw","Y":"wwnnwnnnn",
+    "Z":"nwwnwnnnn","-":"nwnnnnwnw",".":"wwnnnnwnn"," ":"nwwnnnwnn","$":"nwnwnwnnn",
+    "/":"nwnwnnnwn","+":"nwnnnwnwn","%":"nnnwnwnwn","*":"nwnnwnwnn"
+  };
+  function code39Svg(value) {
+    const text = String(value || "").toUpperCase();
+    if (!text || [...text].some(ch => !CODE39[ch] || ch === "*")) return "";
+    const encoded = `*${text}*`;
+    let x = 8; const bars = [];
+    for (const ch of encoded) {
+      const pattern = CODE39[ch];
+      for (let i=0;i<pattern.length;i++) {
+        const width = pattern[i] === "w" ? 3 : 1;
+        if (i % 2 === 0) bars.push(`<rect x="${x}" y="4" width="${width}" height="52"/>`);
+        x += width;
+      }
+      x += 1;
+    }
+    return `<svg class="barcode-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x+8} 64" role="img" aria-label="Código de barras ${escapeHtml(text)}"><rect width="100%" height="100%" fill="#fff"/>${bars.join("")}<text x="50%" y="62" text-anchor="middle" font-size="7" fill="#111">${escapeHtml(text)}</text></svg>`;
+  }
+  function generateProductBarcode() {
+    const input = $("productBarcode"); if (!input) return;
+    let code;
+    do { code = `MPN${Date.now().toString().slice(-9)}`; }
+    while (data.products.some(p => String(p.barcode || "").toUpperCase() === code));
+    input.value = code;
+    updateBarcodePreview();
+  }
+  function updateBarcodePreview() {
+    const input = $("productBarcode"), preview = $("productBarcodePreview");
+    if (!input || !preview) return;
+    const value = input.value.trim();
+    preview.innerHTML = value ? (code39Svg(value) || `<small class="muted">Code 39 admite letras mayúsculas, números, espacios y - . $ / + %</small>`) : "";
+  }
+
   function renderProducts() {
     const q = $("productSearch").value.trim().toLowerCase();
     const list = data.products.filter(p => p.name.toLowerCase().includes(q));
     const cards = $("productCards");
-    if (cards) cards.innerHTML = list.map(p => `<article class="product-card"><div class="product-card-image">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">` : `<span aria-hidden="true">📦</span>`}</div><div class="product-card-body"><strong>${escapeHtml(p.name)}</strong><p>${money(p.price)} · Stock: ${p.stock}</p><p class="muted">${p.productKind === "resale" ? "Reventa" : "Producto propio"} · ${({finished:"Terminados",raw:"Materia prima",wip:"En proceso"})[p.inventoryKind||"finished"] || "Terminados"}</p><p class="muted">Costo ${money(productCost(p))} · Ganancia ${money(p.price-productCost(p))}</p><div class="product-card-actions"><button type="button" class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ Favorito" : "☆ Favorito"}</button><button type="button" class="row-button" data-edit-product="${escapeHtml(p.id)}">Editar</button></div></div></article>`).join("") || `<p class="muted">No hay productos que coincidan.</p>`;
+    if (cards) cards.innerHTML = list.map(p => `<article class="product-card"><div class="product-card-image">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">` : `<span aria-hidden="true">📦</span>`}</div><div class="product-card-body"><strong>${escapeHtml(p.name)}</strong><p>${money(p.price)} · Stock: ${p.stock}</p>${p.barcode ? `<div class="product-barcode">${code39Svg(p.barcode)}<small>${escapeHtml(p.barcode)}</small></div>` : ""}<p class="muted">${p.productKind === "resale" ? "Reventa" : "Producto propio"} · ${({finished:"Terminados",raw:"Materia prima",wip:"En proceso"})[p.inventoryKind||"finished"] || "Terminados"}</p><p class="muted">Costo ${money(productCost(p))} · Ganancia ${money(p.price-productCost(p))}</p><div class="product-card-actions"><button type="button" class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ Favorito" : "☆ Favorito"}</button><button type="button" class="row-button" data-edit-product="${escapeHtml(p.id)}">Editar</button></div></div></article>`).join("") || `<p class="muted">No hay productos que coincidan.</p>`;
     if (cards) cards.classList.toggle("hidden", data.settings.productView !== "grid");
     const tableWrap = $("productTableWrap"); if (tableWrap) tableWrap.classList.toggle("hidden", data.settings.productView === "grid");
     $("productRows").innerHTML = list.map(p => `
       <tr>
-        <td><button class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ " : "☆ "}</button>${p.image ? `<img class="table-product-image" src="${p.image}" alt="">` : ""}${escapeHtml(p.name)}</td>
+        <td><button class="row-button" data-favorite-product="${escapeHtml(p.id)}">${p.favorite ? "★ " : "☆ "}</button>${p.image ? `<img class="table-product-image" src="${p.image}" alt="">` : ""}${escapeHtml(p.name)}${p.barcode ? `<div class="table-barcode">${code39Svg(p.barcode)}<small>${escapeHtml(p.barcode)}</small></div>` : ""}</td>
         <td>${money(productCost(p))}</td>
         <td>${money(p.price)}</td>
         <td>${money(p.price - productCost(p))}</td>
@@ -474,7 +516,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.8.2", code: 25, buildDate: "28 de octubre de 2026" };
+  const APP_VERSION = { name: "3.10.0", code: 34, buildDate: "12 de noviembre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -1002,6 +1044,10 @@
     });
   }
 
+  $("generateProductBarcode")?.addEventListener("click", generateProductBarcode);
+  $("productBarcode")?.addEventListener("input", updateBarcodePreview);
+  updateBarcodePreview();
+
   $("productForm").addEventListener("submit", e => {
     e.preventDefault();
 
@@ -1024,6 +1070,10 @@
         !Number.isInteger(stock) || !Number.isInteger(minStock)) {
       toast("Revisa los datos del producto.");
       return;
+    }
+
+    if (barcode && data.products.some(existing => existing.id !== id && String(existing.barcode || "").toUpperCase() === barcode.toUpperCase())) {
+      toast("Ese código de barras ya está asignado a otro producto."); return;
     }
 
     if (id) {
