@@ -1,0 +1,10 @@
+FASE 10.4 — Mi Primer Negocio 3.11.0 (compilación 35)
+
+- Se incorpora un explorador de gráficas con siete modalidades: barras, histograma, dispersión, líneas, resumen de cinco números (caja y bigotes), circular y área.
+- Se puede seleccionar la métrica: ventas, utilidad bruta, gastos o unidades vendidas.
+- Se guardan las preferencias de tipo de gráfica y métrica dentro de settings, conservando la clave localStorage mpn36_v2_data.
+- Las gráficas usan exclusivamente ventas y gastos existentes dentro del periodo elegido; no generan ni modifican operaciones.
+- El gráfico circular agrupa gastos por categoría. El de dispersión representa cada venta como punto.
+- El resumen de caja y bigotes muestra mínimo, Q1, mediana, Q3 y máximo en una gráfica de barras de cinco valores; no se presenta como diagrama nativo.
+- Se sincronizan APP_VERSION, versionName/versionCode y «Versión del sistema».
+- No se modifican los identificadores de productos, ventas, clientes ni el formato de respaldo.

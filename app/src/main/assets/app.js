@@ -97,7 +97,7 @@
   data.recurringExpenses = Array.isArray(data.recurringExpenses) ? data.recurringExpenses : [];
   data.employees = Array.isArray(data.employees) ? data.employees : [];
   data.laborRecords = Array.isArray(data.laborRecords) ? data.laborRecords : [];
-  data.settings = { currency: "MXN", theme: "classic", businessName: "", businessType: "", taxRate: 16, taxMode: "add", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", ...(data.settings || {}) };
+  data.settings = { currency: "MXN", theme: "classic", businessName: "", businessType: "", taxRate: 16, taxMode: "add", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", chartType: "bar", chartMetric: "revenue", ...(data.settings || {}) };
   data.products.forEach(p => {
     if (!p.productKind) p.productKind = data.settings.businessType === "resale" ? "resale" : "own";
     if (!p.inventoryKind) p.inventoryKind = "finished";
@@ -118,6 +118,7 @@
   let comparisonChart = null;
   let statsMoneyChart = null;
   let statsExpenseChart = null;
+  let advancedChart = null;
 
   function save(options = {}) {
     try {
@@ -516,7 +517,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.10.0", code: 34, buildDate: "12 de noviembre de 2026" };
+  const APP_VERSION = { name: "3.11.0", code: 35, buildDate: "12 de noviembre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -634,6 +635,56 @@
     return values.length ? { max: Math.max(...values), min: Math.min(...values) } : { max: 0, min: 0 };
   }
 
+  function quantile(sorted, q) {
+    if (!sorted.length) return 0;
+    const pos = (sorted.length - 1) * q, base = Math.floor(pos), rest = pos - base;
+    return sorted[base + 1] === undefined ? sorted[base] : sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+  }
+
+  function renderAdvancedChart(period) {
+    const canvas = $("advancedChart");
+    if (!canvas || !window.Chart) return;
+    const typeEl = $("advancedChartType"), metricEl = $("advancedChartMetric");
+    const type = typeEl?.value || data.settings.chartType || "bar";
+    const metric = metricEl?.value || data.settings.chartMetric || "revenue";
+    data.settings.chartType = type; data.settings.chartMetric = metric;
+    const sales = data.sales.filter(x => x.date >= period.from && x.date <= period.to);
+    const expenses = data.expenses.filter(x => x.date >= period.from && x.date <= period.to);
+    const daily = periodSeries(period.from, period.to);
+    const moneyValues = metric === "profit" ? daily.gross : metric === "expenses" ? daily.expenses : daily.revenue;
+    const labels = daily.dates.map(d => d.slice(5));
+    let chartType = type, chartData, note = "Datos del periodo seleccionado.";
+    if (type === "histogram") {
+      const values = metric === "quantity" ? sales.map(x => Number(x.qty)||0) : moneyValues.filter(v => Number.isFinite(v));
+      const max = Math.max(0, ...values), min = Math.min(0, ...values), bins = 6;
+      const width = (max - min) / bins || 1, counts = Array(bins).fill(0);
+      values.forEach(v => counts[Math.min(bins-1, Math.max(0, Math.floor((v-min)/width)))]++);
+      chartType = "bar"; chartData = { labels: counts.map((_,i)=>`${(min+i*width).toFixed(0)}–${(min+(i+1)*width).toFixed(0)}`), datasets:[{label:"Registros por intervalo",data:counts,backgroundColor:"#64748b"}]};
+      note = "Histograma de valores observados; cada barra representa un intervalo.";
+    } else if (type === "scatter") {
+      chartType = "scatter"; chartData = { datasets:[{label:metric === "quantity" ? "Unidades por venta" : "Importe por venta", data:sales.map((x,i)=>({x:i+1,y:metric === "quantity" ? Number(x.qty)||0 : metric === "profit" ? ((Number(x.price)||0)-(Number(x.cost)||0))*(Number(x.qty)||0) : (Number(x.price)||0)*(Number(x.qty)||0)})), backgroundColor:"#d4a72c"}]};
+      note = "Cada punto representa una venta registrada; el eje horizontal es el orden del registro.";
+    } else if (type === "box") {
+      const vals = (metric === "quantity" ? sales.map(x=>Number(x.qty)||0) : moneyValues).filter(Number.isFinite).sort((a,b)=>a-b);
+      const summary = vals.length ? [vals[0],quantile(vals,.25),quantile(vals,.5),quantile(vals,.75),vals[vals.length-1]] : [0,0,0,0,0];
+      chartType = "bar"; chartData = {labels:["Mínimo","Q1","Mediana","Q3","Máximo"],datasets:[{label:"Resumen de caja y bigotes",data:summary,backgroundColor:["#94a3b8","#64748b","#d4a72c","#64748b","#94a3b8"]}]};
+      note = vals.length ? "Resumen de cinco números (mínimo, cuartil 1, mediana, cuartil 3 y máximo); no es un diagrama estadístico de caja nativo." : "No hay registros para calcular el resumen.";
+    } else if (type === "pie") {
+      const groups = {};
+      expenses.forEach(e=>{const k=String(e.category||e.name||"Sin categoría");groups[k]=(groups[k]||0)+(Number(e.amount)||0);});
+      chartType = "pie"; chartData = {labels:Object.keys(groups).length?Object.keys(groups):["Sin gastos"],datasets:[{label:"Gastos por categoría",data:Object.keys(groups).length?Object.values(groups):[0],backgroundColor:["#d4a72c","#64748b","#16a34a","#f97316","#8b5cf6","#0ea5e9"]}]};
+      note = "Distribución de gastos por categoría, usando los importes registrados.";
+    } else {
+      const vals = metric === "quantity" ? daily.dates.map(d=>sales.filter(x=>x.date===d).reduce((a,x)=>a+(Number(x.qty)||0),0)) : moneyValues;
+      chartType = type === "area" ? "line" : type;
+      chartData = {labels,datasets:[{label:({revenue:"Ventas",profit:"Utilidad bruta",expenses:"Gastos",quantity:"Unidades vendidas"})[metric],data:vals,borderColor:"#d4a72c",backgroundColor:type === "area" ? "rgba(212,167,44,.22)" : "rgba(100,116,139,.65)",fill:type === "area",tension:.25}]};
+      if (type === "area") note = "Área acumulada visualmente bajo la serie diaria; no altera los registros.";
+    }
+    if (advancedChart) advancedChart.destroy();
+    advancedChart = new Chart(canvas,{type:chartType,data:chartData,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},scales:chartType === "pie" ? {} : {y:{beginAtZero:true}}}});
+    const noteEl=$("advancedChartNote"); if(noteEl) noteEl.textContent=note;
+  }
+
   function renderStatistics() {
     if (!$("statsPeriod")) return;
     const p = periodBounds($("statsPeriod").value);
@@ -694,6 +745,7 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
       });
     }
+    renderAdvancedChart(p);
   }
 
   function applyTheme() {
@@ -849,6 +901,8 @@
     if (button) handleThemeAction(button.dataset.themeAction);
   });
   $("statsPeriod")?.addEventListener("change", renderStatistics);
+  $("advancedChartType")?.addEventListener("change", () => { data.settings.chartType = $("advancedChartType").value; save(); renderStatistics(); });
+  $("advancedChartMetric")?.addEventListener("change", () => { data.settings.chartMetric = $("advancedChartMetric").value; save(); renderStatistics(); });
 
   function renderNotes() {
     const list = $("notesList");
@@ -901,6 +955,8 @@
     renderDashboard();
     renderReport();
     renderStreak();
+    if ($("advancedChartType")) $("advancedChartType").value = data.settings.chartType || "bar";
+    if ($("advancedChartMetric")) $("advancedChartMetric").value = data.settings.chartMetric || "revenue";
     renderStatistics();
     renderShop();
     renderNotes();
