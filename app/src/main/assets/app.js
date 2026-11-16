@@ -172,17 +172,47 @@
     list.forEach(n=>n.read=true); localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(list)); renderBusinessControls();
   }
   window.onNativeNotificationPermission = function(granted){data.settings.notificationsEnabled=!!granted;save();toast(granted?"Notificaciones activadas.":"No se concedió permiso para notificaciones.");};
+  let businessNameDialogCallback = null;
+  function openBusinessNameDialog(title, hint, initialValue, onSave) {
+    const dialog = $("businessNameDialog");
+    const input = $("businessNameDialogInput");
+    if (!dialog || !input) { toast("No se pudo abrir el formulario de nombre."); return; }
+    $("businessNameDialogTitle").textContent = title;
+    $("businessNameDialogHint").textContent = hint;
+    input.value = initialValue || "";
+    businessNameDialogCallback = onSave;
+    dialog.classList.remove("hidden");
+    dialog.setAttribute("aria-hidden", "false");
+    setTimeout(() => { input.focus(); input.select(); }, 60);
+  }
+  function closeBusinessNameDialog() {
+    const dialog = $("businessNameDialog");
+    if (dialog) { dialog.classList.add("hidden"); dialog.setAttribute("aria-hidden", "true"); }
+    businessNameDialogCallback = null;
+  }
+  $("businessNameDialogCancel")?.addEventListener("click", closeBusinessNameDialog);
+  $("businessNameDialog")?.addEventListener("click", event => { if (event.target.id === "businessNameDialog") closeBusinessNameDialog(); });
+  $("businessNameDialogForm")?.addEventListener("submit", event => {
+    event.preventDefault();
+    const name = $("businessNameDialogInput")?.value.trim();
+    if (!name) { $("businessNameDialogInput")?.focus(); return; }
+    const callback = businessNameDialogCallback;
+    closeBusinessNameDialog();
+    if (typeof callback === "function") callback(name);
+  });
   function createBusiness() {
     if (businessRegistry.businesses.length >= 5) { toast("Has alcanzado el límite de 5 negocios."); return; }
-    const name=prompt("Nombre del nuevo negocio:"); if (!name || !name.trim()) return;
-    persistBusinessRegistry(); const id=uid();
-    businessRegistry.businesses.push({id,name:name.trim(),snapshot:makeEmptyBusiness(name.trim()),createdAt:new Date().toISOString()});
-    businessRegistry.activeId=id; localStorage.setItem(BUSINESS_KEY,JSON.stringify(businessRegistry)); localStorage.setItem(ACTIVE_BUSINESS_KEY,id); localStorage.setItem(KEY,JSON.stringify(businessRegistry.businesses.at(-1).snapshot)); location.reload();
+    openBusinessNameDialog("Crear negocio", "Asigna un nombre para identificar tu nuevo negocio.", "", name => {
+      persistBusinessRegistry(); const id=uid();
+      businessRegistry.businesses.push({id,name,snapshot:makeEmptyBusiness(name),createdAt:new Date().toISOString()});
+      businessRegistry.activeId=id; localStorage.setItem(BUSINESS_KEY,JSON.stringify(businessRegistry)); localStorage.setItem(ACTIVE_BUSINESS_KEY,id); localStorage.setItem(KEY,JSON.stringify(businessRegistry.businesses.at(-1).snapshot)); location.reload();
+    });
   }
   function renameBusiness() {
     const active=businessRegistry.businesses.find(b=>b.id===businessRegistry.activeId); if(!active)return;
-    const name=prompt("Nuevo nombre del negocio:",active.name); if(!name||!name.trim())return;
-    active.name=name.trim(); data.settings.businessName=name.trim(); persistBusinessRegistry(); save(); renderBusinessControls(); toast("Nombre del negocio actualizado.");
+    openBusinessNameDialog("Renombrar negocio", "El nuevo nombre se aplicará sin modificar tus ventas ni tu inventario.", active.name, name => {
+      active.name=name; data.settings.businessName=name; persistBusinessRegistry(); save(); renderBusinessControls(); toast("Nombre del negocio actualizado.");
+    });
   }
   function checkBusinessLimitAndNotifications() {
     const low=data.products.filter(p=>Number(p.stock)<=Number(p.minStock));
