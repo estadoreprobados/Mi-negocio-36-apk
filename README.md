@@ -1,35 +1,34 @@
-# Mi Primer Negocio 36 — versión 3.7.5
+# Mi Primer Negocio 36 — versión 3.13.0 (Build 37)
 
-## Resumen
-Actualización Android/WebView con compilación 20. La app mantiene los datos del negocio en almacenamiento local del dispositivo. No hay cuentas ni sincronización en la nube en esta versión.
+## Proyecto
+Aplicación Android basada en una interfaz web local dentro de WebView. La pantalla de uso sigue siendo `MainActivity` con `file:///android_asset/index.html`; `NativeHomeActivity` no se usa como pantalla principal.
 
-## Novedades de 3.7.5
-- Manolito es una mascota interactiva sin IA: consejos predeterminados según productos, ventas y registros.
-- Botón «Dame un consejo» y accesos rápidos a Productos y Registrar venta.
-- Opción para mostrar u ocultar la mascota desde Ajustes.
-- Se conserva el registro de empleados y el cálculo estimado de pago por horas normales y extras.
-- Se conserva el reporte PDF con secciones de los módulos que ya existen y tengan registros.
-- Temas Cyberpunk y Galaxia con variantes visuales de modo claro y oscuro.
-- Versión del sistema actualizada a 3.7.5, compilación 22.
+Los datos principales permanecen en el almacenamiento local del dispositivo con la clave `mpn36_v2_data`. Se conserva el identificador `com.miprimernegocio36.app` para permitir actualizar una instalación existente sin cambiar de paquete.
 
-## Rutas importantes
-- Web publicada: `index.html`, `app.js`, `styles.css`, `features.css`.
-- APK Android (archivos que carga el WebView): `app/src/main/assets/index.html`, `app/src/main/assets/app.js`, `app/src/main/assets/styles.css`, `app/src/main/assets/features.css`.
-- Versión Android: `app/build.gradle`.
+## Archivos principales
+- `app/src/main/java/com/miprimernegocio36/app/MainActivity.java`: WebView, selector de archivos/cámara, impresión, notificaciones Android y escáner.
+- `app/src/main/assets/index.html`: interfaz.
+- `app/src/main/assets/app.js`: lógica de negocio y almacenamiento local.
+- `app/src/main/assets/styles.css`, `features.css`, `menu-tools.css`: diseño y temas.
+- `app/src/main/AndroidManifest.xml`: permisos y configuración Android.
+- `app/build.gradle`: versión y dependencias.
+- `.github/workflows/build-android.yml`: compilación en GitHub Actions.
 
-Los archivos raíz `index.html`, `app.js` y `features.css` deben mantenerse sincronizados con las copias incluidas en `app/src/main/assets/`.
+## Cambios de 3.13.0
+- Centro visual de notificaciones y avisos nativos de Android.
+- Opción para ocultar/mostrar el desglose de IVA en tickets sin alterar el total.
+- Indicadores y gráficas en Productos, Ventas, Gastos y Estadísticas.
+- Cámara y galería para fotografías de productos.
+- Calendario de rachas visible en la vista compacta.
+- Versión 3.13.0, código 37.
 
-## Actualizar desde Android
-1. Haz una copia del repositorio y exporta un respaldo JSON desde la app. Comprueba que el archivo se guardó antes de continuar.
-2. Sube los archivos del ZIP al repositorio correcto conservando la estructura de carpetas.
-3. Abre **Actions** y ejecuta/espera el flujo de compilación Android. No descargues un artefacto si el flujo falló.
-4. Descarga el APK de la ejecución exitosa e instálalo. No borres los datos de la app.
-5. Abre **Menú → Versión del sistema** y confirma versión `3.7.5`, compilación `22`.
-6. Prueba Manolito, registra un empleado de prueba, revisa el PDF y prueba ventas/inventario antes de usarlo en operaciones reales.
+## Compilar desde Android con GitHub
+1. Antes de instalar una actualización, exporta un respaldo desde la app y comprueba que el archivo se guardó.
+2. Sube el contenido de este ZIP al repositorio, conservando las carpetas.
+3. Abre la pestaña **Actions** y espera a que termine el flujo `build-android.yml`.
+4. Descarga el artefacto APK únicamente si la ejecución terminó correctamente.
+5. Instálalo como actualización, sin borrar los datos de la aplicación.
+6. En **Versión del sistema**, comprueba `3.13.0 (37)` y realiza las pruebas descritas en `CAMBIOS_VERSION_3.13.0.txt`.
 
-## Privacidad y limitaciones
-Manolito no utiliza IA, no procesa lenguaje libre y no necesita conectarse a un servidor. Sus consejos se generan con reglas incluidas en `app.js` a partir de los datos locales. Los cálculos de pago de empleados son estimaciones y no sustituyen asesoría laboral o nómina. El PDF es un reporte de lectura, no un archivo de restauración.
-
-## Verificación
-Este paquete actualiza los archivos de origen, pero no contiene un APK compilado ni certifica pruebas en un dispositivo físico. La compilación y las pruebas deben confirmarse en GitHub Actions y en el dispositivo Android antes de publicar. Consulta `CAMBIOS_VERSION_3.7.5.txt` para la descripción detallada.
-\n\nVersión de trabajo actual: **3.13.0 (build 37)**. Consulta `CAMBIOS_VERSION_3.13.0.txt` para el registro de cambios.\n
+## Validación y límites
+`app.js` pasó `node --check`. Se verificó que Gradle declare `versionName 3.13.0` y `versionCode 37`. Este paquete contiene el código fuente, no un APK recién compilado. No se pudo ejecutar una compilación Android local en este entorno; GitHub Actions y las pruebas físicas en Android siguen siendo necesarias, especialmente para cámara y permisos de notificaciones.

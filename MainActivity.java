@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.Manifest;
 import android.webkit.PermissionRequest;
 import android.content.Intent;
+import android.content.ClipData;
 import android.webkit.ValueCallback;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -95,10 +96,16 @@ public class MainActivity extends Activity {
                         ContentValues values = new ContentValues();
                         values.put(MediaStore.Images.Media.DISPLAY_NAME, "MPN36_" + System.currentTimeMillis() + ".jpg");
                         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Mi Primer Negocio 36");
+                            values.put(MediaStore.Images.Media.IS_PENDING, 0);
+                        }
                         pendingCameraPhotoUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                         if (pendingCameraPhotoUri != null) {
                             camera.putExtra(MediaStore.EXTRA_OUTPUT, pendingCameraPhotoUri);
+                            camera.setClipData(ClipData.newRawUri("Fotografía del producto", pendingCameraPhotoUri));
                             camera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                             chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{camera});
                         }
                     }

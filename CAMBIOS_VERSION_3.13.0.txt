@@ -1,20 +1,24 @@
 MI PRIMER NEGOCIO — VERSIÓN 3.13.0 (BUILD 37)
-Fecha: 15 de noviembre de 2026
+Fecha: 16 de noviembre de 2026
 
-CAMBIOS INCLUIDOS
-- Rediseño visual Premium moderno adaptable a pantallas verticales y horizontales, respetando las paletas y fondos actuales.
-- Centro de notificaciones en la aplicación con historial visual, lectura y alertas de inventario bajo y saldos pendientes.
+CAMBIOS Y CORRECCIONES
+- Versión Android alineada a 3.13.0 (versionCode 37).
+- Centro de notificaciones visual dentro de la app, con historial, lectura y alertas de inventario bajo y saldos pendientes.
+- Notificaciones Android nativas mediante el puente Android/WebView; se solicita el permiso POST_NOTIFICATIONS en Android 13 o posterior.
 - Opción independiente para mostrar u ocultar el desglose del IVA en los tickets. No cambia el cálculo ni los totales registrados.
-- Panel de gráficas con seis indicadores adicionales: operaciones, unidades, venta promedio, ingresos, gastos y diferencia ingresos-gastos.
-- Captura directa de fotografías desde la cámara del dispositivo en el selector de imagen de productos, además de seleccionar imágenes existentes.
-- Espacio técnico reservado para futura integración publicitaria; no se muestran anuncios en esta versión.
-- Detalles de superficie y presentación específicos por tema sin redefinir los colores ni fondos existentes.
+- Indicadores para operaciones, unidades, venta promedio, ingresos, gastos y diferencia ingresos-gastos.
+- Gráficas visibles en Productos (existencias), Ventas (ventas por día), Gastos (gastos por concepto) y Estadísticas (explorador configurable).
+- Selector de fotografía de producto con opción de cámara y galería en Android.
+- Calendario de rachas permanece visible al activar la vista compacta.
+- Se conserva la interfaz web local como pantalla principal; no se activa NativeHomeActivity.
+- Se conservan las paletas y fondos existentes, la clave local mpn36_v2_data y el identificador com.miprimernegocio36.app.
 
 COMPATIBILIDAD Y DATOS
-- Se conserva la clave de almacenamiento local mpn36_v2_data.
-- Se conserva el identificador Android com.miprimernegocio36.app para permitir actualizar sobre la instalación anterior.
-- No se cambia el formato de los registros de ventas ni de inventario.
+- No se cambia el formato de registros de ventas ni de inventario.
+- La opción de ocultar el IVA afecta únicamente la impresión/visualización del ticket, no el cálculo ni el total.
+- No se requieren cuentas ni conexión para las funciones principales.
 
-VALIDACIÓN
-- app.js validado con node --check.
-- No se generó un APK en este entorno. La compilación debe ejecutarse mediante el flujo de GitHub Actions del repositorio y probarse en Android antes de distribuirla.
+VALIDACIÓN REALIZADA EN ESTE PAQUETE
+- app.js pasó la comprobación sintáctica con node --check.
+- Se verificó que Gradle declare versionName 3.13.0 y versionCode 37.
+- No se pudo compilar un APK en este entorno porque no hay instalación local de Gradle/Android SDK. Ejecuta GitHub Actions y prueba permisos, cámara, tickets, gráficas y persistencia en Android antes de distribuir.
