@@ -1,0 +1,11 @@
+MI PRIMER NEGOCIO 36 — VERSIÓN 3.13.2 BUILD 39
+
+Correcciones incluidas:
+- Se reorganizaron los controles superiores para que permanezcan visibles en orientación vertical.
+- Los botones Agregar negocio, Renombrar, Notificaciones, Activar avisos, Importar CSV y Exportar CSV se acomodan en una cuadrícula adaptable.
+- Se reforzó el selector de imágenes para ofrecer cámara y galería desde Android.
+- Se mejoró la recuperación de fotografías tomadas con aplicaciones de cámara que no devuelven un Intent con data.
+
+Se conserva la interfaz WebView, el almacenamiento local y las funciones existentes.
+
+Pendiente de validar en dispositivo: compilación de APK, captura real de fotografía y distribución visual en distintas resoluciones.
