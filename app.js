@@ -97,7 +97,7 @@
   data.recurringExpenses = Array.isArray(data.recurringExpenses) ? data.recurringExpenses : [];
   data.employees = Array.isArray(data.employees) ? data.employees : [];
   data.laborRecords = Array.isArray(data.laborRecords) ? data.laborRecords : [];
-  data.settings = { currency: "MXN", theme: "classic", businessName: "", businessType: "", taxRate: 16, taxMode: "add", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", chartType: "bar", chartMetric: "revenue", ...(data.settings || {}) };
+  data.settings = { currency: "MXN", theme: "classic", businessName: "", businessType: "", taxRate: 16, taxMode: "add", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", chartType: "bar", chartMetric: "revenue", ticketShowTax: true, ...(data.settings || {}) };
   data.products.forEach(p => {
     if (!p.productKind) p.productKind = data.settings.businessType === "resale" ? "resale" : "own";
     if (!p.inventoryKind) p.inventoryKind = "finished";
@@ -158,11 +158,13 @@
     if (data.settings.notificationsEnabled && "Notification" in window && Notification.permission === "granted") { try { new Notification(title,{body:message}); } catch (_) {} }
   }
   function showNotificationCenter() {
-    const list=readNotifications();
-    if (!list.length) { alert("No tienes notificaciones nuevas."); return; }
-    const lines=list.slice(0,15).map((n,i)=>`${i+1}. ${n.title}\n${n.message}\n${new Date(n.date).toLocaleString()}`).join("\n\n");
-    alert(lines);
-    list.forEach(n=>n.read=true); localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(list)); renderBusinessControls();
+    let dialog=$("notificationCenterDialog");
+    if(!dialog){dialog=document.createElement("dialog");dialog.id="notificationCenterDialog";dialog.className="mpn-dialog";dialog.innerHTML='<div class="dialog-head"><div><p class="eyebrow">CENTRO DE AVISOS</p><h2>Notificaciones</h2></div><button type="button" class="icon-button" data-close-notifications aria-label="Cerrar">×</button></div><div id="notificationCenterList" class="notification-list"></div><div class="dialog-actions"><button type="button" class="button secondary" data-mark-notifications>Marcar todas como leídas</button><button type="button" class="button" data-close-notifications>Cerrar</button></div>';document.body.appendChild(dialog);
+      dialog.addEventListener("click",e=>{if(e.target===dialog||e.target.closest("[data-close-notifications]"))dialog.close();if(e.target.closest("[data-mark-notifications]")){const all=readNotifications();all.forEach(n=>n.read=true);localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(all));renderBusinessControls();renderNotificationList();}});
+    }
+    function renderNotificationList(){const target=$("notificationCenterList");if(!target)return;const current=readNotifications();target.innerHTML=current.length?current.slice(0,50).map(n=>`<article class="notification-item ${n.read?"is-read":""}"><span class="notification-kind">${n.kind==="stock"?"▣":n.kind==="payment"?"$":"•"}</span><div><strong>${escapeHtml(n.title)}</strong><p>${escapeHtml(n.message)}</p><small>${new Date(n.date).toLocaleString()}</small></div></article>`).join(""):'<p class="muted">Todavía no hay notificaciones.</p>';}
+    renderNotificationList();if(typeof dialog.showModal==="function"&&!dialog.open)dialog.showModal();else if(!dialog.open)alert("Todavía no hay notificaciones.");
+    const updated=readNotifications();updated.forEach(n=>n.read=true);localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(updated));renderBusinessControls();
   }
   function createBusiness() {
     if (businessRegistry.businesses.length >= 5) { toast("Has alcanzado el límite de 5 negocios."); return; }
@@ -193,6 +195,7 @@
       updateStreakRewards(Boolean(options.saleRegisteredToday));
       localStorage.setItem(KEY, JSON.stringify(data));
       persistBusinessRegistry();
+      if (typeof checkBusinessLimitAndNotifications === "function") checkBusinessLimitAndNotifications();
       renderAll();
     } catch (e) {
       console.error("Error guardando datos:", e);
@@ -587,7 +590,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.12.0", code: 36, buildDate: "12 de noviembre de 2026" };
+  const APP_VERSION = { name: "3.13.0", code: 37, buildDate: "15 de noviembre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -753,6 +756,9 @@
     if (advancedChart) advancedChart.destroy();
     advancedChart = new Chart(canvas,{type:chartType,data:chartData,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},scales:chartType === "pie" ? {} : {y:{beginAtZero:true}}}});
     const noteEl=$("advancedChartNote"); if(noteEl) noteEl.textContent=note;
+    const insight=$("advancedChartInsights");
+    if(insight){const total=sales.reduce((s,x)=>s+(Number(x.qty)||0)*(Number(x.price)||0),0),units=sales.reduce((s,x)=>s+(Number(x.qty)||0),0),avg=sales.length?total/sales.length:0,expenseTotal=expenses.reduce((s,x)=>s+(Number(x.amount)||0),0),profit=total-expenseTotal;
+      insight.innerHTML=[["Ventas registradas",String(sales.length)],["Unidades vendidas",String(units)],["Venta promedio",money(avg)],["Ingresos del periodo",money(total)],["Gastos del periodo",money(expenseTotal)],["Ingresos menos gastos",money(profit)]].map(([label,value])=>`<div class="chart-insight"><span>${label}</span><strong>${value}</strong></div>`).join("");}
   }
 
   function renderStatistics() {
@@ -829,6 +835,7 @@
     document.documentElement.dataset.mode = data.settings.mode === "dark" ? "dark" : "light";
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = theme.colors[0];
+    document.documentElement.dataset.themeStyle = theme.id;
   }
 
   function renderShop() {
@@ -1447,7 +1454,7 @@
     const total = Number(first.saleTotal ?? items.reduce((n,x)=>n+Number(x.lineTotal ?? x.qty*x.price),0));
     const tax = Number(first.saleTax ?? items.reduce((n,x)=>n+(Number(x.taxAmount)||0),0));
     const lines = items.map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join("");
-    const ticketBody = `<h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p class="ticket-center">Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}<br>IVA: ${money(tax)}</p><p class="ticket-total">Total: ${money(total)}</p><p class="ticket-center">¡Gracias por tu compra!</p>`;
+    const ticketBody = `<h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p class="ticket-center">Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}${data.settings.ticketShowTax === false ? "" : `<br>IVA: ${money(tax)}`}</p><p class="ticket-total">Total: ${money(total)}</p><p class="ticket-center">¡Gracias por tu compra!</p>`;
     const printableHtml = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ticket de venta</title><style>body{font:14px system-ui;max-width:360px;margin:20px auto;padding:0 12px;color:#222}h2,.ticket-center{text-align:center}table{width:100%;border-collapse:collapse}td,th{padding:6px 2px;border-bottom:1px dashed #aaa;text-align:left}.ticket-total{text-align:right;font-size:18px;font-weight:bold}@media print{body{margin:0 auto;padding:0}}</style></head><body>${ticketBody}</body></html>`;
     document.getElementById("mpnTicketOverlay")?.remove();
     const overlay = document.createElement("div");
@@ -2389,6 +2396,7 @@ function downloadCsv() {
     if ($("businessTypeSetting")) $("businessTypeSetting").value = data.settings.businessType || "both";
     if ($("businessTaxRate")) $("businessTaxRate").value = String(data.settings.taxRate ?? 16);
     if ($("businessTaxMode")) $("businessTaxMode").value = data.settings.taxMode || "add";
+    if ($("ticketShowTax")) $("ticketShowTax").checked = data.settings.ticketShowTax !== false;
   }
   function showBusinessTypeSetup() { $("businessTypeSetup")?.classList.remove("hidden"); }
   function chooseBusinessType(type) {
@@ -2406,7 +2414,7 @@ function downloadCsv() {
   $("saveBusinessTax")?.addEventListener("click", () => {
     const rate = Number($("businessTaxRate")?.value); const mode = $("businessTaxMode")?.value || "add";
     if (!Number.isFinite(rate) || rate < 0 || rate > 100) { toast("La tasa debe estar entre 0 y 100 %."); return; }
-    data.settings.taxRate = rate; data.settings.taxMode = mode; save(); renderSaleCart(); toast("Configuración de IVA guardada.");
+    data.settings.taxRate = rate; data.settings.taxMode = mode; data.settings.ticketShowTax = $("ticketShowTax") ? $("ticketShowTax").checked : data.settings.ticketShowTax !== false; save(); renderSaleCart(); toast("Configuración de IVA y tickets guardada.");
   });
   $("businessSwitcher")?.addEventListener("change", e => switchBusiness(e.target.value));
   $("addBusinessButton")?.addEventListener("click", createBusiness);

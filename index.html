@@ -83,7 +83,7 @@
   <div class="notice" id="storageNotice">
     Tus datos se guardan en este dispositivo. Esta versión no sincroniza entre dispositivos.
   </div>
-
+  <div class="ad-slot" data-ad-slot="main-top" aria-hidden="true"></div>
 
   <section class="view hidden" id="view-currency">
     <section class="panel currency-settings" aria-labelledby="currencyTitle">
@@ -646,7 +646,7 @@
         </label>
       </div>
       <div class="chart-wrap stats-chart-wrap"><canvas id="advancedChart"></canvas></div>
-      <p class="muted footnote" id="advancedChartNote">La gráfica utiliza únicamente registros existentes dentro del periodo seleccionado.</p>
+      <p class="muted footnote" id="advancedChartNote">La gráfica utiliza únicamente registros existentes dentro del periodo seleccionado.</p>\n      <div id="advancedChartInsights" class="chart-insights" aria-live="polite"></div>
     </article>
     <div class="metrics stats-metrics">
       <article class="metric"><span>Productos vendidos</span><strong id="statUnits">0</strong><small>Unidades</small></article>
@@ -764,15 +764,23 @@
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.12.0</strong><p>Mi Primer Negocio</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.13.0</strong><p>Mi Primer Negocio</p>
       <div class="version-facts">
-        <p><span>Número de compilación</span><strong id="appBuildNumber">36</strong></p>
-        <p><span>Actualización preparada</span><strong id="appBuildDate">12 de noviembre de 2026</strong></p>
+        <p><span>Número de compilación</span><strong id="appBuildNumber">37</strong></p>
+        <p><span>Actualización preparada</span><strong id="appBuildDate">15 de noviembre de 2026</strong></p>
       </div>
     </article>
     <article class="panel version-panel">
       <h3>Novedades de esta actualización</h3>
       <ul class="release-list">
+         <li><strong>Diseño Premium moderno:</strong> actualización visual completa y adaptable a móvil vertical y tablet horizontal; conserva paletas, fondos e identidad de los temas.</li>
+         <li><strong>Notificaciones:</strong> centro de avisos con historial, estados de lectura y alertas de inventario bajo y saldos pendientes.</li>
+         <li><strong>Tickets:</strong> opción para mostrar u ocultar el desglose del IVA sin alterar el cálculo de las ventas.</li>
+         <li><strong>Gráficas ampliadas:</strong> visualizaciones y métricas configurables con indicadores adicionales del periodo seleccionado.</li>
+         <li><strong>Fotografías de productos:</strong> selección desde el dispositivo y captura desde la cámara cuando Android la ofrezca.</li>
+         <li><strong>Espacios preparados para anuncios:</strong> estructura reservada y no invasiva; no se muestran anuncios en esta versión.</li>
+         <li><strong>Temas enriquecidos:</strong> detalles visuales propios para cada tema, respetando sus colores y fondos.</li>
+
         <li><strong>Edición de empleados:</strong> modifica nombre, puesto, pago por hora, horas normales, horas extra y multiplicador sin eliminar y volver a registrar al empleado. La edición conserva su identificador.</li>
         <li><strong>Frecuencia de gastos:</strong> cada gasto puede marcarse como único, semanal, quincenal (cada 15 días), mensual, bimestral (cada 2 meses), trimestral, semestral o anual. Se muestra su periodicidad y equivalente mensual estimado; el registro no genera cargos automáticamente.</li>
         <li><strong>Ventas con varios productos:</strong> en el apartado Ventas puedes agregar varios productos al carrito, ajustar cantidades, revisar el total, cancelar la operación sin registrar nada o confirmar la venta una sola vez. Se valida el stock de cada artículo y se descuenta de cada producto vendido.</li>
@@ -791,7 +799,7 @@
         <li><strong>Versión sincronizada:</strong> aplicación actualizada a 3.10.0, compilación 34. Se sincronizaron los datos de versión entre Android, JavaScript y esta pantalla.</li>
         <li><strong>Versión 3.10.0 · compilación 34:</strong> generador local de códigos de barras Code 39, vista previa e integración del código en el catálogo de productos. Se mantiene la compatibilidad con los códigos ya guardados.</li>
         <li><strong>Versión 3.11.0 · compilación 35:</strong> siete visualizaciones configurables: barras, histograma, dispersión, líneas, resumen de caja y bigotes, circular y área. La preferencia de gráfica y métrica se guarda en el dispositivo.</li>
-        <li><strong>Versión 3.12.0 · compilación 36:</strong> administración local de hasta cinco negocios independientes, selector de negocio y notificaciones internas de inventario bajo, saldos pendientes y avisos del negocio. Cada negocio mantiene sus propios registros y ajustes.</li>
+        <li><strong>Versión 3.13.0 · compilación 36:</strong> administración local de hasta cinco negocios independientes, selector de negocio y notificaciones internas de inventario bajo, saldos pendientes y avisos del negocio. Cada negocio mantiene sus propios registros y ajustes.</li>
         <li><strong>Gráficas basadas en registros:</strong> las visualizaciones usan ventas, gastos y cantidades existentes; no crean ni modifican movimientos del negocio. El resumen de caja y bigotes muestra mínimo, cuartiles, mediana y máximo en una vista resumida.</li>
       </ul>
     </article>
@@ -831,6 +839,7 @@
       <p class="muted">Configuración inicial para México: 16 %. Verifica que corresponda a tus productos y obligaciones fiscales.</p>
       <label for="businessTaxRate">Tasa de IVA (%)<input id="businessTaxRate" type="number" min="0" max="100" step="0.01" value="16"></label>
       <label for="businessTaxMode">Cómo aplicar el IVA<select id="businessTaxMode"><option value="add">Añadir al precio al cobrar</option><option value="included">El precio ya incluye IVA</option><option value="off">No calcular IVA en ventas</option></select></label>
+      <label class="switch-row" for="ticketShowTax"><span><strong>Mostrar IVA en los tickets</strong><small class="muted">Desactívalo para ocultar el desglose del IVA en el comprobante. No cambia el cálculo de la venta.</small></span><input id="ticketShowTax" type="checkbox" checked></label>
       <button class="button" type="button" id="saveBusinessTax">Guardar configuración de IVA</button>
     </article>
     <article class="panel options-panel">

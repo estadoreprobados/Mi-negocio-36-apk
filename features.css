@@ -1017,3 +1017,29 @@ footer { color: var(--muted); }
   #view-operations *, #view-expenses *, #view-customers * { scroll-behavior: auto !important; }
 }
 
+\n
+/* v3.13.0 — pulido Premium adaptable; no redefine paletas de temas */
+:root{--mpn-premium-radius:18px;--mpn-premium-shadow:0 10px 30px rgba(16,24,40,.075);--mpn-premium-shadow-hover:0 16px 38px rgba(16,24,40,.12)}
+.panel,.metric-card,.product-card,.ops-card,.version-panel,.stat-card{border-radius:var(--mpn-premium-radius);box-shadow:var(--mpn-premium-shadow);border:1px solid color-mix(in srgb,var(--mpn-line,#d8dee8) 72%,transparent);transition:box-shadow .2s ease,transform .2s ease}
+.panel:hover,.metric-card:hover,.product-card:hover{box-shadow:var(--mpn-premium-shadow-hover)}
+.button,.row-button,.primary-nav-item,.menu-item{border-radius:12px;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+.button:active,.row-button:active{transform:translateY(1px) scale(.985)}
+input,select,textarea{border-radius:11px;min-height:42px}
+.section-heading{align-items:flex-end;gap:16px}.section-heading h2{letter-spacing:-.035em}.panel-title{gap:12px}
+.product-card-image{overflow:hidden;border-radius:14px}.product-card-image img,.table-product-image{object-fit:cover}
+.chart-insights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.chart-insight{padding:13px 14px;border-radius:13px;background:color-mix(in srgb,var(--mpn-panel,#fff) 88%,var(--mpn-accent,#315f82) 12%);border:1px solid color-mix(in srgb,var(--mpn-line,#ddd) 70%,transparent);display:flex;flex-direction:column;gap:5px;min-width:0}
+.chart-insight span{font-size:.78rem;color:var(--mpn-muted,#667085)}.chart-insight strong{font-size:1.05rem;overflow-wrap:anywhere}
+.mpn-dialog{width:min(620px,calc(100% - 28px));max-height:min(80dvh,760px);border:1px solid var(--mpn-line,#ddd);border-radius:20px;padding:20px;background:var(--mpn-panel,#fff);color:var(--mpn-text,#182230);box-shadow:0 24px 80px rgba(0,0,0,.25)}
+.mpn-dialog::backdrop{background:rgba(15,23,42,.48);backdrop-filter:blur(4px)}
+.dialog-head,.dialog-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}.dialog-head h2{margin:0}.dialog-actions{margin-top:18px;flex-wrap:wrap;justify-content:flex-end}
+.icon-button{width:40px;height:40px;border:0;border-radius:12px;background:color-mix(in srgb,var(--mpn-panel,#fff) 80%,var(--mpn-accent,#315f82) 20%);font-size:1.5rem}
+.notification-list{display:grid;gap:9px;margin-top:18px;overflow:auto;max-height:55dvh}.notification-item{display:flex;gap:12px;padding:13px;border:1px solid var(--mpn-line,#ddd);border-radius:14px}.notification-item.is-read{opacity:.65}.notification-kind{font-size:1.25rem}.notification-item p{margin:4px 0}.notification-item small{color:var(--mpn-muted,#667085)}
+.switch-row{display:flex!important;align-items:center;justify-content:space-between;gap:16px;padding:12px 0}.switch-row span{display:grid;gap:4px}.switch-row input{width:22px;min-width:22px}
+.ad-slot{display:none;min-height:0}
+@media(min-width:900px){.app-shell{max-width:1600px;margin-inline:auto}.view{padding-inline:clamp(22px,3vw,48px)}.panel,.metric-card{padding:clamp(18px,1.6vw,26px)}.ad-slot[data-ad-ready="true"]{display:block;min-height:90px;margin:16px 0;border:1px dashed color-mix(in srgb,var(--mpn-line,#ddd) 80%,transparent);border-radius:14px}}
+@media(max-width:640px){.chart-insights{grid-template-columns:repeat(2,minmax(0,1fr))}.panel,.metric-card,.product-card{border-radius:15px}.section-heading{align-items:flex-start}}
+html[data-theme-style="hacker"] .panel,html[data-theme-style="cyberpunk"] .panel{box-shadow:0 0 0 1px color-mix(in srgb,currentColor 7%,transparent),var(--mpn-premium-shadow)}
+html[data-theme-style="forest"] .panel,html[data-theme-style="nature"] .panel{border-radius:20px}
+html[data-theme-style="retro"] .panel,html[data-theme-style="cbtis36"] .panel{border-radius:9px;box-shadow:3px 4px 0 color-mix(in srgb,currentColor 10%,transparent)}
+html[data-theme-style="galaxy"] .panel,html[data-theme-style="violet"] .panel{box-shadow:0 12px 34px color-mix(in srgb,currentColor 10%,transparent)}

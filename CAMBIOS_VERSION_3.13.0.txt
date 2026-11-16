@@ -1,0 +1,20 @@
+MI PRIMER NEGOCIO — VERSIÓN 3.13.0 (BUILD 37)
+Fecha: 15 de noviembre de 2026
+
+CAMBIOS INCLUIDOS
+- Rediseño visual Premium moderno adaptable a pantallas verticales y horizontales, respetando las paletas y fondos actuales.
+- Centro de notificaciones en la aplicación con historial visual, lectura y alertas de inventario bajo y saldos pendientes.
+- Opción independiente para mostrar u ocultar el desglose del IVA en los tickets. No cambia el cálculo ni los totales registrados.
+- Panel de gráficas con seis indicadores adicionales: operaciones, unidades, venta promedio, ingresos, gastos y diferencia ingresos-gastos.
+- Captura directa de fotografías desde la cámara del dispositivo en el selector de imagen de productos, además de seleccionar imágenes existentes.
+- Espacio técnico reservado para futura integración publicitaria; no se muestran anuncios en esta versión.
+- Detalles de superficie y presentación específicos por tema sin redefinir los colores ni fondos existentes.
+
+COMPATIBILIDAD Y DATOS
+- Se conserva la clave de almacenamiento local mpn36_v2_data.
+- Se conserva el identificador Android com.miprimernegocio36.app para permitir actualizar sobre la instalación anterior.
+- No se cambia el formato de los registros de ventas ni de inventario.
+
+VALIDACIÓN
+- app.js validado con node --check.
+- No se generó un APK en este entorno. La compilación debe ejecutarse mediante el flujo de GitHub Actions del repositorio y probarse en Android antes de distribuirla.

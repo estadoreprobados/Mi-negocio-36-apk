@@ -32,3 +32,4 @@ Manolito no utiliza IA, no procesa lenguaje libre y no necesita conectarse a un 
 
 ## Verificación
 Este paquete actualiza los archivos de origen, pero no contiene un APK compilado ni certifica pruebas en un dispositivo físico. La compilación y las pruebas deben confirmarse en GitHub Actions y en el dispositivo Android antes de publicar. Consulta `CAMBIOS_VERSION_3.7.5.txt` para la descripción detallada.
+\n\nVersión de trabajo actual: **3.13.0 (build 37)**. Consulta `CAMBIOS_VERSION_3.13.0.txt` para el registro de cambios.\n
