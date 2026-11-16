@@ -311,6 +311,7 @@
       </div>
     </form>
 
+    <article class="panel section-data-chart"><div class="panel-title"><h3>Existencias por producto</h3><span class="muted">Inventario actual</span></div><div class="chart-wrap"><canvas id="inventorySectionChart"></canvas></div></article>
     <article class="panel">
       <div class="panel-title">
         <h3>Lista de productos</h3>
@@ -433,6 +434,7 @@
       </div>
     </article>
 
+    <article class="panel section-data-chart"><div class="panel-title"><h3>Ventas por día</h3><span class="muted">Últimos 7 días</span></div><div class="chart-wrap"><canvas id="salesSectionChart"></canvas></div></article>
     <article class="panel">
       <div class="panel-title"><h3>Historial de ventas</h3></div>
       <div class="table-wrap">
@@ -490,6 +492,7 @@
       </div>
     </form>
 
+    <article class="panel section-data-chart"><div class="panel-title"><h3>Gastos por categoría</h3><span class="muted">Registros actuales</span></div><div class="chart-wrap"><canvas id="expensesSectionChart"></canvas></div></article>
     <article class="panel">
       <div class="panel-title"><h3>Programar gasto recurrente automático</h3></div>
       <p class="muted">El gasto se registrará al llegar a cada fecha programada. Cada periodo genera un único movimiento.</p>
@@ -655,6 +658,10 @@
       <article class="metric"><span>Gasto máximo / mínimo</span><strong id="statExpenseRange">$0 / $0</strong><small>Por gasto registrado</small></article>
       <article class="metric"><span>Costo de ventas máximo / mínimo</span><strong id="statCostRange">$0 / $0</strong><small>Por operación registrada</small></article>
       <article class="metric"><span>Utilidad bruta máxima / mínima</span><strong id="statGrossRange">$0 / $0</strong><small>Por operación registrada</small></article>
+      <article class="metric"><span>Ingresos</span><strong id="statRevenue">$0</strong><small>Ventas del periodo</small></article>
+      <article class="metric"><span>Gastos</span><strong id="statExpenses">$0</strong><small>Gastos del periodo</small></article>
+      <article class="metric"><span>Diferencia ingresos - gastos</span><strong id="statNet">$0</strong><small>Resultado del periodo</small></article>
+      <article class="metric"><span>Venta promedio</span><strong id="statAverageSale">$0</strong><small>Por operación</small></article>
     </div>
     <article class="panel">
       <div class="panel-title"><h3>Comparación con el periodo anterior</h3><span class="muted" id="statsCompareLabel">Periodo actual vs. anterior</span></div>
@@ -764,10 +771,10 @@
     <div class="section-heading"><div><p class="eyebrow">INFORMACIÓN DE LA APP</p><h2>Versión del sistema</h2></div></div>
     <article class="panel version-panel version-hero">
       <p class="version-mark" aria-hidden="true">MPN36</p>
-      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.12.0</strong><p>Mi Primer Negocio</p>
+      <p class="muted">Versión actual de la aplicación</p><strong id="appVersionLabel">Versión 3.13.0</strong><p>Mi Primer Negocio 36</p>
       <div class="version-facts">
-        <p><span>Número de compilación</span><strong id="appBuildNumber">36</strong></p>
-        <p><span>Actualización preparada</span><strong id="appBuildDate">12 de noviembre de 2026</strong></p>
+        <p><span>Número de compilación</span><strong id="appBuildNumber">37</strong></p>
+        <p><span>Actualización preparada</span><strong id="appBuildDate">16 de noviembre de 2026</strong></p>
       </div>
     </article>
     <article class="panel version-panel">
@@ -792,6 +799,12 @@
         <li><strong>Versión 3.10.0 · compilación 34:</strong> generador local de códigos de barras Code 39, vista previa e integración del código en el catálogo de productos. Se mantiene la compatibilidad con los códigos ya guardados.</li>
         <li><strong>Versión 3.11.0 · compilación 35:</strong> siete visualizaciones configurables: barras, histograma, dispersión, líneas, resumen de caja y bigotes, circular y área. La preferencia de gráfica y métrica se guarda en el dispositivo.</li>
         <li><strong>Versión 3.12.0 · compilación 36:</strong> administración local de hasta cinco negocios independientes, selector de negocio y notificaciones internas de inventario bajo, saldos pendientes y avisos del negocio. Cada negocio mantiene sus propios registros y ajustes.</li>
+        <li><strong>Versión 3.13.0 · compilación 37:</strong> centro visual de notificaciones y avisos Android nativos para inventario bajo y saldos pendientes; permiso del sistema en Android 13 o posterior.</li>
+        <li><strong>Tickets con IVA configurable:</strong> desde Ajustes puedes ocultar o mostrar el desglose del IVA en el ticket. El cálculo y el total de la venta permanecen iguales.</li>
+        <li><strong>Gráficas por sección:</strong> Productos muestra existencias, Ventas muestra importes por día y Gastos muestra importes por concepto. Estadísticas conserva el explorador de siete tipos de gráficas.</li>
+        <li><strong>Indicadores adicionales:</strong> operaciones, unidades, venta promedio, ingresos, gastos y diferencia entre ingresos y gastos.</li>
+        <li><strong>Cámara para productos:</strong> el selector Android permite tomar una fotografía o elegir una imagen de la galería.</li>
+        <li><strong>Calendario de rachas:</strong> permanece visible al activar la vista compacta del Resumen.</li>
         <li><strong>Gráficas basadas en registros:</strong> las visualizaciones usan ventas, gastos y cantidades existentes; no crean ni modifican movimientos del negocio. El resumen de caja y bigotes muestra mínimo, cuartiles, mediana y máximo en una vista resumida.</li>
       </ul>
     </article>
@@ -832,6 +845,11 @@
       <label for="businessTaxRate">Tasa de IVA (%)<input id="businessTaxRate" type="number" min="0" max="100" step="0.01" value="16"></label>
       <label for="businessTaxMode">Cómo aplicar el IVA<select id="businessTaxMode"><option value="add">Añadir al precio al cobrar</option><option value="included">El precio ya incluye IVA</option><option value="off">No calcular IVA en ventas</option></select></label>
       <button class="button" type="button" id="saveBusinessTax">Guardar configuración de IVA</button>
+    </article>
+    <article class="panel options-panel">
+      <h3>Tickets de venta</h3>
+      <p class="muted">Controla si el ticket muestra el desglose del IVA. Esta opción no modifica el IVA calculado ni el total cobrado.</p>
+      <label class="mascot-toggle-label"><input type="checkbox" id="showTicketTax" checked> Mostrar desglose del IVA en los tickets</label>
     </article>
     <article class="panel options-panel">
       <h3>Apariencia</h3>

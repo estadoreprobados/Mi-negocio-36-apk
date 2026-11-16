@@ -97,7 +97,7 @@
   data.recurringExpenses = Array.isArray(data.recurringExpenses) ? data.recurringExpenses : [];
   data.employees = Array.isArray(data.employees) ? data.employees : [];
   data.laborRecords = Array.isArray(data.laborRecords) ? data.laborRecords : [];
-  data.settings = { currency: "MXN", theme: "classic", businessName: "", businessType: "", taxRate: 16, taxMode: "add", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", chartType: "bar", chartMetric: "revenue", ...(data.settings || {}) };
+  data.settings = { currency: "MXN", theme: "classic", businessName: "", businessType: "", taxRate: 16, taxMode: "add", mode: "light", mascotEnabled: true, productView: "grid", accentColor: "#315f82", fontScale: "normal", dashboardCards: "all", chartType: "bar", chartMetric: "revenue", showTicketTax: true, notificationsEnabled: false, ...(data.settings || {}) };
   data.products.forEach(p => {
     if (!p.productKind) p.productKind = data.settings.businessType === "resale" ? "resale" : "own";
     if (!p.inventoryKind) p.inventoryKind = "finished";
@@ -155,15 +155,23 @@
     list.unshift({id:uid(),key,title,message,kind,date:new Date().toISOString(),read:false});
     try { localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(list.slice(0,100))); } catch (_) {}
     renderBusinessControls();
-    if (data.settings.notificationsEnabled && "Notification" in window && Notification.permission === "granted") { try { new Notification(title,{body:message}); } catch (_) {} }
+    if (data.settings.notificationsEnabled) {
+      if (window.AndroidFiles && typeof window.AndroidFiles.showNotification === "function") window.AndroidFiles.showNotification(title, message);
+      else if ("Notification" in window && Notification.permission === "granted") { try { new Notification(title,{body:message}); } catch (_) {} }
+    }
   }
   function showNotificationCenter() {
     const list=readNotifications();
-    if (!list.length) { alert("No tienes notificaciones nuevas."); return; }
-    const lines=list.slice(0,15).map((n,i)=>`${i+1}. ${n.title}\n${n.message}\n${new Date(n.date).toLocaleString()}`).join("\n\n");
-    alert(lines);
+    document.getElementById("mpnNotificationOverlay")?.remove();
+    const overlay=document.createElement("div"); overlay.id="mpnNotificationOverlay"; overlay.className="mpn-notification-overlay";
+    const rows=list.length ? list.slice(0,50).map(n=>`<article class="mpn-notification-item ${n.read?"":"unread"}"><strong>${escapeHtml(n.title||"Aviso")}</strong><p>${escapeHtml(n.message||"")}</p><small>${new Date(n.date).toLocaleString()}</small></article>`).join("") : '<p class="empty">No tienes notificaciones todavía.</p>';
+    overlay.innerHTML=`<section class="mpn-notification-dialog" role="dialog" aria-modal="true" aria-label="Centro de notificaciones"><header class="mpn-notification-head"><div><h2 style="margin:0">Notificaciones</h2><small class="muted">Avisos de este negocio</small></div><button type="button" class="button secondary" data-notice-close>Cerrar ✕</button></header><div>${rows}</div><div class="inline-actions"><button type="button" class="button secondary" data-notice-clear>Marcar todas como leídas</button></div></section>`;
+    document.body.appendChild(overlay);
+    const close=()=>overlay.remove(); overlay.querySelector('[data-notice-close]').addEventListener('click',close); overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+    overlay.querySelector('[data-notice-clear]').addEventListener('click',()=>{list.forEach(n=>n.read=true);localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(list));renderBusinessControls();close();});
     list.forEach(n=>n.read=true); localStorage.setItem(NOTIFICATION_KEY,JSON.stringify(list)); renderBusinessControls();
   }
+  window.onNativeNotificationPermission = function(granted){data.settings.notificationsEnabled=!!granted;save();toast(granted?"Notificaciones activadas.":"No se concedió permiso para notificaciones.");};
   function createBusiness() {
     if (businessRegistry.businesses.length >= 5) { toast("Has alcanzado el límite de 5 negocios."); return; }
     const name=prompt("Nombre del nuevo negocio:"); if (!name || !name.trim()) return;
@@ -275,9 +283,6 @@
     addNotification("Aviso del negocio", message, "business");
     const host = $("businessNotice");
     if (host) { host.textContent = message; host.classList.remove("hidden"); }
-    if (data.settings.notificationsEnabled && "Notification" in window && Notification.permission === "granted") {
-      try { new Notification("Mi Primer Negocio 36", { body: message }); } catch (_) {}
-    }
   }
 
   function checkLowStockNotice() {
@@ -587,7 +592,7 @@
     { id: "vaporwave", name: "Vaporwave", cost: 0, description: "Rosa, naranja y morado retro.", colors: ["#ff6eb4", "#8c5cff", "#ffb45e"], preview: "linear-gradient(135deg,#ff6eb4 0%,#8c5cff 55%,#ffb45e 100%)" }
   ];
 
-  const APP_VERSION = { name: "3.12.0", code: 36, buildDate: "12 de noviembre de 2026" };
+  const APP_VERSION = { name: "3.13.0", code: 37, buildDate: "16 de noviembre de 2026" };
 
   function seasonalThemeIsAvailable(theme, date = today()) {
     if (!theme?.seasonal) return true;
@@ -774,6 +779,10 @@
     $("statExpenseRange").textContent = `${money(expenseRange.max)} / ${money(expenseRange.min)}`;
     $("statCostRange").textContent = `${money(costRange.max)} / ${money(costRange.min)}`;
     $("statGrossRange").textContent = `${money(grossRange.max)} / ${money(grossRange.min)}`;
+    if ($("statRevenue")) $("statRevenue").textContent=money(t.revenue);
+    if ($("statExpenses")) $("statExpenses").textContent=money(t.expenseTotal);
+    if ($("statNet")) $("statNet").textContent=money(t.revenue-t.expenseTotal);
+    if ($("statAverageSale")) $("statAverageSale").textContent=money(t.ss.length?t.revenue/t.ss.length:0);
 
     const current = periodSeries(p.from, p.to);
     const prevTo = addDays(p.from, -1);
@@ -1047,6 +1056,29 @@
     if (p && $("salePrice").value === "") $("salePrice").value = p.price;
   }
 
+  const sectionCharts = { inventory:null, sales:null, expenses:null };
+  function renderSectionCharts(view) {
+    if (!window.Chart) return;
+    if (view === "products") {
+      const canvas=$("inventorySectionChart"); if (!canvas) return;
+      if (sectionCharts.inventory) sectionCharts.inventory.destroy();
+      const rows=data.products.filter(p=>Number(p.stock)>0).slice(0,12);
+      sectionCharts.inventory=new Chart(canvas,{type:"bar",data:{labels:rows.map(p=>p.name),datasets:[{label:"Existencias",data:rows.map(p=>Number(p.stock)||0),backgroundColor:"#64748b"}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+    } else if (view === "sales") {
+      const canvas=$("salesSectionChart"); if (!canvas) return;
+      if (sectionCharts.sales) sectionCharts.sales.destroy();
+      const labels=Array.from({length:7},(_,i)=>addDays(today(),i-6));
+      const values=labels.map(day=>data.sales.filter(x=>x.date===day).reduce((sum,x)=>sum+Number(x.lineTotal ?? (Number(x.qty)||0)*(Number(x.price)||0)),0));
+      sectionCharts.sales=new Chart(canvas,{type:"line",data:{labels:labels.map(x=>x.slice(5)),datasets:[{label:"Ventas",data:values,borderColor:"#d4a72c",backgroundColor:"rgba(212,167,44,.18)",fill:true,tension:.25}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},scales:{y:{beginAtZero:true}}}});
+    } else if (view === "expenses") {
+      const canvas=$("expensesSectionChart"); if (!canvas) return;
+      if (sectionCharts.expenses) sectionCharts.expenses.destroy();
+      const groups={}; data.expenses.forEach(e=>{const key=e.category||e.name||"Otros";groups[key]=(groups[key]||0)+(Number(e.amount)||0);});
+      const keys=Object.keys(groups);
+      sectionCharts.expenses=new Chart(canvas,{type:"doughnut",data:{labels:keys.length?keys:["Sin gastos"],datasets:[{label:"Gastos",data:keys.length?keys.map(k=>groups[k]):[0],backgroundColor:["#d4a72c","#64748b","#16a34a","#f97316","#8b5cf6","#0ea5e9"]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}}}});
+    }
+  }
+
   function go(view) {
     if (!view || !document.getElementById("view-" + view)) view = "dashboard";
     try { localStorage.setItem("mpn36_active_view", view); } catch (_) {}
@@ -1070,6 +1102,7 @@
     if (view === "dashboard") { renderDashboard(); renderStreak(); }
     if (view === "reports") renderReport();
     if (view === "statistics") renderStatistics();
+    if (["products","sales","expenses"].includes(view)) renderSectionCharts(view);
     if (view === "shop") renderShop();
     if (view === "taxes") updateTax();
     if (view === "version") renderSystemVersion();
@@ -1447,7 +1480,7 @@
     const total = Number(first.saleTotal ?? items.reduce((n,x)=>n+Number(x.lineTotal ?? x.qty*x.price),0));
     const tax = Number(first.saleTax ?? items.reduce((n,x)=>n+(Number(x.taxAmount)||0),0));
     const lines = items.map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join("");
-    const ticketBody = `<h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p class="ticket-center">Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}<br>IVA: ${money(tax)}</p><p class="ticket-total">Total: ${money(total)}</p><p class="ticket-center">¡Gracias por tu compra!</p>`;
+    const ticketBody = `<h2>${escapeHtml(data.settings.businessName||"Mi Primer Negocio 36")}</h2><p class="ticket-center">Ticket de venta<br>${escapeHtml(first.date)}<br>Folio: ${escapeHtml(String(key).slice(0,12))}</p><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead><tbody>${lines}</tbody></table><p>Subtotal: ${money(first.saleSubtotal ?? subtotal)}${data.settings.showTicketTax === false ? "" : `<br>IVA: ${money(tax)}`}</p><p class="ticket-total">Total: ${money(total)}</p><p class="ticket-center">¡Gracias por tu compra!</p>`;
     const printableHtml = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ticket de venta</title><style>body{font:14px system-ui;max-width:360px;margin:20px auto;padding:0 12px;color:#222}h2,.ticket-center{text-align:center}table{width:100%;border-collapse:collapse}td,th{padding:6px 2px;border-bottom:1px dashed #aaa;text-align:left}.ticket-total{text-align:right;font-size:18px;font-weight:bold}@media print{body{margin:0 auto;padding:0}}</style></head><body>${ticketBody}</body></html>`;
     document.getElementById("mpnTicketOverlay")?.remove();
     const overlay = document.createElement("div");
@@ -2166,6 +2199,7 @@ function downloadCsv() {
     if ($("accentColor")) $("accentColor").value=data.settings.accentColor || "#315f82";
     if ($("fontScale")) $("fontScale").value=data.settings.fontScale || "normal";
     if ($("dashboardCards")) $("dashboardCards").value=data.settings.dashboardCards || "all";
+    if ($("showTicketTax")) $("showTicketTax").checked=data.settings.showTicketTax !== false;
     const compact = data.settings.dashboardCards === "compact";
     document.documentElement.classList.toggle("mpn-compact-mode", compact);
     if ($("quickActionsPanel")) $("quickActionsPanel").classList.toggle("compact-dashboard", compact);
@@ -2412,8 +2446,10 @@ function downloadCsv() {
   $("addBusinessButton")?.addEventListener("click", createBusiness);
   $("renameBusinessButton")?.addEventListener("click", renameBusiness);
   $("notificationButton")?.addEventListener("click", showNotificationCenter);
+  $("showTicketTax")?.addEventListener("change",e=>{data.settings.showTicketTax=e.target.checked;save();toast(e.target.checked?"El ticket mostrará el desglose del IVA.":"El ticket ocultará el desglose del IVA; el total no cambia.");});
   $("enableNotificationsButton")?.addEventListener("click", async () => {
-    if (!("Notification" in window)) { toast("Este dispositivo no admite notificaciones del navegador."); return; }
+    if (window.AndroidFiles && typeof window.AndroidFiles.requestNotificationPermission === "function") { window.AndroidFiles.requestNotificationPermission(); return; }
+    if (!("Notification" in window)) { toast("Las notificaciones del sistema requieren la aplicación Android."); return; }
     try { const permission=await Notification.requestPermission(); data.settings.notificationsEnabled=permission==="granted"; save(); toast(permission==="granted"?"Notificaciones activadas.":"No se concedió permiso para notificaciones."); }
     catch (_) { toast("No se pudo solicitar permiso de notificaciones."); }
   });

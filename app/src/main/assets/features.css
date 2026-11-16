@@ -828,7 +828,7 @@ footer { color: var(--muted); }
 #view-dashboard.dashboard-compact > .panel,
 #view-dashboard.dashboard-compact .metric { padding:10px; margin-bottom:9px; }
 #view-dashboard.dashboard-compact .streak-panel { gap:8px; }
-#view-dashboard.dashboard-compact .streak-calendar-wrap { display:none; }
+#view-dashboard.dashboard-compact .streak-calendar-wrap { display:block; }
 #view-dashboard.dashboard-compact .mascot-panel { display:none; }
 #view-dashboard.dashboard-compact .quick-actions-panel h3 { margin:0 0 7px; font-size:1rem; }
 #view-dashboard.dashboard-compact .quick-actions { gap:6px; }
@@ -1017,3 +1017,18 @@ footer { color: var(--muted); }
   #view-operations *, #view-expenses *, #view-customers * { scroll-behavior: auto !important; }
 }
 
+
+/* 3.13.0: calendario visible también en vista compacta y centro de avisos */
+#view-dashboard.dashboard-compact .streak-calendar-wrap { padding:8px; }
+#view-dashboard.dashboard-compact .streak-calendar { gap:3px; }
+#view-dashboard.dashboard-compact .calendar-day { min-height:26px; font-size:.76rem; }
+.mpn-notification-overlay{position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,.58);display:flex;align-items:center;justify-content:center;padding:16px}
+.mpn-notification-dialog{width:min(620px,100%);max-height:min(80vh,720px);overflow:auto;background:var(--panel,#fff);color:var(--text,#1f2937);border:1px solid var(--border,#dbe2e8);border-radius:20px;padding:18px;box-shadow:0 24px 70px #0003}
+.mpn-notification-head{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:-18px;background:var(--panel,#fff);padding:4px 0 12px;z-index:1}
+.mpn-notification-item{padding:12px;border:1px solid var(--border,#e1e7ed);border-radius:12px;margin:8px 0;background:var(--surface-soft,#f7f9fb)}
+.mpn-notification-item.unread{border-left:4px solid var(--accent,#315f82)}
+.mpn-notification-item p{margin:5px 0}.mpn-notification-item small{color:var(--muted,#667085)}
+@media(max-width:520px){.mpn-notification-dialog{padding:14px;border-radius:16px}.mpn-notification-head{top:-14px}}
+
+.section-data-chart .chart-wrap{position:relative;height:250px;min-height:220px;width:100%;}
+@media(max-width:520px){.section-data-chart .chart-wrap{height:220px;}}
