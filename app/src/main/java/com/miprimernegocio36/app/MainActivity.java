@@ -90,23 +90,32 @@ public class MainActivity extends Activity {
                     Intent picker = new Intent(Intent.ACTION_GET_CONTENT);
                     picker.addCategory(Intent.CATEGORY_OPENABLE);
                     picker.setType(wantsImage ? "image/*" : "*/*");
-                    Intent chooser = Intent.createChooser(picker, wantsImage ? "Tomar foto o elegir imagen" : "Seleccionar archivo");
+
+                    // La cámara se agrega como opción independiente al selector de galería.
+                    // Es importante usar EXTRA_OUTPUT: muchas cámaras no devuelven una miniatura
+                    // en data cuando se solicita una fotografía de resolución completa.
+                    Intent chooser = Intent.createChooser(picker,
+                            wantsImage ? "Tomar una foto o elegir de galería" : "Seleccionar archivo");
                     if (wantsImage && getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
                         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        ContentValues values = new ContentValues();
-                        values.put(MediaStore.Images.Media.DISPLAY_NAME, "MPN36_" + System.currentTimeMillis() + ".jpg");
-                        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Mi Primer Negocio 36");
-                            values.put(MediaStore.Images.Media.IS_PENDING, 0);
-                        }
-                        pendingCameraPhotoUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                        if (pendingCameraPhotoUri != null) {
-                            camera.putExtra(MediaStore.EXTRA_OUTPUT, pendingCameraPhotoUri);
-                            camera.setClipData(ClipData.newRawUri("Fotografía del producto", pendingCameraPhotoUri));
-                            camera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                            chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{camera});
+                        if (camera.resolveActivity(getPackageManager()) != null) {
+                            ContentValues values = new ContentValues();
+                            values.put(MediaStore.Images.Media.DISPLAY_NAME,
+                                    "MPN36_" + System.currentTimeMillis() + ".jpg");
+                            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                values.put(MediaStore.Images.Media.RELATIVE_PATH,
+                                        Environment.DIRECTORY_PICTURES + "/Mi Primer Negocio 36");
+                            }
+                            pendingCameraPhotoUri = getContentResolver().insert(
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                            if (pendingCameraPhotoUri != null) {
+                                camera.putExtra(MediaStore.EXTRA_OUTPUT, pendingCameraPhotoUri);
+                                camera.setClipData(ClipData.newRawUri("Fotografía del producto", pendingCameraPhotoUri));
+                                camera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{camera});
+                            }
                         }
                     }
                     startActivityForResult(chooser, FILE_CHOOSER_REQUEST);
@@ -379,20 +388,38 @@ public class MainActivity extends Activity {
     }
 
 
+    private boolean hasImageContent(Uri uri) {
+        if (uri == null) return false;
+        try (java.io.InputStream input = getContentResolver().openInputStream(uri)) {
+            return input != null && input.read() != -1;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == FILE_CHOOSER_REQUEST) {
             if (filePathCallback != null) {
                 Uri[] results = null;
-                if (resultCode == RESULT_OK) {
-                    Uri selected = intent != null ? intent.getData() : null;
-                    if (selected == null && pendingCameraPhotoUri != null) selected = pendingCameraPhotoUri;
-                    if (selected != null) results = new Uri[] { selected };
-                    if (pendingCameraPhotoUri != null && selected != null && !pendingCameraPhotoUri.equals(selected)) {
-                        try { getContentResolver().delete(pendingCameraPhotoUri, null, null); } catch (Exception ignored) {}
+                Uri selected = null;
+                if (resultCode == RESULT_OK && intent != null) {
+                    if (intent.getClipData() != null && intent.getClipData().getItemCount() > 0) {
+                        selected = intent.getClipData().getItemAt(0).getUri();
+                    } else {
+                        selected = intent.getData();
                     }
-                } else if (pendingCameraPhotoUri != null) {
+                }
+                // Algunas apps de cámara guardan correctamente la foto en EXTRA_OUTPUT,
+                // pero devuelven RESULT_CANCELED o un Intent sin data. Comprobamos el URI.
+                if (selected == null && pendingCameraPhotoUri != null && hasImageContent(pendingCameraPhotoUri)) {
+                    selected = pendingCameraPhotoUri;
+                }
+                if (selected != null) results = new Uri[]{selected};
+                if (pendingCameraPhotoUri != null && !pendingCameraPhotoUri.equals(selected)) {
+                    try { getContentResolver().delete(pendingCameraPhotoUri, null, null); } catch (Exception ignored) {}
+                } else if (pendingCameraPhotoUri != null && selected == null) {
                     try { getContentResolver().delete(pendingCameraPhotoUri, null, null); } catch (Exception ignored) {}
                 }
                 filePathCallback.onReceiveValue(results);
